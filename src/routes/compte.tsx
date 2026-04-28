@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Users, Utensils, Star, Bell, Moon, Shield, HelpCircle, MessageSquare, ChevronRight, LogOut } from "lucide-react";
+import { Pencil, Users, Utensils, Star, Bell, Moon, Shield, HelpCircle, MessageSquare, ChevronRight, LogOut, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/compte")({
 
 function AccountPage() {
   const { session, profile, loading, signOut, refreshProfile } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const [notif, setNotif] = useState(true);
   const [dark, setDark] = useState(false);
@@ -109,6 +111,9 @@ function AccountPage() {
           <Row icon={<Shield className="h-5 w-5" />} title="Confidentialité" to="/compte/confidentialite" />
           <Row icon={<HelpCircle className="h-5 w-5" />} title="Aide et support" to="/compte/aide" />
           <Row icon={<MessageSquare className="h-5 w-5" />} title="Contactez-nous" to="/compte/contact" />
+          {isAdmin && (
+            <Row icon={<ShieldCheck className="h-5 w-5 text-primary" />} title="Dashboard admin" subtitle="Messages support & réponses IA" to="/admin" iconBg="bg-primary/10" />
+          )}
         </div>
 
         <div className="mt-8 space-y-2">
