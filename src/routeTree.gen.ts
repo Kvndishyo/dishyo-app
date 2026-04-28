@@ -9,38 +9,187 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as PublierRouteImport } from './routes/publier'
+import { Route as CompteRouteImport } from './routes/compte'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
+import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
+import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
+import { Route as CompteContactRouteImport } from './routes/compte.contact'
+import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
+import { Route as CompteAmisRouteImport } from './routes/compte.amis'
+import { Route as CompteAideRouteImport } from './routes/compte.aide'
 
+const RechercheRoute = RechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublierRoute = PublierRouteImport.update({
+  id: '/publier',
+  path: '/publier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompteRoute = CompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfilHandleRoute = ProfilHandleRouteImport.update({
+  id: '/profil/$handle',
+  path: '/profil/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
+  id: '/restaurateur',
+  path: '/restaurateur',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteMesPlatsRoute = CompteMesPlatsRouteImport.update({
+  id: '/mes-plats',
+  path: '/mes-plats',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteContactRoute = CompteContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteConfidentialiteRoute = CompteConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteAmisRoute = CompteAmisRouteImport.update({
+  id: '/amis',
+  path: '/amis',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteAideRoute = CompteAideRouteImport.update({
+  id: '/aide',
+  path: '/aide',
+  getParentRoute: () => CompteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/compte': typeof CompteRouteWithChildren
+  '/publier': typeof PublierRoute
+  '/recherche': typeof RechercheRoute
+  '/compte/aide': typeof CompteAideRoute
+  '/compte/amis': typeof CompteAmisRoute
+  '/compte/confidentialite': typeof CompteConfidentialiteRoute
+  '/compte/contact': typeof CompteContactRoute
+  '/compte/mes-plats': typeof CompteMesPlatsRoute
+  '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/profil/$handle': typeof ProfilHandleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/compte': typeof CompteRouteWithChildren
+  '/publier': typeof PublierRoute
+  '/recherche': typeof RechercheRoute
+  '/compte/aide': typeof CompteAideRoute
+  '/compte/amis': typeof CompteAmisRoute
+  '/compte/confidentialite': typeof CompteConfidentialiteRoute
+  '/compte/contact': typeof CompteContactRoute
+  '/compte/mes-plats': typeof CompteMesPlatsRoute
+  '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/profil/$handle': typeof ProfilHandleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/compte': typeof CompteRouteWithChildren
+  '/publier': typeof PublierRoute
+  '/recherche': typeof RechercheRoute
+  '/compte/aide': typeof CompteAideRoute
+  '/compte/amis': typeof CompteAmisRoute
+  '/compte/confidentialite': typeof CompteConfidentialiteRoute
+  '/compte/contact': typeof CompteContactRoute
+  '/compte/mes-plats': typeof CompteMesPlatsRoute
+  '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/profil/$handle': typeof ProfilHandleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/compte'
+    | '/publier'
+    | '/recherche'
+    | '/compte/aide'
+    | '/compte/amis'
+    | '/compte/confidentialite'
+    | '/compte/contact'
+    | '/compte/mes-plats'
+    | '/compte/restaurateur'
+    | '/profil/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/compte'
+    | '/publier'
+    | '/recherche'
+    | '/compte/aide'
+    | '/compte/amis'
+    | '/compte/confidentialite'
+    | '/compte/contact'
+    | '/compte/mes-plats'
+    | '/compte/restaurateur'
+    | '/profil/$handle'
+  id:
+    | '__root__'
+    | '/'
+    | '/compte'
+    | '/publier'
+    | '/recherche'
+    | '/compte/aide'
+    | '/compte/amis'
+    | '/compte/confidentialite'
+    | '/compte/contact'
+    | '/compte/mes-plats'
+    | '/compte/restaurateur'
+    | '/profil/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompteRoute: typeof CompteRouteWithChildren
+  PublierRoute: typeof PublierRoute
+  RechercheRoute: typeof RechercheRoute
+  ProfilHandleRoute: typeof ProfilHandleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/recherche': {
+      id: '/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof RechercheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publier': {
+      id: '/publier'
+      path: '/publier'
+      fullPath: '/publier'
+      preLoaderRoute: typeof PublierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compte': {
+      id: '/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof CompteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,21 +197,86 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profil/$handle': {
+      id: '/profil/$handle'
+      path: '/profil/$handle'
+      fullPath: '/profil/$handle'
+      preLoaderRoute: typeof ProfilHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compte/restaurateur': {
+      id: '/compte/restaurateur'
+      path: '/restaurateur'
+      fullPath: '/compte/restaurateur'
+      preLoaderRoute: typeof CompteRestaurateurRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/mes-plats': {
+      id: '/compte/mes-plats'
+      path: '/mes-plats'
+      fullPath: '/compte/mes-plats'
+      preLoaderRoute: typeof CompteMesPlatsRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/contact': {
+      id: '/compte/contact'
+      path: '/contact'
+      fullPath: '/compte/contact'
+      preLoaderRoute: typeof CompteContactRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/confidentialite': {
+      id: '/compte/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/compte/confidentialite'
+      preLoaderRoute: typeof CompteConfidentialiteRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/amis': {
+      id: '/compte/amis'
+      path: '/amis'
+      fullPath: '/compte/amis'
+      preLoaderRoute: typeof CompteAmisRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/aide': {
+      id: '/compte/aide'
+      path: '/aide'
+      fullPath: '/compte/aide'
+      preLoaderRoute: typeof CompteAideRouteImport
+      parentRoute: typeof CompteRoute
+    }
   }
 }
 
+interface CompteRouteChildren {
+  CompteAideRoute: typeof CompteAideRoute
+  CompteAmisRoute: typeof CompteAmisRoute
+  CompteConfidentialiteRoute: typeof CompteConfidentialiteRoute
+  CompteContactRoute: typeof CompteContactRoute
+  CompteMesPlatsRoute: typeof CompteMesPlatsRoute
+  CompteRestaurateurRoute: typeof CompteRestaurateurRoute
+}
+
+const CompteRouteChildren: CompteRouteChildren = {
+  CompteAideRoute: CompteAideRoute,
+  CompteAmisRoute: CompteAmisRoute,
+  CompteConfidentialiteRoute: CompteConfidentialiteRoute,
+  CompteContactRoute: CompteContactRoute,
+  CompteMesPlatsRoute: CompteMesPlatsRoute,
+  CompteRestaurateurRoute: CompteRestaurateurRoute,
+}
+
+const CompteRouteWithChildren =
+  CompteRoute._addFileChildren(CompteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompteRoute: CompteRouteWithChildren,
+  PublierRoute: PublierRoute,
+  RechercheRoute: RechercheRoute,
+  ProfilHandleRoute: ProfilHandleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
