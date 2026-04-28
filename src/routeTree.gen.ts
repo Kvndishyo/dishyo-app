@@ -9,9 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as PublierRouteImport } from './routes/publier'
 import { Route as CompteRouteImport } from './routes/compte'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
@@ -21,6 +23,11 @@ import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confi
 import { Route as CompteAmisRouteImport } from './routes/compte.amis'
 import { Route as CompteAideRouteImport } from './routes/compte.aide'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RechercheRoute = RechercheRouteImport.update({
   id: '/recherche',
   path: '/recherche',
@@ -34,6 +41,11 @@ const PublierRoute = PublierRouteImport.update({
 const CompteRoute = CompteRouteImport.update({
   id: '/compte',
   path: '/compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -79,9 +91,11 @@ const CompteAideRoute = CompteAideRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/compte': typeof CompteRouteWithChildren
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/compte/aide': typeof CompteAideRoute
   '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
@@ -92,9 +106,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/compte': typeof CompteRouteWithChildren
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/compte/aide': typeof CompteAideRoute
   '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
@@ -106,9 +122,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/compte': typeof CompteRouteWithChildren
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/compte/aide': typeof CompteAideRoute
   '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
@@ -121,9 +139,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/compte'
     | '/publier'
     | '/recherche'
+    | '/reset-password'
     | '/compte/aide'
     | '/compte/amis'
     | '/compte/confidentialite'
@@ -134,9 +154,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/compte'
     | '/publier'
     | '/recherche'
+    | '/reset-password'
     | '/compte/aide'
     | '/compte/amis'
     | '/compte/confidentialite'
@@ -147,9 +169,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/compte'
     | '/publier'
     | '/recherche'
+    | '/reset-password'
     | '/compte/aide'
     | '/compte/amis'
     | '/compte/confidentialite'
@@ -161,14 +185,23 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   CompteRoute: typeof CompteRouteWithChildren
   PublierRoute: typeof PublierRoute
   RechercheRoute: typeof RechercheRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ProfilHandleRoute: typeof ProfilHandleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recherche': {
       id: '/recherche'
       path: '/recherche'
@@ -188,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/compte'
       fullPath: '/compte'
       preLoaderRoute: typeof CompteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -272,9 +312,11 @@ const CompteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   CompteRoute: CompteRouteWithChildren,
   PublierRoute: PublierRoute,
   RechercheRoute: RechercheRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ProfilHandleRoute: ProfilHandleRoute,
 }
 export const routeTree = rootRouteImport

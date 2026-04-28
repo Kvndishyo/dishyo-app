@@ -1,6 +1,8 @@
 import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/dishyo/AppShell";
+import { AuthProvider } from "@/hooks/useAuth";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -37,9 +39,12 @@ export const Route = createRootRoute({
   }),
   shellComponent: RootShell,
   component: () => (
-    <AppShell>
-      <Outlet />
-    </AppShell>
+    <AuthProvider>
+      <AppShell>
+        <Outlet />
+      </AppShell>
+      <Toaster position="top-center" richColors />
+    </AuthProvider>
   ),
   notFoundComponent: NotFoundComponent,
 });

@@ -1,21 +1,49 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send } from "lucide-react";
-import { useState } from "react";
-import { type Post, ME, timeAgo } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { timeAgo } from "@/lib/dishyo-db";
+import { toast } from "sonner";
+
+type Comment = {
+  id: string;
+  body: string;
+  created_at: string;
+  user_id: string;
+  profiles: { handle: string; display_name: string; avatar_url: string | null } | null;
+};
 
 export function CommentSheet({
-  open, onClose, post,
-}: { open: boolean; onClose: () => void; post: Post }) {
+  open, onClose, postId, currentUserId,
+}: { open: boolean; onClose: () => void; postId: string; currentUserId: string }) {
   const [text, setText] = useState("");
-  const [comments, setComments] = useState(post.comments);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  function send() {
+  useEffect(() => {
+    if (!open) return;
+    setLoading(true);
+    supabase
+      .from("comments")
+      .select("id,body,created_at,user_id,profiles!comments_user_id_fkey(handle,display_name,avatar_url)")
+      .eq("post_id", postId)
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        setComments((data as unknown as Comment[]) ?? []);
+        setLoading(false);
+      });
+  }, [open, postId]);
+
+  async function send() {
     const v = text.trim();
     if (!v) return;
-    setComments((c) => [
-      ...c,
-      { id: `local-${Date.now()}`, user: ME, text: v, createdAt: Date.now() },
-    ]);
+    const { data, error } = await supabase
+      .from("comments")
+      .insert({ post_id: postId, user_id: currentUserId, body: v })
+      .select("id,body,created_at,user_id,profiles!comments_user_id_fkey(handle,display_name,avatar_url)")
+      .single();
+    if (error) return toast.error(error.message);
+    setComments((c) => [...c, data as unknown as Comment]);
     setText("");
   }
 
@@ -23,11 +51,7 @@ export function CommentSheet({
     <AnimatePresence>
       {open && (
         <>
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
-          />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm" />
           <motion.div
             initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 280 }}
@@ -40,38 +64,32 @@ export function CommentSheet({
               </button>
             </div>
             <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-              {comments.length === 0 && (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  Sois le premier à commenter ✨
-                </p>
+              {loading && <p className="py-8 text-center text-sm text-muted-foreground">Chargement…</p>}
+              {!loading && comments.length === 0 && (
+                <p className="py-8 text-center text-sm text-muted-foreground">Sois le premier à commenter ✨</p>
               )}
               {comments.map((c) => (
                 <div key={c.id} className="flex gap-3">
-                  <img src={c.user.avatar} className="h-9 w-9 rounded-full object-cover" />
+                  <img src={c.profiles?.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${c.profiles?.handle ?? "?"}`} className="h-9 w-9 rounded-full object-cover" />
                   <div>
                     <div className="rounded-2xl rounded-tl-sm bg-muted px-3 py-2">
-                      <div className="text-sm font-semibold">{c.user.username}</div>
-                      <div className="text-sm">{renderText(c.text)}</div>
+                      <div className="text-sm font-semibold">{c.profiles?.display_name ?? "?"}</div>
+                      <div className="text-sm">{renderText(c.body)}</div>
                     </div>
-                    <div className="mt-1 px-2 text-xs text-muted-foreground">{timeAgo(c.createdAt)}</div>
+                    <div className="mt-1 px-2 text-xs text-muted-foreground">{timeAgo(c.created_at)}</div>
                   </div>
                 </div>
               ))}
             </div>
             <div className="flex items-center gap-2 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-              <img src={ME.avatar} className="h-9 w-9 rounded-full object-cover" />
               <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
+                value={text} onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
                 placeholder="Ajoute un commentaire… (@ #)"
+                maxLength={500}
                 className="flex-1 rounded-full bg-muted px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
               />
-              <button
-                onClick={send}
-                disabled={!text.trim()}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow transition disabled:opacity-40"
-              >
+              <button onClick={send} disabled={!text.trim()} className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow transition disabled:opacity-40">
                 <Send className="h-4 w-4" />
               </button>
             </div>
