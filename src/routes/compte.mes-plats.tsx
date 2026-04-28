@@ -1,14 +1,32 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Trash2, Clock } from "lucide-react";
-import { POSTS, ME, timeRemaining } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { fetchUserPosts, timeRemaining, type DbPost } from "@/lib/dishyo-db";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/compte/mes-plats")({
   component: MyPostsPage,
 });
 
 function MyPostsPage() {
-  // Pour la démo on prend les premiers posts comme étant "à moi"
-  const myPosts = POSTS.slice(0, 3).map((p) => ({ ...p, user: ME }));
+  const { session } = useAuth();
+  const [posts, setPosts] = useState<DbPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!session) return;
+    fetchUserPosts(session.user.id).then((p) => { setPosts(p); setLoading(false); });
+  }, [session]);
+
+  async function remove(id: string) {
+    if (!confirm("Supprimer ce plat ?")) return;
+    const { error } = await supabase.from("posts").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    setPosts((p) => p.filter((x) => x.id !== id));
+    toast.success("Plat supprimé");
+  }
 
   return (
     <div className="min-h-screen">
@@ -20,38 +38,29 @@ function MyPostsPage() {
       </header>
 
       <div className="space-y-3 p-5">
-        {myPosts.map((p) => {
-          const remaining = timeRemaining(p.createdAt);
-          const expired = remaining === "Expiré";
-          return (
-            <div key={p.id} className="flex gap-3 rounded-2xl bg-card p-3 shadow-soft">
-              <img src={p.image} className="h-20 w-20 rounded-xl object-cover" />
-              <div className="flex flex-1 flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{p.title}</h3>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        expired
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}
-                    >
-                      {expired ? "Expiré" : "Actif"}
-                    </span>
-                  </div>
-                  <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    {expired ? "Plus disponible" : `Disparaît dans ${remaining}`}
-                  </div>
+        {loading && <p className="text-center text-sm text-muted-foreground">Chargement…</p>}
+        {!loading && posts.length === 0 && (
+          <p className="py-12 text-center text-sm text-muted-foreground">Aucun plat actif. Publie ton premier plat ! 🍽️</p>
+        )}
+        {posts.map((p) => (
+          <div key={p.id} className="flex gap-3 rounded-2xl bg-card p-3 shadow-soft">
+            <img src={p.photo_url} className="h-20 w-20 rounded-xl object-cover" />
+            <div className="flex flex-1 flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold">{p.title}</h3>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700">Actif</span>
                 </div>
-                <button className="self-end rounded-full p-2 text-destructive hover:bg-destructive/10">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" /> Disparaît dans {timeRemaining(p.expires_at)}
+                </div>
               </div>
+              <button onClick={() => remove(p.id)} className="self-end rounded-full p-2 text-destructive hover:bg-destructive/10">
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

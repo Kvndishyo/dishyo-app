@@ -1,24 +1,36 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Send } from "lucide-react";
 import { useState } from "react";
-import { ME } from "@/lib/mock-data";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/compte/contact")({
   component: ContactPage,
 });
 
 function ContactPage() {
-  const [handle, setHandle] = useState(ME.handle);
-  const [email, setEmail] = useState("");
+  const { session, profile } = useAuth();
+  const [subject, setSubject] = useState("");
+  const [email, setEmail] = useState(session?.user.email ?? "");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  function send(e: React.FormEvent) {
+  async function send(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !message.trim()) return;
+    if (!session) return toast.error("Connecte-toi d'abord");
+    if (!email.trim() || !message.trim() || !subject.trim()) return;
+    setBusy(true);
+    const { error } = await supabase.from("support_messages").insert({
+      user_id: session.user.id, email, subject, body: message,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message);
     setSent(true);
-    setTimeout(() => setSent(false), 3500);
     setMessage("");
+    setSubject("");
+    setTimeout(() => setSent(false), 4000);
   }
 
   return (
@@ -32,44 +44,24 @@ function ContactPage() {
 
       <form onSubmit={send} className="space-y-4 p-5">
         <p className="text-sm text-muted-foreground">
-          Une question, un bug, une suggestion ? On te répond par email rapidement.
+          {profile ? `Bonjour @${profile.handle} !` : ""} Une question, un bug, une suggestion ? On te répond rapidement.
         </p>
 
-        <Field label="Pseudo">
-          <input value={handle} onChange={(e) => setHandle(e.target.value)} className={inputCls} />
-        </Field>
-        <Field label="Email">
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ton@email.com" className={inputCls} />
-        </Field>
-        <Field label="Message">
-          <textarea required value={message} onChange={(e) => setMessage(e.target.value)} rows={6} placeholder="Décris-nous ta demande…" className={inputCls + " resize-none"} />
-        </Field>
+        <Field label="Sujet"><input required value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Sujet" className={inputCls} /></Field>
+        <Field label="Email"><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} /></Field>
+        <Field label="Message"><textarea required value={message} onChange={(e) => setMessage(e.target.value)} rows={6} placeholder="Décris-nous ta demande…" className={inputCls + " resize-none"} /></Field>
 
-        <button
-          type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3.5 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98]"
-        >
-          <Send className="h-4 w-4" />
-          Envoyer
+        <button type="submit" disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3.5 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98] disabled:opacity-50">
+          <Send className="h-4 w-4" /> {busy ? "Envoi…" : "Envoyer"}
         </button>
 
-        {sent && (
-          <div className="rounded-2xl bg-emerald-100 px-4 py-3 text-center text-sm text-emerald-700">
-            ✅ Message envoyé ! On revient vers toi très vite.
-          </div>
-        )}
+        {sent && <div className="rounded-2xl bg-emerald-100 px-4 py-3 text-center text-sm text-emerald-700">✅ Message envoyé ! On revient vers toi très vite.</div>}
       </form>
     </div>
   );
 }
 
 const inputCls = "w-full rounded-2xl bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30";
-
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
-      {children}
-    </label>
-  );
+  return <label className="block"><div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>{children}</label>;
 }
