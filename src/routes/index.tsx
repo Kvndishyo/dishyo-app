@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Heart, MessageCircle, UserPlus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { POSTS, NOTIFICATIONS, timeAgo } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { fetchFeed, type DbPost } from "@/lib/dishyo-db";
 import { PostCard } from "@/components/dishyo/PostCard";
+import { useAuth } from "@/hooks/useAuth";
+import { Logo } from "@/components/dishyo/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,39 +18,66 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const { session, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
+  const [posts, setPosts] = useState<DbPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!session) return;
+    fetchFeed().then((p) => { setPosts(p); setLoading(false); }).catch(() => setLoading(false));
+  }, [session, authLoading]);
+
+  if (authLoading) return <div className="flex min-h-screen items-center justify-center"><Logo size={48} /></div>;
+
+  if (!session) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <Logo size={72} />
+        <h1 className="mt-4 text-3xl font-bold">Dishyo</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Connecte-toi pour voir les plats de tes amis</p>
+        <button onClick={() => navigate({ to: "/auth" })} className="mt-6 rounded-full bg-primary px-8 py-3 font-semibold text-primary-foreground shadow-glow">
+          Commencer
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background/85 px-5 py-4 backdrop-blur-xl">
         <div className="w-10" />
         <h1 className="text-xl font-bold tracking-tight">Dishyo</h1>
-        <button
-          onClick={() => setNotifOpen(true)}
-          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-muted transition hover:bg-accent"
-        >
+        <button onClick={() => setNotifOpen(true)} className="relative flex h-10 w-10 items-center justify-center rounded-full bg-muted transition hover:bg-accent">
           <Bell className="h-5 w-5" />
-          {NOTIFICATIONS.length > 0 && (
-            <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background" />
-          )}
         </button>
       </header>
 
       <div className="pt-4">
-        {POSTS.map((p) => <PostCard key={p.id} post={p} />)}
-        <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-          Tu as tout vu ! ✨
-        </p>
+        {loading ? (
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">Chargement…</p>
+        ) : posts.length === 0 ? (
+          <div className="px-6 py-16 text-center">
+            <p className="text-base font-semibold">Pas encore de plats 🍽️</p>
+            <p className="mt-2 text-sm text-muted-foreground">Suis tes amis ou publie ton premier plat !</p>
+            <Link to="/publier" className="mt-6 inline-block rounded-full bg-primary px-6 py-2 font-semibold text-primary-foreground">
+              Publier un plat
+            </Link>
+          </div>
+        ) : (
+          posts.map((p) => <PostCard key={p.id} post={p} currentUserId={session.user.id} />)
+        )}
+        {!loading && posts.length > 0 && (
+          <p className="px-4 py-8 text-center text-sm text-muted-foreground">Tu as tout vu ! ✨</p>
+        )}
       </div>
 
       <AnimatePresence>
         {notifOpen && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setNotifOpen(false)}
-              className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
-            />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setNotifOpen(false)} className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm" />
             <motion.div
               initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
@@ -60,30 +89,11 @@ function HomePage() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto">
-                {NOTIFICATIONS.map((n) => {
-                  const Icon = n.type === "like" ? Heart : n.type === "comment" ? MessageCircle : UserPlus;
-                  const text =
-                    n.type === "like" ? `a aimé ton plat « ${n.postPreview} »` :
-                    n.type === "comment" ? `a commenté « ${n.postPreview} »` :
-                    "a commencé à te suivre";
-                  return (
-                    <div key={n.id} className="flex items-center gap-3 border-b border-border px-5 py-4">
-                      <div className="relative">
-                        <img src={n.user.avatar} className="h-11 w-11 rounded-full object-cover" />
-                        <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                          <Icon className="h-3 w-3" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm">
-                          <span className="font-semibold">{n.user.username}</span> {text}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{timeAgo(n.createdAt)}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="flex-1 overflow-y-auto p-6 text-center text-sm text-muted-foreground">
+                Aucune notification pour l'instant.
+                <div className="mt-6 flex items-center justify-center gap-3 text-xs">
+                  <Heart className="h-4 w-4" /><MessageCircle className="h-4 w-4" /><UserPlus className="h-4 w-4" />
+                </div>
               </div>
             </motion.div>
           </>
