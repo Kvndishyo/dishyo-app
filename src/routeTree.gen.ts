@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as PublierRouteImport } from './routes/publier'
+import { Route as CompteRouteImport } from './routes/compte'
 import { Route as IndexRouteImport } from './routes/index'
 
+const RechercheRoute = RechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublierRoute = PublierRouteImport.update({
+  id: '/publier',
+  path: '/publier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompteRoute = CompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/compte': typeof CompteRoute
+  '/publier': typeof PublierRoute
+  '/recherche': typeof RechercheRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/compte': typeof CompteRoute
+  '/publier': typeof PublierRoute
+  '/recherche': typeof RechercheRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/compte': typeof CompteRoute
+  '/publier': typeof PublierRoute
+  '/recherche': typeof RechercheRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/compte' | '/publier' | '/recherche'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/compte' | '/publier' | '/recherche'
+  id: '__root__' | '/' | '/compte' | '/publier' | '/recherche'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompteRoute: typeof CompteRoute
+  PublierRoute: typeof PublierRoute
+  RechercheRoute: typeof RechercheRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/recherche': {
+      id: '/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof RechercheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publier': {
+      id: '/publier'
+      path: '/publier'
+      fullPath: '/publier'
+      preLoaderRoute: typeof PublierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compte': {
+      id: '/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof CompteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompteRoute: CompteRoute,
+  PublierRoute: PublierRoute,
+  RechercheRoute: RechercheRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
