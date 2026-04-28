@@ -1,39 +1,54 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Share2, Flag, UserPlus, UserCheck } from "lucide-react";
-import { useMemo, useState } from "react";
-import { USERS } from "@/lib/mock-data";
+import { Search, Share2, UserPlus, UserCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { searchProfiles, type DbProfile } from "@/lib/dishyo-db";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/recherche")({
-  head: () => ({
-    meta: [
-      { title: "Dishyo — Recherche" },
-      { name: "description", content: "Trouve des foodies et restaurateurs sur Dishyo." },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "Dishyo — Recherche" }] }),
   component: SearchPage,
 });
 
 function SearchPage() {
+  const { session } = useAuth();
   const [q, setQ] = useState("");
-  const [following, setFollowing] = useState<Record<string, boolean>>({});
+  const [results, setResults] = useState<DbProfile[]>([]);
+  const [follows, setFollows] = useState<Set<string>>(new Set());
 
-  const results = useMemo(() => {
-    const list = q
-      ? USERS.filter((u) =>
-          u.username.toLowerCase().includes(q.toLowerCase()) ||
-          u.handle.toLowerCase().includes(q.toLowerCase()))
-      : USERS;
-    return list;
-  }, [q]);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      searchProfiles(q).then((r) => setResults(r.filter((u) => u.id !== session?.user.id)));
+    }, 200);
+    return () => clearTimeout(t);
+  }, [q, session]);
+
+  useEffect(() => {
+    if (!session) return;
+    supabase.from("follows").select("following_id").eq("follower_id", session.user.id).then(({ data }) => {
+      setFollows(new Set((data ?? []).map((d) => d.following_id)));
+    });
+  }, [session]);
+
+  async function toggleFollow(targetId: string) {
+    if (!session) return;
+    const isFollowing = follows.has(targetId);
+    const next = new Set(follows);
+    if (isFollowing) {
+      next.delete(targetId);
+      await supabase.from("follows").delete().eq("follower_id", session.user.id).eq("following_id", targetId);
+    } else {
+      next.add(targetId);
+      await supabase.from("follows").insert({ follower_id: session.user.id, following_id: targetId });
+    }
+    setFollows(next);
+  }
 
   function share() {
     const url = window.location.origin;
-    if (navigator.share) {
-      navigator.share({ title: "Dishyo", text: "Rejoins-moi sur Dishyo !", url }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(url);
-      alert("Lien copié !");
-    }
+    if (navigator.share) navigator.share({ title: "Dishyo", text: "Rejoins-moi sur Dishyo !", url }).catch(() => {});
+    else { navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
   }
 
   return (
@@ -42,63 +57,37 @@ function SearchPage() {
         <h1 className="mb-3 text-xl font-bold">Recherche</h1>
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Rechercher un pseudo…"
-            className="w-full rounded-full bg-muted py-3 pl-12 pr-4 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
-          />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher un pseudo…"
+            className="w-full rounded-full bg-muted py-3 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
       </header>
 
       <div className="px-5 py-4">
-        <button
-          onClick={share}
-          className="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3.5 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98]"
-        >
-          <Share2 className="h-5 w-5" />
-          Inviter des amis
+        <button onClick={share} className="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3.5 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98]">
+          <Share2 className="h-5 w-5" /> Inviter des amis
         </button>
 
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          {q ? "Résultats" : "Recommandations"}
+          {q ? "Résultats" : "Découvrir"}
         </h2>
 
         <ul className="space-y-2">
           {results.map((u) => {
-            const isFollowing = following[u.id] ?? false;
+            const isFollowing = follows.has(u.id);
             return (
-              <li
-                key={u.id}
-                className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"
-              >
+              <li key={u.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
                 <Link to="/profil/$handle" params={{ handle: u.handle }} className="flex flex-1 items-center gap-3">
-                  <img src={u.avatar} className="h-12 w-12 rounded-full object-cover" />
+                  <img src={u.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${u.handle}`} className="h-12 w-12 rounded-full object-cover" />
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-semibold">{u.username}</span>
-                      {u.isRestaurant && (
-                        <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">★</span>
-                      )}
+                      <span className="font-semibold">{u.display_name}</span>
+                      {u.restaurateur && <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">★</span>}
                     </div>
                     <div className="text-xs text-muted-foreground">@{u.handle}</div>
                   </div>
                 </Link>
-                <button
-                  className="rounded-full p-2 text-muted-foreground hover:bg-muted"
-                  title="Signaler"
-                  onClick={() => alert("Signalement envoyé")}
-                >
-                  <Flag className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setFollowing((f) => ({ ...f, [u.id]: !isFollowing }))}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition ${
-                    isFollowing
-                      ? "bg-muted text-foreground"
-                      : "bg-primary text-primary-foreground shadow-glow"
-                  }`}
-                >
+                <button onClick={() => toggleFollow(u.id)}
+                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition ${isFollowing ? "bg-muted text-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}>
                   {isFollowing ? <UserCheck className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
                   {isFollowing ? "Suivi" : "Suivre"}
                 </button>
@@ -106,7 +95,7 @@ function SearchPage() {
             );
           })}
           {results.length === 0 && (
-            <li className="py-12 text-center text-sm text-muted-foreground">Aucun résultat pour « {q} »</li>
+            <li className="py-12 text-center text-sm text-muted-foreground">{q ? `Aucun résultat pour « ${q} »` : "Aucun utilisateur"}</li>
           )}
         </ul>
       </div>
