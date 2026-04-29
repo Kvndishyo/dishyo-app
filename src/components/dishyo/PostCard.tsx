@@ -18,7 +18,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
 
   const totalLikes = post.likes.length + delta;
   const author = post.profiles;
-  const commentsCount = post.comments?.[0]?.count ?? 0;
+  const commentsCount = (post.comments?.[0]?.count ?? 0) + commentsDelta;
 
   async function setReaction(emoji: string | null) {
     const wasLiked = !!liked;
