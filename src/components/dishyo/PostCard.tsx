@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { type DbPost, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
 import { CommentSheet } from "./CommentSheet";
+import { HighlightedText } from "./MentionTextarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -66,7 +67,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-4 pt-16 text-white">
           <h3 className="text-2xl font-bold leading-tight">{post.title}</h3>
           {post.restaurant && <p className="mt-1 text-xs opacity-90">📍 {post.restaurant}</p>}
-          {post.recipe && <p className="mt-1 text-sm leading-snug">{renderText(post.recipe)}</p>}
+          {post.recipe && <p className="mt-1 text-sm leading-snug"><HighlightedText text={post.recipe} /></p>}
         </div>
       </div>
 
@@ -107,10 +108,3 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
   );
 }
 
-function renderText(text: string) {
-  return text.split(/(\s+)/).map((part, i) => {
-    if (part.startsWith("#")) return <span key={i} className="text-primary">{part}</span>;
-    if (part.startsWith("@")) return <span key={i} className="font-semibold text-primary">{part}</span>;
-    return <span key={i}>{part}</span>;
-  });
-}

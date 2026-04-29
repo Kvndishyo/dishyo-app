@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { timeAgo } from "@/lib/dishyo-db";
 import { toast } from "sonner";
+import { MentionTextarea, HighlightedText } from "./MentionTextarea";
 
 type Comment = {
   id: string;
@@ -25,7 +26,7 @@ export function CommentSheet({
     setLoading(true);
     supabase
       .from("comments")
-      .select("id,body,created_at,user_id,profiles!comments_user_id_fkey(handle,display_name,avatar_url)")
+      .select("id,body,created_at,user_id,profiles!comments_user_id_profiles_fkey(handle,display_name,avatar_url)")
       .eq("post_id", postId)
       .order("created_at", { ascending: true })
       .then(({ data }) => {
@@ -40,7 +41,7 @@ export function CommentSheet({
     const { data, error } = await supabase
       .from("comments")
       .insert({ post_id: postId, user_id: currentUserId, body: v })
-      .select("id,body,created_at,user_id,profiles!comments_user_id_fkey(handle,display_name,avatar_url)")
+      .select("id,body,created_at,user_id,profiles!comments_user_id_profiles_fkey(handle,display_name,avatar_url)")
       .single();
     if (error) return toast.error(error.message);
     setComments((c) => [...c, data as unknown as Comment]);
@@ -74,21 +75,25 @@ export function CommentSheet({
                   <div>
                     <div className="rounded-2xl rounded-tl-sm bg-muted px-3 py-2">
                       <div className="text-sm font-semibold">{c.profiles?.display_name ?? "?"}</div>
-                      <div className="text-sm">{renderText(c.body)}</div>
+                      <div className="text-sm"><HighlightedText text={c.body} /></div>
                     </div>
                     <div className="mt-1 px-2 text-xs text-muted-foreground">{timeAgo(c.created_at)}</div>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-2 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-              <input
-                value={text} onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && send()}
-                placeholder="Ajoute un commentaire… (@ #)"
-                maxLength={500}
-                className="flex-1 rounded-full bg-muted px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
-              />
+            <div className="flex items-end gap-2 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="flex-1">
+                <MentionTextarea
+                  asInput
+                  value={text}
+                  onChange={setText}
+                  onEnterSubmit={send}
+                  placeholder="Ajoute un commentaire… (@ #)"
+                  maxLength={500}
+                  className="w-full rounded-full bg-muted px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
+                />
+              </div>
               <button onClick={send} disabled={!text.trim()} className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow transition disabled:opacity-40">
                 <Send className="h-4 w-4" />
               </button>
@@ -100,10 +105,3 @@ export function CommentSheet({
   );
 }
 
-function renderText(text: string) {
-  return text.split(/(\s+)/).map((p, i) =>
-    p.startsWith("@") || p.startsWith("#")
-      ? <span key={i} className="font-medium text-primary">{p}</span>
-      : <span key={i}>{p}</span>
-  );
-}

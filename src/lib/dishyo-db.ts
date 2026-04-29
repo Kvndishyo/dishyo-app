@@ -56,10 +56,12 @@ export function timeAgo(iso: string): string {
   return `il y a ${Math.floor(h / 24)}j`;
 }
 
+const POST_SELECT = "*, profiles!posts_user_id_profiles_fkey(*), likes(emoji,user_id), comments(count)";
+
 export async function fetchFeed(): Promise<DbPost[]> {
   const { data, error } = await supabase
     .from("posts")
-    .select("*, profiles!posts_user_id_fkey(*), likes(emoji,user_id), comments(count)")
+    .select(POST_SELECT)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false })
     .limit(100);
@@ -70,7 +72,7 @@ export async function fetchFeed(): Promise<DbPost[]> {
 export async function fetchUserPosts(userId: string): Promise<DbPost[]> {
   const { data, error } = await supabase
     .from("posts")
-    .select("*, profiles!posts_user_id_fkey(*), likes(emoji,user_id), comments(count)")
+    .select(POST_SELECT)
     .eq("user_id", userId)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false });
@@ -88,4 +90,40 @@ export async function searchProfiles(q: string): Promise<DbProfile[]> {
   if (q.trim()) qb = qb.or(`handle.ilike.%${q}%,display_name.ilike.%${q}%`);
   const { data } = await qb;
   return (data as DbProfile[]) ?? [];
+}
+
+/** Suggest profiles whose handle starts with `q` (no @). */
+export async function suggestProfiles(q: string, limit = 6): Promise<DbProfile[]> {
+  const term = q.replace(/^@/, "").trim();
+  if (!term) return [];
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .ilike("handle", `${term}%`)
+    .limit(limit);
+  return (data as DbProfile[]) ?? [];
+}
+
+/** Suggest hashtags by scanning recent posts' recipe text. */
+export async function suggestHashtags(q: string, limit = 6): Promise<{ tag: string; count: number }[]> {
+  const term = q.replace(/^#/, "").toLowerCase().trim();
+  const { data } = await supabase
+    .from("posts")
+    .select("recipe,title")
+    .gt("expires_at", new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString())
+    .limit(500);
+  const counts = new Map<string, number>();
+  for (const r of (data ?? []) as { recipe: string | null; title: string | null }[]) {
+    const text = `${r.recipe ?? ""} ${r.title ?? ""}`;
+    const matches = text.match(/#[\p{L}0-9_]+/gu) ?? [];
+    for (const m of matches) {
+      const tag = m.slice(1).toLowerCase();
+      if (term && !tag.startsWith(term)) continue;
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tag, count]) => ({ tag, count }));
 }
