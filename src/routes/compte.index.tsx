@@ -141,7 +141,7 @@ function AccountPage() {
           <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={dark} onChange={toggleDark} />
           <Row icon={<Shield className="h-5 w-5" />} title="Confidentialité" to="/compte/confidentialite" />
           <Row icon={<HelpCircle className="h-5 w-5" />} title="Aide et support" to="/compte/aide" />
-          <Row icon={<MessageSquare className="h-5 w-5" />} title="Contactez-nous" to="/compte/contact" />
+          
           {isAdmin && (
             <Row icon={<ShieldCheck className="h-5 w-5 text-primary" />} title="Dashboard admin" subtitle="Messages support & réponses IA" to="/admin" iconBg="bg-primary/10" />
           )}

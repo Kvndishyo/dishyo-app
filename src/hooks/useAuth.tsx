@@ -37,17 +37,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      if (s?.user) setTimeout(() => loadProfile(s.user.id), 0);
-      else setProfile(null);
-    });
+    let mounted = true;
     supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
       setSession(data.session);
       if (data.session?.user) loadProfile(data.session.user.id);
       setLoading(false);
     });
-    return () => sub.subscription.unsubscribe();
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      if (!mounted) return;
+      setSession(s);
+      if (s?.user) loadProfile(s.user.id);
+      else setProfile(null);
+    });
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
   }, []);
 
   return (

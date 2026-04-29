@@ -15,8 +15,8 @@ type Comment = {
 };
 
 export function CommentSheet({
-  open, onClose, postId, currentUserId,
-}: { open: boolean; onClose: () => void; postId: string; currentUserId: string }) {
+  open, onClose, postId, currentUserId, onAdded,
+}: { open: boolean; onClose: () => void; postId: string; currentUserId: string; onAdded?: () => void }) {
   const [text, setText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,6 +46,7 @@ export function CommentSheet({
     if (error) return toast.error(error.message);
     setComments((c) => [...c, data as unknown as Comment]);
     setText("");
+    onAdded?.();
   }
 
   return (

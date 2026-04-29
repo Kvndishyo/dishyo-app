@@ -14,10 +14,11 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
   const myInitial = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
   const [liked, setLiked] = useState<string | null>(myInitial);
   const [delta, setDelta] = useState(0);
+  const [commentsDelta, setCommentsDelta] = useState(0);
 
   const totalLikes = post.likes.length + delta;
   const author = post.profiles;
-  const commentsCount = post.comments?.[0]?.count ?? 0;
+  const commentsCount = (post.comments?.[0]?.count ?? 0) + commentsDelta;
 
   async function setReaction(emoji: string | null) {
     const wasLiked = !!liked;
@@ -103,7 +104,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
         </button>
       </div>
 
-      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} currentUserId={currentUserId} />
+      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
     </article>
   );
 }

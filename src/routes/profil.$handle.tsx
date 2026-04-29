@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, MapPin, UserPlus, UserCheck } from "lucide-react";
+import { ArrowLeft, UserPlus, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchProfileByHandle, fetchUserPosts, type DbProfile, type DbPost } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,31 +21,35 @@ function ProfilePage() {
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
     (async () => {
       const p = await fetchProfileByHandle(handle);
       if (cancelled) return;
-      if (!p) { setLoading(false); return; }
+      if (!p) { setProfile(null); setLoading(false); return; }
       setProfile(p);
-      const [posts, followers, followingC, isFollow] = await Promise.all([
+      const uid = session?.user.id;
+      const [postsR, followersR, followingR, isFollowR] = await Promise.all([
         fetchUserPosts(p.id),
         supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", p.id),
         supabase.from("follows").select("*", { count: "exact", head: true }).eq("follower_id", p.id),
-        session ? supabase.from("follows").select("*", { head: true }).eq("follower_id", session.user.id).eq("following_id", p.id) : Promise.resolve({ count: 0 } as any),
+        uid
+          ? supabase.from("follows").select("follower_id").eq("follower_id", uid).eq("following_id", p.id).maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
       if (cancelled) return;
-      setPosts(posts);
-      setStats({ followers: followers.count ?? 0, following: followingC.count ?? 0 });
-      setFollowing((isFollow as any).count ? true : false);
+      setPosts(postsR);
+      setStats({ followers: followersR.count ?? 0, following: followingR.count ?? 0 });
+      setFollowing(!!(isFollowR as { data: unknown }).data);
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [handle, session]);
+  }, [handle, session?.user.id]);
 
   async function toggle() {
     if (!session || !profile) return navigate({ to: "/auth" });
     if (following) {
       setFollowing(false);
-      setStats((s) => ({ ...s, followers: s.followers - 1 }));
+      setStats((s) => ({ ...s, followers: Math.max(0, s.followers - 1) }));
       await supabase.from("follows").delete().eq("follower_id", session.user.id).eq("following_id", profile.id);
     } else {
       setFollowing(true);
