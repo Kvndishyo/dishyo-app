@@ -21,7 +21,6 @@ import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaura
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
 import { Route as CompteContactRouteImport } from './routes/compte.contact'
 import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
-import { Route as CompteAmisRouteImport } from './routes/compte.amis'
 import { Route as CompteAideRouteImport } from './routes/compte.aide'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -84,11 +83,6 @@ const CompteConfidentialiteRoute = CompteConfidentialiteRouteImport.update({
   path: '/confidentialite',
   getParentRoute: () => CompteRoute,
 } as any)
-const CompteAmisRoute = CompteAmisRouteImport.update({
-  id: '/amis',
-  path: '/amis',
-  getParentRoute: () => CompteRoute,
-} as any)
 const CompteAideRoute = CompteAideRouteImport.update({
   id: '/aide',
   path: '/aide',
@@ -104,7 +98,6 @@ export interface FileRoutesByFullPath {
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
   '/compte/aide': typeof CompteAideRoute
-  '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
@@ -120,7 +113,6 @@ export interface FileRoutesByTo {
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
   '/compte/aide': typeof CompteAideRoute
-  '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
@@ -137,7 +129,6 @@ export interface FileRoutesById {
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
   '/compte/aide': typeof CompteAideRoute
-  '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
@@ -155,7 +146,6 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/reset-password'
     | '/compte/aide'
-    | '/compte/amis'
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/mes-plats'
@@ -171,7 +161,6 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/reset-password'
     | '/compte/aide'
-    | '/compte/amis'
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/mes-plats'
@@ -187,7 +176,6 @@ export interface FileRouteTypes {
     | '/recherche'
     | '/reset-password'
     | '/compte/aide'
-    | '/compte/amis'
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/mes-plats'
@@ -292,13 +280,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteConfidentialiteRouteImport
       parentRoute: typeof CompteRoute
     }
-    '/compte/amis': {
-      id: '/compte/amis'
-      path: '/amis'
-      fullPath: '/compte/amis'
-      preLoaderRoute: typeof CompteAmisRouteImport
-      parentRoute: typeof CompteRoute
-    }
     '/compte/aide': {
       id: '/compte/aide'
       path: '/aide'
@@ -311,7 +292,6 @@ declare module '@tanstack/react-router' {
 
 interface CompteRouteChildren {
   CompteAideRoute: typeof CompteAideRoute
-  CompteAmisRoute: typeof CompteAmisRoute
   CompteConfidentialiteRoute: typeof CompteConfidentialiteRoute
   CompteContactRoute: typeof CompteContactRoute
   CompteMesPlatsRoute: typeof CompteMesPlatsRoute
@@ -320,7 +300,6 @@ interface CompteRouteChildren {
 
 const CompteRouteChildren: CompteRouteChildren = {
   CompteAideRoute: CompteAideRoute,
-  CompteAmisRoute: CompteAmisRoute,
   CompteConfidentialiteRoute: CompteConfidentialiteRoute,
   CompteContactRoute: CompteContactRoute,
   CompteMesPlatsRoute: CompteMesPlatsRoute,
