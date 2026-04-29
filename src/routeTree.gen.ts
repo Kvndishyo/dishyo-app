@@ -16,12 +16,15 @@ import { Route as CompteRouteImport } from './routes/compte'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CompteIndexRouteImport } from './routes/compte.index'
 import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
 import { Route as CompteContactRouteImport } from './routes/compte.contact'
 import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
 import { Route as CompteAideRouteImport } from './routes/compte.aide'
+import { Route as CompteAbonnesRouteImport } from './routes/compte.abonnes'
+import { Route as CompteAbonnementsRouteImport } from './routes/compte.abonnements'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -58,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompteIndexRoute = CompteIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CompteRoute,
+} as any)
 const ProfilHandleRoute = ProfilHandleRouteImport.update({
   id: '/profil/$handle',
   path: '/profil/$handle',
@@ -88,6 +96,16 @@ const CompteAideRoute = CompteAideRouteImport.update({
   path: '/aide',
   getParentRoute: () => CompteRoute,
 } as any)
+const CompteAbonnesRoute = CompteAbonnesRouteImport.update({
+  id: '/abonnes',
+  path: '/abonnes',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteAbonnementsRoute = CompteAbonnementsRouteImport.update({
+  id: '/abonnements',
+  path: '/abonnements',
+  getParentRoute: () => CompteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -97,27 +115,32 @@ export interface FileRoutesByFullPath {
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/compte/abonnements': typeof CompteAbonnementsRoute
+  '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
+  '/compte/': typeof CompteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/compte': typeof CompteRouteWithChildren
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/compte/abonnements': typeof CompteAbonnementsRoute
+  '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
+  '/compte': typeof CompteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -128,12 +151,15 @@ export interface FileRoutesById {
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/compte/abonnements': typeof CompteAbonnementsRoute
+  '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
+  '/compte/': typeof CompteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -145,27 +171,32 @@ export interface FileRouteTypes {
     | '/publier'
     | '/recherche'
     | '/reset-password'
+    | '/compte/abonnements'
+    | '/compte/abonnes'
     | '/compte/aide'
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
     | '/profil/$handle'
+    | '/compte/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/auth'
-    | '/compte'
     | '/publier'
     | '/recherche'
     | '/reset-password'
+    | '/compte/abonnements'
+    | '/compte/abonnes'
     | '/compte/aide'
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
     | '/profil/$handle'
+    | '/compte'
   id:
     | '__root__'
     | '/'
@@ -175,12 +206,15 @@ export interface FileRouteTypes {
     | '/publier'
     | '/recherche'
     | '/reset-password'
+    | '/compte/abonnements'
+    | '/compte/abonnes'
     | '/compte/aide'
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
     | '/profil/$handle'
+    | '/compte/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -245,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compte/': {
+      id: '/compte/'
+      path: '/'
+      fullPath: '/compte/'
+      preLoaderRoute: typeof CompteIndexRouteImport
+      parentRoute: typeof CompteRoute
+    }
     '/profil/$handle': {
       id: '/profil/$handle'
       path: '/profil/$handle'
@@ -287,23 +328,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteAideRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/compte/abonnes': {
+      id: '/compte/abonnes'
+      path: '/abonnes'
+      fullPath: '/compte/abonnes'
+      preLoaderRoute: typeof CompteAbonnesRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/abonnements': {
+      id: '/compte/abonnements'
+      path: '/abonnements'
+      fullPath: '/compte/abonnements'
+      preLoaderRoute: typeof CompteAbonnementsRouteImport
+      parentRoute: typeof CompteRoute
+    }
   }
 }
 
 interface CompteRouteChildren {
+  CompteAbonnementsRoute: typeof CompteAbonnementsRoute
+  CompteAbonnesRoute: typeof CompteAbonnesRoute
   CompteAideRoute: typeof CompteAideRoute
   CompteConfidentialiteRoute: typeof CompteConfidentialiteRoute
   CompteContactRoute: typeof CompteContactRoute
   CompteMesPlatsRoute: typeof CompteMesPlatsRoute
   CompteRestaurateurRoute: typeof CompteRestaurateurRoute
+  CompteIndexRoute: typeof CompteIndexRoute
 }
 
 const CompteRouteChildren: CompteRouteChildren = {
+  CompteAbonnementsRoute: CompteAbonnementsRoute,
+  CompteAbonnesRoute: CompteAbonnesRoute,
   CompteAideRoute: CompteAideRoute,
   CompteConfidentialiteRoute: CompteConfidentialiteRoute,
   CompteContactRoute: CompteContactRoute,
   CompteMesPlatsRoute: CompteMesPlatsRoute,
   CompteRestaurateurRoute: CompteRestaurateurRoute,
+  CompteIndexRoute: CompteIndexRoute,
 }
 
 const CompteRouteWithChildren =
