@@ -46,6 +46,7 @@ export function CommentSheet({
     if (error) return toast.error(error.message);
     setComments((c) => [...c, data as unknown as Comment]);
     setText("");
+    onAdded?.();
   }
 
   return (
