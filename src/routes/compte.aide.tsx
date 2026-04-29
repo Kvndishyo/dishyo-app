@@ -50,12 +50,6 @@ function HelpPage() {
           );
         })}
 
-        <Link
-          to="/compte/contact"
-          className="mt-4 flex items-center justify-center rounded-2xl bg-primary px-4 py-3.5 font-semibold text-primary-foreground shadow-glow"
-        >
-          Toujours pas de réponse ? Contacte-nous
-        </Link>
       </div>
     </div>
   );
