@@ -14,6 +14,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
   const myInitial = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
   const [liked, setLiked] = useState<string | null>(myInitial);
   const [delta, setDelta] = useState(0);
+  const [commentsDelta, setCommentsDelta] = useState(0);
 
   const totalLikes = post.likes.length + delta;
   const author = post.profiles;
