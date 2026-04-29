@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ImagePlus, Users, Globe, Utensils } from "lucide-react";
+import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { CATEGORIES } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
 
 export const Route = createFileRoute("/publier")({
   head: () => ({ meta: [{ title: "Dishyo — Publier un plat" }] }),
@@ -14,9 +15,11 @@ export const Route = createFileRoute("/publier")({
 function PublishPage() {
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [visibility, setVisibility] = useState<"friends" | "public">("public");
   const [category, setCategory] = useState<string | null>(null);
   const [title, setTitle] = useState("");
@@ -30,6 +33,7 @@ function PublishPage() {
 
   function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
+    setPickerOpen(false);
     if (!f) return;
     setFile(f);
     setPreview(URL.createObjectURL(f));
@@ -70,24 +74,25 @@ function PublishPage() {
       </header>
 
       <div className="space-y-6 p-5">
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={pickFile} className="hidden" />
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={pickFile} className="hidden" />
+        <input ref={galleryRef} type="file" accept="image/*" onChange={pickFile} className="hidden" />
 
         <div className="relative">
           {preview ? (
             <div className="relative overflow-hidden rounded-2xl shadow-card">
               <img src={preview} alt="Plat" className="aspect-square w-full object-cover" />
-              <button onClick={() => fileRef.current?.click()} className="absolute bottom-3 right-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
+              <button onClick={() => setPickerOpen(true)} className="absolute bottom-3 right-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
                 Changer
               </button>
             </div>
           ) : (
-            <button onClick={() => fileRef.current?.click()} className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card/50 p-6 text-center transition hover:border-primary hover:bg-accent/30">
+            <button onClick={() => setPickerOpen(true)} className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card/50 p-6 text-center transition hover:border-primary hover:bg-accent/30">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent">
                 <ImagePlus className="h-7 w-7 text-primary" />
               </div>
               <div>
-                <p className="font-semibold">Prends ton plat en photo</p>
-                <p className="mt-1 text-sm text-muted-foreground">Appuie pour prendre ou choisir une photo</p>
+                <p className="font-semibold">Ajoute une photo de ton plat</p>
+                <p className="mt-1 text-sm text-muted-foreground">Caméra ou galerie</p>
               </div>
             </button>
           )}
@@ -118,8 +123,12 @@ function PublishPage() {
             className="w-full rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
           <input value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="Restaurant (optionnel) 📍"
             className="w-full rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
-          <textarea value={recipe} onChange={(e) => setRecipe(e.target.value)} placeholder="Décris ton plat ou ta recette… (@mention #hashtag)" rows={4}
-            className="w-full resize-none rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+          <MentionTextarea
+            value={recipe} onChange={setRecipe}
+            placeholder="Décris ton plat ou ta recette… (@mention #hashtag)"
+            rows={4}
+            className="w-full resize-none rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+          />
         </div>
 
         <button onClick={publish} disabled={!canPublish}
@@ -128,6 +137,39 @@ function PublishPage() {
           {busy ? "Publication…" : "Publier mon plat"}
         </button>
       </div>
+
+      {pickerOpen && (
+        <>
+          <div onClick={() => setPickerOpen(false)} className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm" />
+          <div className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-[520px] rounded-t-3xl bg-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-card">
+            <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-muted" />
+            <h3 className="mb-4 text-center text-base font-semibold">Choisis une source</h3>
+            <div className="space-y-2">
+              <button onClick={() => cameraRef.current?.click()} className="flex w-full items-center gap-3 rounded-2xl bg-muted p-4 text-left transition hover:bg-accent">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Camera className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="font-semibold">Prendre une photo</div>
+                  <div className="text-xs text-muted-foreground">Utiliser la caméra</div>
+                </div>
+              </button>
+              <button onClick={() => galleryRef.current?.click()} className="flex w-full items-center gap-3 rounded-2xl bg-muted p-4 text-left transition hover:bg-accent">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-primary">
+                  <ImageIcon className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="font-semibold">Choisir depuis la galerie</div>
+                  <div className="text-xs text-muted-foreground">Photos existantes</div>
+                </div>
+              </button>
+              <button onClick={() => setPickerOpen(false)} className="w-full rounded-2xl py-3 text-sm font-medium text-muted-foreground hover:bg-muted">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
