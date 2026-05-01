@@ -77,11 +77,15 @@ function RestaurantPage() {
           </div>
         </div>
 
+        <div className="rounded-2xl border border-dashed border-border bg-muted/40 p-4 text-center text-xs text-muted-foreground">
+          💳 Le paiement par carte sera bientôt disponible. Le mode Restaurateur s'activera automatiquement après ton abonnement.
+        </div>
+
         <button
-          onClick={() => alert("Redirection vers le paiement (Stripe à brancher)")}
-          className="w-full rounded-2xl bg-primary px-4 py-4 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98]"
+          disabled
+          className="w-full rounded-2xl bg-primary/60 px-4 py-4 font-semibold text-primary-foreground opacity-70"
         >
-          Activer le mode Restaurateur
+          Bientôt disponible
         </button>
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, MessageSquare, ChevronRight, LogOut, ShieldCheck, Camera } from "lucide-react";
+import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, AtSign } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useUnreadNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -14,12 +15,14 @@ export const Route = createFileRoute("/compte/")({
 function AccountPage() {
   const { session, profile, loading, signOut, refreshProfile } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const unread = useUnreadNotifications();
   const navigate = useNavigate();
   const [notif, setNotif] = useState(true);
   const [dark, setDark] = useState(false);
   const [stats, setStats] = useState({ following: 0, followers: 0, posts: 0 });
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -40,7 +43,7 @@ function AccountPage() {
   }, [session]);
 
   useEffect(() => {
-    if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); }
+    if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); setHandle(profile.handle); }
   }, [profile]);
 
   function toggleDark(v: boolean) {
@@ -57,6 +60,11 @@ function AccountPage() {
 
   async function saveProfile() {
     if (!session || !profile) return;
+    // Update handle if changed
+    if (handle !== profile.handle) {
+      const { error: hErr } = await supabase.rpc("update_my_handle", { new_handle: handle });
+      if (hErr) return toast.error(hErr.message);
+    }
     let avatar_url = profile.avatar_url;
     if (avatarFile) {
       const ext = avatarFile.name.split(".").pop() ?? "jpg";
@@ -119,6 +127,11 @@ function AccountPage() {
               </div>
               <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Nom"
                 className="w-full rounded-2xl bg-muted px-4 py-2.5 text-sm outline-none" />
+              <div className="flex items-center gap-2 rounded-2xl bg-muted px-4 py-2.5">
+                <AtSign className="h-4 w-4 text-primary" />
+                <input value={handle} onChange={(e) => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))} placeholder="pseudo_unique" maxLength={20}
+                  className="w-full bg-transparent text-sm outline-none" />
+              </div>
               <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Bio" rows={2}
                 className="w-full resize-none rounded-2xl bg-muted px-4 py-2.5 text-sm outline-none" />
               <button onClick={saveProfile} className="w-full rounded-2xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground">
@@ -137,7 +150,8 @@ function AccountPage() {
         <div className="mt-6 space-y-1">
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
-          <ToggleRow icon={<Bell className="h-5 w-5" />} title="Notifications" value={notif} onChange={setNotif} />
+          <Row icon={<Bell className="h-5 w-5" />} title="Notifications" to="/notifications" badge={unread} />
+          <ToggleRow icon={<Bell className="h-5 w-5" />} title="Alertes activées" value={notif} onChange={setNotif} />
           <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={dark} onChange={toggleDark} />
           <Row icon={<Shield className="h-5 w-5" />} title="Confidentialité" to="/compte/confidentialite" />
           <Row icon={<HelpCircle className="h-5 w-5" />} title="Aide et support" to="/compte/aide" />
@@ -167,7 +181,7 @@ function StatBtn({ n, label, to }: { n: number; label: string; to: string }) {
   );
 }
 
-function Row({ icon, title, subtitle, subtitleEl, to, iconBg = "bg-muted" }: { icon: React.ReactNode; title: string; subtitle?: string; subtitleEl?: React.ReactNode; to: string; iconBg?: string }) {
+function Row({ icon, title, subtitle, subtitleEl, to, iconBg = "bg-muted", badge }: { icon: React.ReactNode; title: string; subtitle?: string; subtitleEl?: React.ReactNode; to: string; iconBg?: string; badge?: number }) {
   return (
     <Link to={to} className="flex items-center gap-3 rounded-2xl px-2 py-3 hover:bg-muted">
       <div className={`flex h-10 w-10 items-center justify-center rounded-full ${iconBg}`}>{icon}</div>
@@ -176,6 +190,9 @@ function Row({ icon, title, subtitle, subtitleEl, to, iconBg = "bg-muted" }: { i
         {subtitle && <div className="text-xs text-muted-foreground">{subtitle}</div>}
         {subtitleEl && <div className="text-xs">{subtitleEl}</div>}
       </div>
+      {badge !== undefined && badge > 0 && (
+        <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground">{badge}</span>
+      )}
       <ChevronRight className="h-5 w-5 text-muted-foreground" />
     </Link>
   );

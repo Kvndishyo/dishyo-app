@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
+import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 
 export const Route = createFileRoute("/publier")({
   head: () => ({ meta: [{ title: "Dishyo — Publier un plat" }] }),
@@ -19,6 +20,7 @@ function PublishPage() {
   const galleryRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [editorSrc, setEditorSrc] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [visibility, setVisibility] = useState<"friends" | "public">("public");
   const [category, setCategory] = useState<string | null>(null);
@@ -35,8 +37,15 @@ function PublishPage() {
     const f = e.target.files?.[0];
     setPickerOpen(false);
     if (!f) return;
+    setEditorSrc(URL.createObjectURL(f));
+    e.target.value = "";
+  }
+
+  function handleEditorSave(blob: Blob) {
+    const f = new File([blob], `photo-${Date.now()}.jpg`, { type: "image/jpeg" });
     setFile(f);
-    setPreview(URL.createObjectURL(f));
+    setPreview(URL.createObjectURL(blob));
+    setEditorSrc(null);
   }
 
   async function publish() {
@@ -81,9 +90,14 @@ function PublishPage() {
           {preview ? (
             <div className="relative overflow-hidden rounded-2xl shadow-card">
               <img src={preview} alt="Plat" className="aspect-square w-full object-cover" />
-              <button onClick={() => setPickerOpen(true)} className="absolute bottom-3 right-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
-                Changer
-              </button>
+              <div className="absolute bottom-3 right-3 flex gap-2">
+                <button onClick={() => setEditorSrc(preview)} className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
+                  Éditer
+                </button>
+                <button onClick={() => setPickerOpen(true)} className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
+                  Changer
+                </button>
+              </div>
             </div>
           ) : (
             <button onClick={() => setPickerOpen(true)} className="flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-card/50 p-6 text-center transition hover:border-primary hover:bg-accent/30">
@@ -170,6 +184,8 @@ function PublishPage() {
           </div>
         </>
       )}
+
+      {editorSrc && <PhotoEditor src={editorSrc} onCancel={() => setEditorSrc(null)} onSave={handleEditorSave} />}
     </div>
   );
 }
