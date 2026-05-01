@@ -88,7 +88,9 @@ function PublishPage() {
   function handleEditorSave(blob: Blob) {
     const f = new File([blob], `photo-${Date.now()}.jpg`, { type: "image/jpeg" });
     setFile(f);
-    setPreview(URL.createObjectURL(blob));
+    const reader = new FileReader();
+    reader.onload = () => setPreview(reader.result as string);
+    reader.readAsDataURL(blob);
     setEditorSrc(null);
   }
 
