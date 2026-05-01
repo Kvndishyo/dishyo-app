@@ -181,7 +181,7 @@ function StatBtn({ n, label, to }: { n: number; label: string; to: string }) {
   );
 }
 
-function Row({ icon, title, subtitle, subtitleEl, to, iconBg = "bg-muted" }: { icon: React.ReactNode; title: string; subtitle?: string; subtitleEl?: React.ReactNode; to: string; iconBg?: string }) {
+function Row({ icon, title, subtitle, subtitleEl, to, iconBg = "bg-muted", badge }: { icon: React.ReactNode; title: string; subtitle?: string; subtitleEl?: React.ReactNode; to: string; iconBg?: string; badge?: number }) {
   return (
     <Link to={to} className="flex items-center gap-3 rounded-2xl px-2 py-3 hover:bg-muted">
       <div className={`flex h-10 w-10 items-center justify-center rounded-full ${iconBg}`}>{icon}</div>
@@ -190,6 +190,9 @@ function Row({ icon, title, subtitle, subtitleEl, to, iconBg = "bg-muted" }: { i
         {subtitle && <div className="text-xs text-muted-foreground">{subtitle}</div>}
         {subtitleEl && <div className="text-xs">{subtitleEl}</div>}
       </div>
+      {badge !== undefined && badge > 0 && (
+        <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground">{badge}</span>
+      )}
       <ChevronRight className="h-5 w-5 text-muted-foreground" />
     </Link>
   );
