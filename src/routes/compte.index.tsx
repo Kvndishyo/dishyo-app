@@ -150,8 +150,6 @@ function AccountPage() {
         <div className="mt-6 space-y-1">
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
-          <ToggleRow icon={<Bell className="h-5 w-5" />} title="Notifications" value={notif} onChange={setNotif} />
-          <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={dark} onChange={toggleDark} />
           <Row icon={<Bell className="h-5 w-5" />} title="Notifications" to="/notifications" badge={unread} />
           <ToggleRow icon={<Bell className="h-5 w-5" />} title="Alertes activées" value={notif} onChange={setNotif} />
           <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={dark} onChange={toggleDark} />
