@@ -13,6 +13,8 @@ export const Route = createFileRoute("/publier")({
   component: PublishPage,
 });
 
+const DRAFT_KEY = "dishyo:publish-draft:v1";
+
 function PublishPage() {
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
@@ -28,10 +30,52 @@ function PublishPage() {
   const [restaurant, setRestaurant] = useState("");
   const [recipe, setRecipe] = useState("");
   const [busy, setBusy] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !session) navigate({ to: "/auth" });
   }, [authLoading, session, navigate]);
+
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.title) setTitle(d.title);
+        if (d.restaurant) setRestaurant(d.restaurant);
+        if (d.recipe) setRecipe(d.recipe);
+        if (d.category) setCategory(d.category);
+        if (d.visibility) setVisibility(d.visibility);
+        if (d.photoDataUrl) {
+          setPreview(d.photoDataUrl);
+          fetch(d.photoDataUrl).then(r => r.blob()).then(b => {
+            setFile(new File([b], `draft-${Date.now()}.jpg`, { type: b.type || "image/jpeg" }));
+          });
+        }
+      }
+    } catch {}
+    setDraftLoaded(true);
+  }, []);
+
+  // Save draft on changes
+  useEffect(() => {
+    if (!draftLoaded) return;
+    const hasContent = preview || title || restaurant || recipe || category;
+    if (!hasContent) {
+      localStorage.removeItem(DRAFT_KEY);
+      return;
+    }
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          title, restaurant, recipe, category, visibility,
+          photoDataUrl: preview?.startsWith("data:") ? preview : null,
+        }));
+      } catch {}
+    }, 400);
+    return () => clearTimeout(t);
+  }, [draftLoaded, title, restaurant, recipe, category, visibility, preview]);
 
   function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
