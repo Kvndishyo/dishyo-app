@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, MessageSquare, ChevronRight, LogOut, ShieldCheck, Camera } from "lucide-react";
+import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, AtSign } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useUnreadNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -14,12 +15,14 @@ export const Route = createFileRoute("/compte/")({
 function AccountPage() {
   const { session, profile, loading, signOut, refreshProfile } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const unread = useUnreadNotifications();
   const navigate = useNavigate();
   const [notif, setNotif] = useState(true);
   const [dark, setDark] = useState(false);
   const [stats, setStats] = useState({ following: 0, followers: 0, posts: 0 });
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -40,7 +43,7 @@ function AccountPage() {
   }, [session]);
 
   useEffect(() => {
-    if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); }
+    if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); setHandle(profile.handle); }
   }, [profile]);
 
   function toggleDark(v: boolean) {
@@ -57,6 +60,11 @@ function AccountPage() {
 
   async function saveProfile() {
     if (!session || !profile) return;
+    // Update handle if changed
+    if (handle !== profile.handle) {
+      const { error: hErr } = await supabase.rpc("update_my_handle", { new_handle: handle });
+      if (hErr) return toast.error(hErr.message);
+    }
     let avatar_url = profile.avatar_url;
     if (avatarFile) {
       const ext = avatarFile.name.split(".").pop() ?? "jpg";
