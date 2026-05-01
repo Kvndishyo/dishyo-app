@@ -45,10 +45,23 @@ function SearchPage() {
     setFollows(next);
   }
 
-  function share() {
+  async function share() {
     const url = window.location.origin;
-    if (navigator.share) navigator.share({ title: "Dishyo", text: "Rejoins-moi sur Dishyo !", url }).catch(() => {});
-    else { navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+    const text = "Rejoins-moi sur Dishyo, l'app pour partager tes plats préférés ! 🍽️";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Dishyo", text, url });
+        return;
+      }
+    } catch (err: any) {
+      if (err?.name === "AbortError") return;
+    }
+    try {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      toast.success("Lien copié ! Partage-le à tes amis 🎉");
+    } catch {
+      window.prompt("Copie ce lien :", `${text} ${url}`);
+    }
   }
 
   return (
