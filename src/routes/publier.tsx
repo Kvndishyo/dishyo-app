@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
+import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 
 export const Route = createFileRoute("/publier")({
   head: () => ({ meta: [{ title: "Dishyo — Publier un plat" }] }),
@@ -19,6 +20,7 @@ function PublishPage() {
   const galleryRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [editorSrc, setEditorSrc] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [visibility, setVisibility] = useState<"friends" | "public">("public");
   const [category, setCategory] = useState<string | null>(null);
@@ -35,8 +37,15 @@ function PublishPage() {
     const f = e.target.files?.[0];
     setPickerOpen(false);
     if (!f) return;
+    setEditorSrc(URL.createObjectURL(f));
+    e.target.value = "";
+  }
+
+  function handleEditorSave(blob: Blob) {
+    const f = new File([blob], `photo-${Date.now()}.jpg`, { type: "image/jpeg" });
     setFile(f);
-    setPreview(URL.createObjectURL(f));
+    setPreview(URL.createObjectURL(blob));
+    setEditorSrc(null);
   }
 
   async function publish() {
