@@ -37,7 +37,7 @@ function NotificationsPage() {
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
         .limit(100);
-      const list = (data ?? []) as Notif[];
+      const list = (data ?? []) as unknown as Notif[];
       const actorIds = [...new Set(list.map((n) => n.actor_id).filter(Boolean) as string[])];
       let actors: Record<string, Notif["actor"]> = {};
       if (actorIds.length) {
