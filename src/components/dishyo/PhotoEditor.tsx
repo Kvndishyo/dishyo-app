@@ -19,7 +19,7 @@ export function PhotoEditor({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
-  const [aspect, setAspect] = useState(1);
+  const [aspect, setAspect] = useState<number | undefined>(1);
   const [filter, setFilter] = useState<string>("none");
   const [adj, setAdj] = useState<Adjust>({ brightness: 100, contrast: 100, saturate: 100 });
   const [pixels, setPixels] = useState<Area | null>(null);
@@ -61,6 +61,10 @@ export function PhotoEditor({
 
       <div className="space-y-3 bg-background px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <button onClick={() => setAspect(undefined)}
+            className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${aspect === undefined ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+            Libre
+          </button>
           {([1, 4/5, 3/4, 16/9] as const).map((a) => (
             <button key={a} onClick={() => setAspect(a)}
               className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${aspect === a ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
