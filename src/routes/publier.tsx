@@ -111,6 +111,7 @@ function PublishPage() {
         category, recipe: recipe.trim() || null, visibility,
       });
       if (error) throw error;
+      localStorage.removeItem(DRAFT_KEY);
       toast.success("Plat publié ! Disparait dans 24h ✨");
       navigate({ to: "/" });
     } catch (e: any) {
