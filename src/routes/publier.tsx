@@ -184,6 +184,8 @@ function PublishPage() {
           </div>
         </>
       )}
+
+      {editorSrc && <PhotoEditor src={editorSrc} onCancel={() => setEditorSrc(null)} onSave={handleEditorSave} />}
     </div>
   );
 }
