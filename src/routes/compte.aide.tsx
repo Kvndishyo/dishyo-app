@@ -50,6 +50,15 @@ function HelpPage() {
           );
         })}
 
+        <Link to="/compte/contact" className="mt-4 flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft transition hover:bg-accent">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-primary">
+            <Mail className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <div className="font-semibold">Contactez-nous</div>
+            <div className="text-xs text-muted-foreground">Une question ? Écris-nous directement</div>
+          </div>
+        </Link>
       </div>
     </div>
   );
