@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, ChevronDown, Mail } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/compte/aide")({
