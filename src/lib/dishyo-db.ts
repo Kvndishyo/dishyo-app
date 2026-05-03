@@ -27,14 +27,29 @@ export type DbPost = {
 };
 
 export const CATEGORIES = [
-  { name: "Healthy", emoji: "🥗" },
-  { name: "Gourmand", emoji: "🍰" },
+  { name: "Petit-déjeuner", emoji: "🥐" },
+  { name: "Entrée", emoji: "🥗" },
+  { name: "Plat", emoji: "🍝" },
+  { name: "Dessert", emoji: "🍰" },
+  { name: "Boisson", emoji: "🥤" },
+  { name: "Street Food", emoji: "🌮" },
   { name: "Végétarien", emoji: "🌿" },
-  { name: "Exotique", emoji: "🌍" },
-  { name: "Comfort Food", emoji: "🍲" },
+  { name: "Vegan", emoji: "🥬" },
+  { name: "Healthy", emoji: "🥑" },
+  { name: "Pizza", emoji: "🍕" },
+  { name: "Burger", emoji: "🍔" },
+  { name: "Sushi", emoji: "🍣" },
+  { name: "Asiatique", emoji: "🍜" },
+  { name: "Italien", emoji: "🇮🇹" },
+  { name: "Français", emoji: "🥖" },
+  { name: "Pâtisserie", emoji: "🧁" },
+  { name: "Brunch", emoji: "🍳" },
+  { name: "BBQ", emoji: "🔥" },
 ] as const;
 
-export const REACTIONS = ["❤️", "😍", "🔥", "🤤", "👏", "🙌"] as const;
+export const REACTIONS = [
+  "❤️","😍","🔥","🤤","👏","🙌","😋","🤩","😮","😂","🥰","💯","🍽️","👌","💖","🤯","✨","🎉",
+] as const;
 
 const HOUR_MS = 3600 * 1000;
 
