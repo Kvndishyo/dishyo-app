@@ -1,9 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, AtSign } from "lucide-react";
+import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { useUnreadNotifications } from "@/hooks/useNotifications";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
