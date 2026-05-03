@@ -77,7 +77,7 @@ function SearchPage() {
         <h1 className="mb-3 text-xl font-bold">Recherche</h1>
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher un pseudo…"
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nom, pseudo ou email…"
             className="w-full rounded-full bg-muted py-3 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
       </header>
