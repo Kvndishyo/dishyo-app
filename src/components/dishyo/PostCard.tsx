@@ -53,7 +53,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
                 <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">★</span>
               )}
             </div>
-            <div className="text-sm text-primary">@{author.handle}</div>
+            {currentUserId === author.id && <div className="text-sm text-primary">@{author.handle}</div>}
             <div className="text-xs text-muted-foreground">{timeAgo(post.created_at)}</div>
           </div>
         </div>
