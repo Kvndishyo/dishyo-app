@@ -14,14 +14,12 @@ export const Route = createFileRoute("/compte/")({
 function AccountPage() {
   const { session, profile, loading, signOut, refreshProfile } = useAuth();
   const { isAdmin } = useIsAdmin();
-  const unread = useUnreadNotifications();
   const navigate = useNavigate();
   const [notif, setNotif] = useState(true);
   const [dark, setDark] = useState(false);
   const [stats, setStats] = useState({ following: 0, followers: 0, posts: 0 });
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
-  const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
