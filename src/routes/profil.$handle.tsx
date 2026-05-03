@@ -91,7 +91,7 @@ function ProfilePage() {
               <button onClick={toggle}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-2.5 text-sm font-semibold transition ${following ? "bg-muted text-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}>
                 {following ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-                {following ? "Suivi" : "Suivre"}
+                {following ? "Suivi" : followsMe ? "Suivre en retour" : "Suivre"}
               </button>
             </div>
           )}
