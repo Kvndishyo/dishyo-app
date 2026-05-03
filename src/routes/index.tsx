@@ -2,10 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Heart, MessageCircle, UserPlus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { fetchFeed, type DbPost } from "@/lib/dishyo-db";
+import { fetchFeed, type DbPost, timeAgo } from "@/lib/dishyo-db";
 import { PostCard } from "@/components/dishyo/PostCard";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/dishyo/Logo";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,18 +18,66 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+type Notif = {
+  id: string;
+  type: "like" | "comment" | "follow";
+  actor_id: string | null;
+  post_id: string | null;
+  read: boolean;
+  created_at: string;
+  actor: { handle: string; display_name: string; avatar_url: string | null } | null;
+};
+
 function HomePage() {
   const { session, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const [posts, setPosts] = useState<DbPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => {
     if (authLoading) return;
     if (!session) return;
     fetchFeed().then((p) => { setPosts(p); setLoading(false); }).catch(() => setLoading(false));
   }, [session, authLoading]);
+
+  // Load notifications + unread badge + realtime
+  useEffect(() => {
+    if (!session) { setNotifs([]); setUnread(0); return; }
+    const uid = session.user.id;
+    const load = async () => {
+      const { data } = await supabase
+        .from("notifications").select("*").eq("user_id", uid)
+        .order("created_at", { ascending: false }).limit(50);
+      const list = (data ?? []) as unknown as Notif[];
+      const ids = [...new Set(list.map((n) => n.actor_id).filter(Boolean) as string[])];
+      let actors: Record<string, Notif["actor"]> = {};
+      if (ids.length) {
+        const { data: profs } = await supabase.from("profiles").select("id,handle,display_name,avatar_url").in("id", ids);
+        actors = Object.fromEntries((profs ?? []).map((p) => [p.id, p]));
+      }
+      const enriched = list.map((n) => ({ ...n, actor: n.actor_id ? actors[n.actor_id] ?? null : null }));
+      setNotifs(enriched);
+      setUnread(enriched.filter((n) => !n.read).length);
+    };
+    load();
+    const ch = supabase.channel(`home-notifs-${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${uid}` }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [session]);
+
+  async function openNotifs() {
+    setNotifOpen(true);
+    if (!session) return;
+    if (unread > 0) {
+      await supabase.from("notifications").update({ read: true }).eq("user_id", session.user.id).eq("read", false);
+      setUnread(0);
+      setNotifs((ns) => ns.map((n) => ({ ...n, read: true })));
+    }
+  }
 
   if (authLoading) return <div className="flex min-h-screen items-center justify-center"><Logo size={48} /></div>;
 
@@ -50,8 +99,13 @@ function HomePage() {
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background/85 px-5 py-4 backdrop-blur-xl">
         <div className="w-10" />
         <h1 className="text-xl font-bold tracking-tight">Dishyo</h1>
-        <button onClick={() => setNotifOpen(true)} className="relative flex h-10 w-10 items-center justify-center rounded-full bg-muted transition hover:bg-accent">
+        <button onClick={openNotifs} className="relative flex h-10 w-10 items-center justify-center rounded-full bg-muted transition hover:bg-accent">
           <Bell className="h-5 w-5" />
+          {unread > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+              {unread > 99 ? "99+" : unread}
+            </span>
+          )}
         </button>
       </header>
 
@@ -89,11 +143,47 @@ function HomePage() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-6 text-center text-sm text-muted-foreground">
-                Aucune notification pour l'instant.
-                <div className="mt-6 flex items-center justify-center gap-3 text-xs">
-                  <Heart className="h-4 w-4" /><MessageCircle className="h-4 w-4" /><UserPlus className="h-4 w-4" />
-                </div>
+              <div className="flex-1 overflow-y-auto">
+                {notifs.length === 0 ? (
+                  <div className="p-6 text-center text-sm text-muted-foreground">
+                    Aucune notification pour l'instant.
+                    <div className="mt-6 flex items-center justify-center gap-3 text-xs">
+                      <Heart className="h-4 w-4" /><MessageCircle className="h-4 w-4" /><UserPlus className="h-4 w-4" />
+                    </div>
+                  </div>
+                ) : (
+                  <ul className="divide-y divide-border">
+                    {notifs.map((n) => {
+                      const icon = n.type === "like" ? <Heart className="h-4 w-4 text-red-500" />
+                        : n.type === "comment" ? <MessageCircle className="h-4 w-4 text-blue-500" />
+                        : <UserPlus className="h-4 w-4 text-primary" />;
+                      const text = n.type === "like" ? "a aimé ton plat" : n.type === "comment" ? "a commenté ton plat" : "a commencé à te suivre";
+                      const handle = n.actor?.handle ?? "";
+                      const name = n.actor?.display_name ?? "Quelqu'un";
+                      const avatar = n.actor?.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${handle || "user"}`;
+                      return (
+                        <li key={n.id} className="flex items-center gap-3 px-4 py-3">
+                          {handle ? (
+                            <Link to="/profil/$handle" params={{ handle }} onClick={() => setNotifOpen(false)} className="relative flex-shrink-0">
+                              <img src={avatar} alt="" className="h-11 w-11 rounded-full object-cover" />
+                              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background shadow-soft">{icon}</span>
+                            </Link>
+                          ) : (
+                            <div className="relative flex-shrink-0">
+                              <img src={avatar} alt="" className="h-11 w-11 rounded-full object-cover" />
+                              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background shadow-soft">{icon}</span>
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1 text-sm">
+                            <span className="font-semibold">{name}</span>{" "}
+                            <span className="text-muted-foreground">{text}</span>
+                            <div className="text-xs text-muted-foreground">{timeAgo(n.created_at)}</div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </motion.div>
           </>
