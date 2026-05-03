@@ -121,11 +121,8 @@ function AccountPage() {
               </div>
               <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Nom"
                 className="w-full rounded-2xl bg-muted px-4 py-2.5 text-sm outline-none" />
-              <div className="flex items-center gap-2 rounded-2xl bg-muted px-4 py-2.5">
-                <AtSign className="h-4 w-4 text-primary" />
-                <input value={handle} onChange={(e) => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))} placeholder="pseudo_unique" maxLength={20}
-                  className="w-full bg-transparent text-sm outline-none" />
-              </div>
+              <p className="text-xs text-muted-foreground">@{profile.handle} · pseudo non modifiable</p>
+
               <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Bio" rows={2}
                 className="w-full resize-none rounded-2xl bg-muted px-4 py-2.5 text-sm outline-none" />
               <button onClick={saveProfile} className="w-full rounded-2xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground">
