@@ -87,10 +87,11 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
             {reactionsOpen && (
               <motion.div
                 initial={{ opacity: 0, y: 6, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 6, scale: 0.9 }}
-                className="absolute bottom-full left-0 mb-2 flex gap-1 rounded-full bg-card p-1.5 shadow-card"
+                className="absolute bottom-full left-0 mb-2 flex max-w-[min(90vw,360px)] gap-1 overflow-x-auto rounded-2xl bg-card p-2 shadow-card"
+                onClick={(e) => e.stopPropagation()}
               >
                 {REACTIONS.map((r) => (
-                  <button key={r} onClick={() => { setReaction(r); setReactionsOpen(false); }} className="text-xl transition hover:scale-125">
+                  <button key={r} onClick={() => { setReaction(r); setReactionsOpen(false); }} className="flex-shrink-0 rounded-full px-2 text-2xl transition hover:scale-125">
                     {r}
                   </button>
                 ))}
