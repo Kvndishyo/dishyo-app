@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Search, Share2, UserPlus, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { searchProfiles, type DbProfile } from "@/lib/dishyo-db";
+import type { DbProfile } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -16,18 +16,25 @@ function SearchPage() {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<DbProfile[]>([]);
   const [follows, setFollows] = useState<Set<string>>(new Set());
+  const [followedBy, setFollowedBy] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      searchProfiles(q).then((r) => setResults(r.filter((u) => u.id !== session?.user.id)));
+    const t = setTimeout(async () => {
+      const { data } = await supabase.rpc("search_users", { q });
+      setResults(((data as DbProfile[] | null) ?? []).filter((u) => u.id !== session?.user.id));
     }, 200);
     return () => clearTimeout(t);
   }, [q, session]);
 
   useEffect(() => {
     if (!session) return;
-    supabase.from("follows").select("following_id").eq("follower_id", session.user.id).then(({ data }) => {
-      setFollows(new Set((data ?? []).map((d) => d.following_id)));
+    const uid = session.user.id;
+    Promise.all([
+      supabase.from("follows").select("following_id").eq("follower_id", uid),
+      supabase.from("follows").select("follower_id").eq("following_id", uid),
+    ]).then(([a, b]) => {
+      setFollows(new Set((a.data ?? []).map((d) => d.following_id)));
+      setFollowedBy(new Set((b.data ?? []).map((d) => d.follower_id)));
     });
   }, [session]);
 
