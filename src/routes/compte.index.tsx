@@ -40,7 +40,7 @@ function AccountPage() {
   }, [session]);
 
   useEffect(() => {
-    if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); setHandle(profile.handle); }
+    if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); }
   }, [profile]);
 
   function toggleDark(v: boolean) {
