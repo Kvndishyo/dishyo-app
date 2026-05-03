@@ -73,7 +73,7 @@ function ProfilePage() {
         <Link to="/recherche" className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-lg font-semibold">@{profile.handle}</h1>
+        <h1 className="text-lg font-semibold">{profile.display_name}</h1>
       </header>
 
       <div className="px-5 py-6">
@@ -83,7 +83,7 @@ function ProfilePage() {
             {profile.display_name}
             {profile.restaurateur && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">★ Restaurateur</span>}
           </h2>
-          <p className="text-sm text-primary">@{profile.handle}</p>
+          {session?.user.id === profile.id && <p className="text-sm text-primary">@{profile.handle}</p>}
           {profile.bio && <p className="mt-2 text-sm text-muted-foreground">{profile.bio}</p>}
 
           {session && session.user.id !== profile.id && (
