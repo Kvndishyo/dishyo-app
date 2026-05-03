@@ -17,6 +17,8 @@ function ProfilePage() {
   const [posts, setPosts] = useState<DbPost[]>([]);
   const [stats, setStats] = useState({ followers: 0, following: 0 });
   const [following, setFollowing] = useState(false);
+  const [followsMe, setFollowsMe] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
