@@ -112,7 +112,7 @@ function PublishPage() {
       });
       if (error) throw error;
       localStorage.removeItem(DRAFT_KEY);
-      toast.success("Plat publié ! Disparait dans 24h ✨");
+      toast.success("Plat publié ! Disparait dans 48h ✨");
       navigate({ to: "/" });
     } catch (e: any) {
       toast.error(e.message ?? "Erreur publication");
