@@ -57,11 +57,8 @@ function AccountPage() {
 
   async function saveProfile() {
     if (!session || !profile) return;
-    // Update handle if changed
-    if (handle !== profile.handle) {
-      const { error: hErr } = await supabase.rpc("update_my_handle", { new_handle: handle });
-      if (hErr) return toast.error(hErr.message);
-    }
+
+
     let avatar_url = profile.avatar_url;
     if (avatarFile) {
       const ext = avatarFile.name.split(".").pop() ?? "jpg";
