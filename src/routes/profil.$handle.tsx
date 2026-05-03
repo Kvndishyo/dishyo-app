@@ -30,18 +30,22 @@ function ProfilePage() {
       if (!p) { setProfile(null); setLoading(false); return; }
       setProfile(p);
       const uid = session?.user.id;
-      const [postsR, followersR, followingR, isFollowR] = await Promise.all([
+      const [postsR, followersR, followingR, isFollowR, followsMeR] = await Promise.all([
         fetchUserPosts(p.id),
         supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", p.id),
         supabase.from("follows").select("*", { count: "exact", head: true }).eq("follower_id", p.id),
         uid
           ? supabase.from("follows").select("follower_id").eq("follower_id", uid).eq("following_id", p.id).maybeSingle()
           : Promise.resolve({ data: null }),
+        uid
+          ? supabase.from("follows").select("follower_id").eq("follower_id", p.id).eq("following_id", uid).maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
       if (cancelled) return;
       setPosts(postsR);
       setStats({ followers: followersR.count ?? 0, following: followingR.count ?? 0 });
       setFollowing(!!(isFollowR as { data: unknown }).data);
+      setFollowsMe(!!(followsMeR as { data: unknown }).data);
       setLoading(false);
     })();
     return () => { cancelled = true; };
