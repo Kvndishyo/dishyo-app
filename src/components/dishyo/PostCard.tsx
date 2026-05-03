@@ -105,7 +105,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
         </button>
       </div>
 
-      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
+      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
     </article>
   );
 }
