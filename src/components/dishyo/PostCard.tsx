@@ -53,7 +53,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
                 <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">★</span>
               )}
             </div>
-            <div className="text-sm text-primary">@{author.handle}</div>
+            {currentUserId === author.id && <div className="text-sm text-primary">@{author.handle}</div>}
             <div className="text-xs text-muted-foreground">{timeAgo(post.created_at)}</div>
           </div>
         </div>
@@ -87,10 +87,11 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
             {reactionsOpen && (
               <motion.div
                 initial={{ opacity: 0, y: 6, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 6, scale: 0.9 }}
-                className="absolute bottom-full left-0 mb-2 flex gap-1 rounded-full bg-card p-1.5 shadow-card"
+                className="absolute bottom-full left-0 mb-2 flex max-w-[min(90vw,360px)] gap-1 overflow-x-auto rounded-2xl bg-card p-2 shadow-card"
+                onClick={(e) => e.stopPropagation()}
               >
                 {REACTIONS.map((r) => (
-                  <button key={r} onClick={() => { setReaction(r); setReactionsOpen(false); }} className="text-xl transition hover:scale-125">
+                  <button key={r} onClick={() => { setReaction(r); setReactionsOpen(false); }} className="flex-shrink-0 rounded-full px-2 text-2xl transition hover:scale-125">
                     {r}
                   </button>
                 ))}
@@ -104,7 +105,7 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
         </button>
       </div>
 
-      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
+      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
     </article>
   );
 }

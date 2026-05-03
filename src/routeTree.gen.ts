@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as PublierRouteImport } from './routes/publier'
-import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as CompteRouteImport } from './routes/compte'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -41,11 +40,6 @@ const RechercheRoute = RechercheRouteImport.update({
 const PublierRoute = PublierRouteImport.update({
   id: '/publier',
   path: '/publier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompteRoute = CompteRouteImport.update({
@@ -124,7 +118,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/compte': typeof CompteRouteWithChildren
-  '/notifications': typeof NotificationsRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -143,7 +136,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/notifications': typeof NotificationsRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -164,7 +156,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/compte': typeof CompteRouteWithChildren
-  '/notifications': typeof NotificationsRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -186,7 +177,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/compte'
-    | '/notifications'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -205,7 +195,6 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
-    | '/notifications'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -225,7 +214,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/compte'
-    | '/notifications'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -246,7 +234,6 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   CompteRoute: typeof CompteRouteWithChildren
-  NotificationsRoute: typeof NotificationsRoute
   PublierRoute: typeof PublierRoute
   RechercheRoute: typeof RechercheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -274,13 +261,6 @@ declare module '@tanstack/react-router' {
       path: '/publier'
       fullPath: '/publier'
       preLoaderRoute: typeof PublierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compte': {
@@ -416,7 +396,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   CompteRoute: CompteRouteWithChildren,
-  NotificationsRoute: NotificationsRoute,
   PublierRoute: PublierRoute,
   RechercheRoute: RechercheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -425,3 +404,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

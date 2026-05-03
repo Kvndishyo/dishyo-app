@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Search, Share2, UserPlus, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { searchProfiles, type DbProfile } from "@/lib/dishyo-db";
+import type { DbProfile } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -16,18 +16,25 @@ function SearchPage() {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<DbProfile[]>([]);
   const [follows, setFollows] = useState<Set<string>>(new Set());
+  const [followedBy, setFollowedBy] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      searchProfiles(q).then((r) => setResults(r.filter((u) => u.id !== session?.user.id)));
+    const t = setTimeout(async () => {
+      const { data } = await supabase.rpc("search_users", { q });
+      setResults(((data as DbProfile[] | null) ?? []).filter((u) => u.id !== session?.user.id));
     }, 200);
     return () => clearTimeout(t);
   }, [q, session]);
 
   useEffect(() => {
     if (!session) return;
-    supabase.from("follows").select("following_id").eq("follower_id", session.user.id).then(({ data }) => {
-      setFollows(new Set((data ?? []).map((d) => d.following_id)));
+    const uid = session.user.id;
+    Promise.all([
+      supabase.from("follows").select("following_id").eq("follower_id", uid),
+      supabase.from("follows").select("follower_id").eq("following_id", uid),
+    ]).then(([a, b]) => {
+      setFollows(new Set((a.data ?? []).map((d) => d.following_id)));
+      setFollowedBy(new Set((b.data ?? []).map((d) => d.follower_id)));
     });
   }, [session]);
 
@@ -70,7 +77,7 @@ function SearchPage() {
         <h1 className="mb-3 text-xl font-bold">Recherche</h1>
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher un pseudo…"
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nom, pseudo ou email…"
             className="w-full rounded-full bg-muted py-3 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
       </header>
@@ -87,6 +94,7 @@ function SearchPage() {
         <ul className="space-y-2">
           {results.map((u) => {
             const isFollowing = follows.has(u.id);
+            const followsMe = followedBy.has(u.id);
             return (
               <li key={u.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
                 <Link to="/profil/$handle" params={{ handle: u.handle }} className="flex flex-1 items-center gap-3">
@@ -96,13 +104,13 @@ function SearchPage() {
                       <span className="font-semibold">{u.display_name}</span>
                       {u.restaurateur && <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">★</span>}
                     </div>
-                    <div className="text-xs text-muted-foreground">@{u.handle}</div>
+                    {followsMe && !isFollowing && <div className="text-xs text-muted-foreground">Te suit</div>}
                   </div>
                 </Link>
                 <button onClick={() => toggleFollow(u.id)}
                   className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition ${isFollowing ? "bg-muted text-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}>
                   {isFollowing ? <UserCheck className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
-                  {isFollowing ? "Suivi" : "Suivre"}
+                  {isFollowing ? "Suivi" : followsMe ? "Suivre en retour" : "Suivre"}
                 </button>
               </li>
             );

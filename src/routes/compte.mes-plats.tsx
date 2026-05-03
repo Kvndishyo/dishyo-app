@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Trash2, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchUserPosts, timeRemaining, type DbPost } from "@/lib/dishyo-db";
+import { timeRemaining, type DbPost } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -17,7 +17,12 @@ function MyPostsPage() {
 
   useEffect(() => {
     if (!session) return;
-    fetchUserPosts(session.user.id).then((p) => { setPosts(p); setLoading(false); });
+    supabase
+      .from("posts")
+      .select("*, profiles!posts_user_id_profiles_fkey(*), likes(emoji,user_id), comments(count)")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => { setPosts((data as unknown as DbPost[]) ?? []); setLoading(false); });
   }, [session]);
 
   async function remove(id: string) {
@@ -27,6 +32,8 @@ function MyPostsPage() {
     setPosts((p) => p.filter((x) => x.id !== id));
     toast.success("Plat supprimé");
   }
+
+  const now = Date.now();
 
   return (
     <div className="min-h-screen">
@@ -40,27 +47,33 @@ function MyPostsPage() {
       <div className="space-y-3 p-5">
         {loading && <p className="text-center text-sm text-muted-foreground">Chargement…</p>}
         {!loading && posts.length === 0 && (
-          <p className="py-12 text-center text-sm text-muted-foreground">Aucun plat actif. Publie ton premier plat ! 🍽️</p>
+          <p className="py-12 text-center text-sm text-muted-foreground">Aucun plat publié. Publie ton premier plat ! 🍽️</p>
         )}
-        {posts.map((p) => (
-          <div key={p.id} className="flex gap-3 rounded-2xl bg-card p-3 shadow-soft">
-            <img src={p.photo_url} className="h-20 w-20 rounded-xl object-cover" />
-            <div className="flex flex-1 flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold">{p.title}</h3>
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700">Actif</span>
+        {posts.map((p) => {
+          const expired = new Date(p.expires_at).getTime() <= now;
+          return (
+            <div key={p.id} className={`flex gap-3 rounded-2xl bg-card p-3 shadow-soft ${expired ? "opacity-70" : ""}`}>
+              <img src={p.photo_url} className={`h-20 w-20 rounded-xl object-cover ${expired ? "grayscale" : ""}`} />
+              <div className="flex flex-1 flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold">{p.title}</h3>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${expired ? "bg-muted text-muted-foreground" : "bg-emerald-100 text-emerald-700"}`}>
+                      {expired ? "Expiré" : "Actif"}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    {expired ? "Expiré" : `Disparaît dans ${timeRemaining(p.expires_at)}`}
+                  </div>
                 </div>
-                <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="h-3 w-3" /> Disparaît dans {timeRemaining(p.expires_at)}
-                </div>
+                <button onClick={() => remove(p.id)} className="self-end rounded-full p-2 text-destructive hover:bg-destructive/10">
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
-              <button onClick={() => remove(p.id)} className="self-end rounded-full p-2 text-destructive hover:bg-destructive/10">
-                <Trash2 className="h-4 w-4" />
-              </button>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

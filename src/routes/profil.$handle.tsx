@@ -17,6 +17,8 @@ function ProfilePage() {
   const [posts, setPosts] = useState<DbPost[]>([]);
   const [stats, setStats] = useState({ followers: 0, following: 0 });
   const [following, setFollowing] = useState(false);
+  const [followsMe, setFollowsMe] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,18 +30,22 @@ function ProfilePage() {
       if (!p) { setProfile(null); setLoading(false); return; }
       setProfile(p);
       const uid = session?.user.id;
-      const [postsR, followersR, followingR, isFollowR] = await Promise.all([
+      const [postsR, followersR, followingR, isFollowR, followsMeR] = await Promise.all([
         fetchUserPosts(p.id),
         supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", p.id),
         supabase.from("follows").select("*", { count: "exact", head: true }).eq("follower_id", p.id),
         uid
           ? supabase.from("follows").select("follower_id").eq("follower_id", uid).eq("following_id", p.id).maybeSingle()
           : Promise.resolve({ data: null }),
+        uid
+          ? supabase.from("follows").select("follower_id").eq("follower_id", p.id).eq("following_id", uid).maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
       if (cancelled) return;
       setPosts(postsR);
       setStats({ followers: followersR.count ?? 0, following: followingR.count ?? 0 });
       setFollowing(!!(isFollowR as { data: unknown }).data);
+      setFollowsMe(!!(followsMeR as { data: unknown }).data);
       setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -67,7 +73,7 @@ function ProfilePage() {
         <Link to="/recherche" className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-lg font-semibold">@{profile.handle}</h1>
+        <h1 className="text-lg font-semibold">{profile.display_name}</h1>
       </header>
 
       <div className="px-5 py-6">
@@ -77,7 +83,7 @@ function ProfilePage() {
             {profile.display_name}
             {profile.restaurateur && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">★ Restaurateur</span>}
           </h2>
-          <p className="text-sm text-primary">@{profile.handle}</p>
+          {session?.user.id === profile.id && <p className="text-sm text-primary">@{profile.handle}</p>}
           {profile.bio && <p className="mt-2 text-sm text-muted-foreground">{profile.bio}</p>}
 
           {session && session.user.id !== profile.id && (
@@ -85,7 +91,7 @@ function ProfilePage() {
               <button onClick={toggle}
                 className={`flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-2.5 text-sm font-semibold transition ${following ? "bg-muted text-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}>
                 {following ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-                {following ? "Suivi" : "Suivre"}
+                {following ? "Suivi" : followsMe ? "Suivre en retour" : "Suivre"}
               </button>
             </div>
           )}
