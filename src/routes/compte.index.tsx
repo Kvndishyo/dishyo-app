@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera } from "lucide-react";
+import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, FileText, Lock, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -152,10 +152,28 @@ function AccountPage() {
           )}
         </div>
 
+        <div className="mt-6 space-y-1">
+          <Row icon={<FileText className="h-5 w-5" />} title="Conditions d'utilisation" to="/cgu" />
+          <Row icon={<Lock className="h-5 w-5" />} title="Politique de confidentialité" to="/confidentialite" />
+        </div>
+
         <div className="mt-8 space-y-2">
           <button onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-medium hover:bg-muted">
             <LogOut className="h-4 w-4" /> Se déconnecter
+          </button>
+          <button
+            onClick={async () => {
+              if (!confirm("Supprimer définitivement ton compte et toutes tes données ? Cette action est irréversible.")) return;
+              if (!confirm("Es-tu vraiment sûr ? Tape OK ensuite.")) return;
+              const { error } = await supabase.functions.invoke("delete-account");
+              if (error) return toast.error(error.message);
+              toast.success("Compte supprimé.");
+              await signOut();
+              navigate({ to: "/auth" });
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 py-3 text-sm font-medium text-destructive hover:bg-destructive/10">
+            <Trash2 className="h-4 w-4" /> Supprimer mon compte
           </button>
         </div>
       </div>

@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { type DbPost, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
 import { CommentSheet } from "./CommentSheet";
 import { HighlightedText } from "./MentionTextarea";
+import { ReportDialog } from "./ReportDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
 
-export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId: string }) {
+export function PostCard({ post, currentUserId, onHide }: { post: DbPost; currentUserId: string; onHide?: (postId: string) => void }) {
   const [reactionsOpen, setReactionsOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const myInitial = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
   const [liked, setLiked] = useState<string | null>(myInitial);
   const [delta, setDelta] = useState(0);
@@ -37,10 +41,19 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
 
   if (!author) return null;
 
+  const isOwn = post.user_id === currentUserId;
+
+  async function doBlock() {
+    if (!confirm(`Bloquer ${author!.display_name} ? Tu ne verras plus son contenu.`)) return;
+    const ok = await blockUser(post.user_id);
+    if (ok) onHide?.(post.id);
+    setMenuOpen(false);
+  }
+
   return (
     <article className="px-4 pb-6">
-      <Link to="/profil/$handle" params={{ handle: author.handle }} className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="mb-3 flex items-center justify-between">
+        <Link to="/profil/$handle" params={{ handle: author.handle }} className="flex items-center gap-3">
           <img
             src={author.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${author.handle}`}
             alt={author.display_name}
@@ -56,12 +69,19 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
             {currentUserId === author.id && <div className="text-sm text-primary">@{author.handle}</div>}
             <div className="text-xs text-muted-foreground">{timeAgo(post.created_at)}</div>
           </div>
+        </Link>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" />
+            {timeRemaining(post.expires_at)}
+          </div>
+          {!isOwn && (
+            <button onClick={() => setMenuOpen(true)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-muted" aria-label="Plus d'options">
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          )}
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-          <Clock className="h-3.5 w-3.5" />
-          {timeRemaining(post.expires_at)}
-        </div>
-      </Link>
+      </div>
 
       <div className="relative overflow-hidden rounded-2xl shadow-card">
         <img src={post.photo_url} alt={post.title} className="aspect-square w-full object-cover" />
@@ -106,6 +126,34 @@ export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId:
       </div>
 
       <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
+
+      <ReportDialog open={reportOpen} onClose={() => setReportOpen(false)} targetType="post" targetId={post.id} />
+
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)} className="fixed inset-0 z-[60] bg-foreground/40 backdrop-blur-sm" />
+            <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              className="fixed inset-x-0 bottom-0 z-[60] rounded-t-3xl bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-card">
+              <div className="mx-auto mb-2 h-1 w-12 rounded-full bg-muted" />
+              <button onClick={() => { setMenuOpen(false); setReportOpen(true); }}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm hover:bg-muted">
+                <Flag className="h-5 w-5 text-red-500" /> Signaler ce plat
+              </button>
+              <button onClick={doBlock}
+                className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm hover:bg-muted">
+                <Ban className="h-5 w-5 text-red-500" /> Bloquer {author.display_name}
+              </button>
+              <button onClick={() => setMenuOpen(false)}
+                className="mt-1 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm hover:bg-muted">
+                <X className="h-5 w-5" /> Annuler
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </article>
   );
 }

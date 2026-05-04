@@ -121,7 +121,7 @@ function HomePage() {
             </Link>
           </div>
         ) : (
-          posts.map((p) => <PostCard key={p.id} post={p} currentUserId={session.user.id} />)
+          posts.map((p) => <PostCard key={p.id} post={p} currentUserId={session.user.id} onHide={(id) => setPosts((ps) => ps.filter((x) => x.id !== id && x.user_id !== p.user_id))} />)
         )}
         {!loading && posts.length > 0 && (
           <p className="px-4 py-8 text-center text-sm text-muted-foreground">Tu as tout vu ! ✨</p>

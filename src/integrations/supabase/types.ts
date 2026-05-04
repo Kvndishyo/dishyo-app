@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       comment_likes: {
         Row: {
           comment_id: string
@@ -270,6 +288,45 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id?: string
+          target_type?: Database["public"]["Enums"]["report_target"]
+        }
+        Relationships: []
+      }
       support_messages: {
         Row: {
           ai_reply: string | null
@@ -336,6 +393,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
       search_users: {
         Args: { q: string }
         Returns: {
@@ -360,6 +418,8 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       post_visibility: "public" | "friends"
+      report_status: "open" | "reviewed" | "dismissed" | "actioned"
+      report_target: "post" | "comment" | "profile"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -489,6 +549,8 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       post_visibility: ["public", "friends"],
+      report_status: ["open", "reviewed", "dismissed", "actioned"],
+      report_target: ["post", "comment", "profile"],
     },
   },
 } as const
