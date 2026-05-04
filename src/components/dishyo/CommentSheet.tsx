@@ -1,10 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Heart, Trash2, Reply } from "lucide-react";
+import { X, Send, Heart, Trash2, Reply, Flag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { timeAgo } from "@/lib/dishyo-db";
 import { toast } from "sonner";
 import { MentionTextarea, HighlightedText } from "./MentionTextarea";
+import { ReportDialog } from "./ReportDialog";
 
 type Comment = {
   id: string;
@@ -25,6 +26,7 @@ export function CommentSheet({
   const [likes, setLikes] = useState<CLike[]>([]);
   const [loading, setLoading] = useState(false);
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -112,6 +114,11 @@ export function CommentSheet({
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               )}
+              {c.user_id !== currentUserId && (
+                <button onClick={() => setReportId(c.id)} className="flex items-center gap-1 hover:text-destructive" title="Signaler">
+                  <Flag className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -166,6 +173,9 @@ export function CommentSheet({
               </button>
             </div>
           </motion.div>
+          {reportId && (
+            <ReportDialog open={!!reportId} onClose={() => setReportId(null)} targetType="comment" targetId={reportId} />
+          )}
         </>
       )}
     </AnimatePresence>
