@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { type DbPost, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
 import { CommentSheet } from "./CommentSheet";
 import { HighlightedText } from "./MentionTextarea";
+import { ReportDialog } from "./ReportDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
 
-export function PostCard({ post, currentUserId }: { post: DbPost; currentUserId: string }) {
+export function PostCard({ post, currentUserId, onHide }: { post: DbPost; currentUserId: string; onHide?: (postId: string) => void }) {
   const [reactionsOpen, setReactionsOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const myInitial = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
   const [liked, setLiked] = useState<string | null>(myInitial);
   const [delta, setDelta] = useState(0);
