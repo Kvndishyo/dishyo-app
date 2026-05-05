@@ -69,11 +69,13 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
     <article className="px-4 pb-6">
       <div className="mb-3 flex items-center justify-between">
         <Link to="/profil/$handle" params={{ handle: author.handle }} className="flex items-center gap-3">
-          <img
-            src={author.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${author.handle}`}
-            alt={author.display_name}
-            className="h-11 w-11 rounded-full object-cover ring-2 ring-background"
-          />
+          <ExpiryRing expiresAt={post.expires_at} size={48}>
+            <img
+              src={author.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${author.handle}`}
+              alt={author.display_name}
+              className="h-full w-full object-cover"
+            />
+          </ExpiryRing>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold leading-tight">{author.display_name}</span>
@@ -98,9 +100,22 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
         </div>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl shadow-card">
-        <img src={post.photo_url} alt={post.title} className="aspect-square w-full object-cover" />
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-4 pt-16 text-white">
+      <div className="relative overflow-hidden rounded-2xl shadow-card" onClick={handleImageTap}>
+        <img src={post.photo_url} alt={post.title} className="aspect-square w-full select-none object-cover" />
+        <AnimatePresence>
+          {burst > 0 && (
+            <motion.div
+              key={burst}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.3, 1.1, 1.6] }}
+              transition={{ duration: 0.9, times: [0, 0.2, 0.6, 1] }}
+              className="pointer-events-none absolute inset-0 flex items-center justify-center"
+            >
+              <Heart className="h-32 w-32 fill-white text-white drop-shadow-2xl" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-4 pt-16 text-white">
           <h3 className="text-2xl font-bold leading-tight">{post.title}</h3>
           {post.restaurant && <p className="mt-1 text-xs opacity-90">📍 {post.restaurant}</p>}
           {post.recipe && <p className="mt-1 text-sm leading-snug"><HighlightedText text={post.recipe} /></p>}
