@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Heart, MessageCircle, UserPlus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
-import { fetchFeed, type DbPost, timeAgo } from "@/lib/dishyo-db";
+import { useEffect, useRef, useState } from "react";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { timeAgo } from "@/lib/dishyo-db";
+import { feedInfiniteOptions } from "@/lib/queries";
 import { PostCard } from "@/components/dishyo/PostCard";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/dishyo/Logo";
@@ -31,17 +33,28 @@ type Notif = {
 function HomePage() {
   const { session, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [notifOpen, setNotifOpen] = useState(false);
-  const [posts, setPosts] = useState<DbPost[]>([]);
-  const [loading, setLoading] = useState(true);
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const feed = useInfiniteQuery({
+    ...feedInfiniteOptions(),
+    enabled: !!session,
+  });
+  const posts = feed.data?.pages.flat() ?? [];
+  const loading = feed.isLoading;
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!session) return;
-    fetchFeed().then((p) => { setPosts(p); setLoading(false); }).catch(() => setLoading(false));
-  }, [session, authLoading]);
+    const el = sentinelRef.current;
+    if (!el || !feed.hasNextPage || feed.isFetchingNextPage) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) feed.fetchNextPage();
+    }, { rootMargin: "400px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [feed.hasNextPage, feed.isFetchingNextPage, feed]);
 
   // Load notifications + unread badge + realtime
   useEffect(() => {
@@ -111,7 +124,20 @@ function HomePage() {
 
       <div className="pt-4">
         {loading ? (
-          <p className="px-4 py-10 text-center text-sm text-muted-foreground">Chargement…</p>
+          <div className="space-y-6 px-4">
+            {[1, 2].map((i) => (
+              <div key={i} className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-11 w-11 animate-pulse rounded-full bg-muted" />
+                  <div className="space-y-1.5">
+                    <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+                    <div className="h-2 w-16 animate-pulse rounded bg-muted" />
+                  </div>
+                </div>
+                <div className="aspect-square w-full animate-pulse rounded-2xl bg-muted" />
+              </div>
+            ))}
+          </div>
         ) : posts.length === 0 ? (
           <div className="px-6 py-16 text-center">
             <p className="text-base font-semibold">Pas encore de plats 🍽️</p>
@@ -121,9 +147,20 @@ function HomePage() {
             </Link>
           </div>
         ) : (
-          posts.map((p) => <PostCard key={p.id} post={p} currentUserId={session.user.id} onHide={(id) => setPosts((ps) => ps.filter((x) => x.id !== id && x.user_id !== p.user_id))} />)
+          posts.map((p) => (
+            <PostCard
+              key={p.id}
+              post={p}
+              currentUserId={session.user.id}
+              onHide={() => qc.invalidateQueries({ queryKey: ["feed"] })}
+            />
+          ))
         )}
-        {!loading && posts.length > 0 && (
+        <div ref={sentinelRef} />
+        {feed.isFetchingNextPage && (
+          <p className="px-4 py-6 text-center text-sm text-muted-foreground">Chargement…</p>
+        )}
+        {!loading && posts.length > 0 && !feed.hasNextPage && (
           <p className="px-4 py-8 text-center text-sm text-muted-foreground">Tu as tout vu ! ✨</p>
         )}
       </div>
