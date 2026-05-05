@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Search, Share2, UserPlus, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { DbProfile } from "@/lib/dishyo-db";
+import { useQuery } from "@tanstack/react-query";
+import { searchUsersOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -14,17 +15,20 @@ export const Route = createFileRoute("/recherche")({
 function SearchPage() {
   const { session } = useAuth();
   const [q, setQ] = useState("");
-  const [results, setResults] = useState<DbProfile[]>([]);
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [follows, setFollows] = useState<Set<string>>(new Set());
   const [followedBy, setFollowedBy] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const t = setTimeout(async () => {
-      const { data } = await supabase.rpc("search_users", { q });
-      setResults(((data as DbProfile[] | null) ?? []).filter((u) => u.id !== session?.user.id));
-    }, 200);
+    const t = setTimeout(() => setDebouncedQ(q), 200);
     return () => clearTimeout(t);
-  }, [q, session]);
+  }, [q]);
+
+  const { data: rawResults = [] } = useQuery({
+    ...searchUsersOptions(debouncedQ),
+    enabled: !!session,
+  });
+  const results = rawResults.filter((u) => u.id !== session?.user.id);
 
   useEffect(() => {
     if (!session) return;
