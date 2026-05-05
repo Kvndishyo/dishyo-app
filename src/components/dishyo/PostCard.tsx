@@ -1,24 +1,29 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { type DbPost, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
 import { CommentSheet } from "./CommentSheet";
 import { HighlightedText } from "./MentionTextarea";
 import { ReportDialog } from "./ReportDialog";
+import { ExpiryRing } from "./ExpiryRing";
 import { supabase } from "@/integrations/supabase/client";
 import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
 
 export function PostCard({ post, currentUserId, onHide }: { post: DbPost; currentUserId: string; onHide?: (postId: string) => void }) {
+  const qc = useQueryClient();
   const [reactionsOpen, setReactionsOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [burst, setBurst] = useState(0);
   const myInitial = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
   const [liked, setLiked] = useState<string | null>(myInitial);
   const [delta, setDelta] = useState(0);
   const [commentsDelta, setCommentsDelta] = useState(0);
+  const lastTapRef = useRef(0);
 
   const totalLikes = post.likes.length + delta;
   const author = post.profiles;
@@ -27,7 +32,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   async function setReaction(emoji: string | null) {
     const wasLiked = !!liked;
     setLiked(emoji);
-    if (!wasLiked && emoji) setDelta((d) => d + 1);
+    if (!wasLiked && emoji) { setDelta((d) => d + 1); setBurst((b) => b + 1); }
     if (wasLiked && !emoji) setDelta((d) => d - 1);
 
     if (!emoji) {
@@ -37,6 +42,16 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
       const { error } = await supabase.from("likes").upsert({ post_id: post.id, user_id: currentUserId, emoji }, { onConflict: "post_id,user_id" });
       if (error) toast.error("Erreur");
     }
+    qc.invalidateQueries({ queryKey: ["feed"] });
+  }
+
+  function handleImageTap() {
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      if (!liked) setReaction("❤️");
+      else setBurst((b) => b + 1);
+    }
+    lastTapRef.current = now;
   }
 
   if (!author) return null;
