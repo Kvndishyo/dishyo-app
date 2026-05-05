@@ -61,9 +61,10 @@ function AccountPage() {
 
     let avatar_url = profile.avatar_url;
     if (avatarFile) {
-      const ext = avatarFile.name.split(".").pop() ?? "jpg";
-      const path = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage.from("avatars").upload(path, avatarFile, { upsert: true });
+      const { compressImage } = await import("@/lib/imageCompression");
+      const compressed = await compressImage(avatarFile, `avatar-${Date.now()}.jpg`);
+      const path = `${session.user.id}/${crypto.randomUUID()}.jpg`;
+      const { error } = await supabase.storage.from("avatars").upload(path, compressed, { upsert: true });
       if (error) return toast.error(error.message);
       avatar_url = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
     }

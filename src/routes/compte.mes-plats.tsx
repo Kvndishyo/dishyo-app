@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Trash2, Clock } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-import { timeRemaining, type DbPost } from "@/lib/dishyo-db";
+import { timeRemaining } from "@/lib/dishyo-db";
+import { myPostsQueryOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -12,24 +13,15 @@ export const Route = createFileRoute("/compte/mes-plats")({
 
 function MyPostsPage() {
   const { session } = useAuth();
-  const [posts, setPosts] = useState<DbPost[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!session) return;
-    supabase
-      .from("posts")
-      .select("*, profiles!posts_user_id_profiles_fkey(*), likes(emoji,user_id), comments(count)")
-      .eq("user_id", session.user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => { setPosts((data as unknown as DbPost[]) ?? []); setLoading(false); });
-  }, [session]);
+  const qc = useQueryClient();
+  const { data: posts = [], isLoading: loading } = useQuery(myPostsQueryOptions(session?.user.id));
 
   async function remove(id: string) {
     if (!confirm("Supprimer ce plat ?")) return;
     const { error } = await supabase.from("posts").delete().eq("id", id);
     if (error) return toast.error(error.message);
-    setPosts((p) => p.filter((x) => x.id !== id));
+    qc.invalidateQueries({ queryKey: ["my-posts"] });
+    qc.invalidateQueries({ queryKey: ["feed"] });
     toast.success("Plat supprimé");
   }
 

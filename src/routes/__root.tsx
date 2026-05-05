@@ -1,8 +1,11 @@
-import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts, Link } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/dishyo/AppShell";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Toaster } from "sonner";
+
+interface RouterContext { queryClient: QueryClient }
 
 function NotFoundComponent() {
   return (
@@ -18,7 +21,7 @@ function NotFoundComponent() {
   );
 }
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -45,16 +48,23 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootShell,
-  component: () => (
-    <AuthProvider>
-      <AppShell>
-        <Outlet />
-      </AppShell>
-      <Toaster position="top-center" richColors />
-    </AuthProvider>
-  ),
+  component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
+
+function RootComponent() {
+  const { queryClient } = Route.useRouteContext();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AppShell>
+          <Outlet />
+        </AppShell>
+        <Toaster position="top-center" richColors />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (

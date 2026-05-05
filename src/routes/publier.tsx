@@ -7,6 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
 import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
+import { compressImage } from "@/lib/imageCompression";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/publier")({
   head: () => ({ meta: [{ title: "Dishyo — Publier un plat" }] }),
@@ -17,6 +19,7 @@ const DRAFT_KEY = "dishyo:publish-draft:v1";
 
 function PublishPage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { session, loading: authLoading } = useAuth();
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -85,12 +88,12 @@ function PublishPage() {
     e.target.value = "";
   }
 
-  function handleEditorSave(blob: Blob) {
-    const f = new File([blob], `photo-${Date.now()}.jpg`, { type: "image/jpeg" });
-    setFile(f);
+  async function handleEditorSave(blob: Blob) {
+    const compressed = await compressImage(blob, `photo-${Date.now()}.jpg`);
+    setFile(compressed);
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
-    reader.readAsDataURL(blob);
+    reader.readAsDataURL(compressed);
     setEditorSrc(null);
   }
 
@@ -112,6 +115,8 @@ function PublishPage() {
       });
       if (error) throw error;
       localStorage.removeItem(DRAFT_KEY);
+      qc.invalidateQueries({ queryKey: ["feed"] });
+      qc.invalidateQueries({ queryKey: ["my-posts"] });
       toast.success("Plat publié ! Disparait dans 48h ✨");
       navigate({ to: "/" });
     } catch (e: any) {

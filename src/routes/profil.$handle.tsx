@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, UserPlus, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { fetchProfileByHandle, fetchUserPosts, type DbProfile, type DbPost } from "@/lib/dishyo-db";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { profileByHandleOptions, userPostsOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -13,43 +14,36 @@ function ProfilePage() {
   const { handle } = Route.useParams();
   const { session } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<DbProfile | null>(null);
-  const [posts, setPosts] = useState<DbPost[]>([]);
+  const qc = useQueryClient();
+
+  const { data: profile, isLoading: profileLoading } = useQuery(profileByHandleOptions(handle));
+  const { data: posts = [] } = useQuery(userPostsOptions(profile?.id));
+
   const [stats, setStats] = useState({ followers: 0, following: 0 });
   const [following, setFollowing] = useState(false);
   const [followsMe, setFollowsMe] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
+    if (!profile) return;
     let cancelled = false;
-    setLoading(true);
-    (async () => {
-      const p = await fetchProfileByHandle(handle);
+    const uid = session?.user.id;
+    Promise.all([
+      supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", profile.id),
+      supabase.from("follows").select("*", { count: "exact", head: true }).eq("follower_id", profile.id),
+      uid
+        ? supabase.from("follows").select("follower_id").eq("follower_id", uid).eq("following_id", profile.id).maybeSingle()
+        : Promise.resolve({ data: null }),
+      uid
+        ? supabase.from("follows").select("follower_id").eq("follower_id", profile.id).eq("following_id", uid).maybeSingle()
+        : Promise.resolve({ data: null }),
+    ]).then(([fr, fg, isF, fMe]) => {
       if (cancelled) return;
-      if (!p) { setProfile(null); setLoading(false); return; }
-      setProfile(p);
-      const uid = session?.user.id;
-      const [postsR, followersR, followingR, isFollowR, followsMeR] = await Promise.all([
-        fetchUserPosts(p.id),
-        supabase.from("follows").select("*", { count: "exact", head: true }).eq("following_id", p.id),
-        supabase.from("follows").select("*", { count: "exact", head: true }).eq("follower_id", p.id),
-        uid
-          ? supabase.from("follows").select("follower_id").eq("follower_id", uid).eq("following_id", p.id).maybeSingle()
-          : Promise.resolve({ data: null }),
-        uid
-          ? supabase.from("follows").select("follower_id").eq("follower_id", p.id).eq("following_id", uid).maybeSingle()
-          : Promise.resolve({ data: null }),
-      ]);
-      if (cancelled) return;
-      setPosts(postsR);
-      setStats({ followers: followersR.count ?? 0, following: followingR.count ?? 0 });
-      setFollowing(!!(isFollowR as { data: unknown }).data);
-      setFollowsMe(!!(followsMeR as { data: unknown }).data);
-      setLoading(false);
-    })();
+      setStats({ followers: fr.count ?? 0, following: fg.count ?? 0 });
+      setFollowing(!!(isF as { data: unknown }).data);
+      setFollowsMe(!!(fMe as { data: unknown }).data);
+    });
     return () => { cancelled = true; };
-  }, [handle, session?.user.id]);
+  }, [profile, session?.user.id]);
 
   async function toggle() {
     if (!session || !profile) return navigate({ to: "/auth" });
@@ -62,7 +56,10 @@ function ProfilePage() {
       setStats((s) => ({ ...s, followers: s.followers + 1 }));
       await supabase.from("follows").insert({ follower_id: session.user.id, following_id: profile.id });
     }
+    qc.invalidateQueries({ queryKey: ["feed"] });
   }
+
+  const loading = profileLoading;
 
   if (loading) return <div className="p-10 text-center text-sm text-muted-foreground">Chargement…</div>;
   if (!profile) return <div className="p-6 text-center">Utilisateur introuvable. <Link to="/recherche" className="text-primary">Retour</Link></div>;
