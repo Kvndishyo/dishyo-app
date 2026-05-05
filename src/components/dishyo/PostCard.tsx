@@ -129,7 +129,9 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
             onContextMenu={(e) => { e.preventDefault(); setReactionsOpen(true); }}
             className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
           >
-            <Heart className={`h-5 w-5 ${liked ? "fill-primary text-primary" : ""}`} />
+            <motion.span animate={{ scale: liked ? [1, 1.4, 1] : 1 }} transition={{ duration: 0.4 }}>
+              <Heart className={`h-5 w-5 ${liked ? "fill-primary text-primary" : ""}`} />
+            </motion.span>
             {liked ? <span>{liked}</span> : null}
             <span className="font-medium">{totalLikes}</span>
           </button>
