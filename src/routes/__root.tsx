@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/dishyo/AppShell";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "@/hooks/useTheme";
 import { Toaster } from "sonner";
 
 interface RouterContext { queryClient: QueryClient }
@@ -56,12 +57,14 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppShell>
-          <Outlet />
-        </AppShell>
-        <Toaster position="top-center" richColors />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppShell>
+            <Outlet />
+          </AppShell>
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
