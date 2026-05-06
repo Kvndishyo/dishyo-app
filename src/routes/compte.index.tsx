@@ -138,6 +138,7 @@ function AccountPage() {
 
         <div className="mt-6 space-y-1">
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />
+          <Row icon={<BarChart3 className="h-5 w-5 text-primary" />} title="Dashboard" subtitle="Tes statistiques" to="/compte/dashboard" iconBg="bg-primary/10" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
           <ToggleRow icon={<Bell className="h-5 w-5" />} title="Alertes activées" value={notif} onChange={setNotif} />
 
