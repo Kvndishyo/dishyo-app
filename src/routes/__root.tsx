@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/dishyo/AppShell";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "@/hooks/useTheme";
 import { Toaster } from "sonner";
 
 interface RouterContext { queryClient: QueryClient }
@@ -27,13 +28,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" },
       { title: "Dishyo — Partage tes plats" },
-      { name: "description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 24h." },
+      { name: "description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 48h." },
       { name: "theme-color", content: "#f5f0e6" },
       { property: "og:title", content: "Dishyo — Partage tes plats" },
-      { property: "og:description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 24h." },
+      { property: "og:description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 48h." },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Dishyo — Partage tes plats" },
-      { name: "twitter:description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 24h." },
+      { name: "twitter:description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 48h." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7c22fd21-3a75-4f56-b262-25278f2e2803/id-preview-c5c22c99--c33a9cbe-39e8-4d13-a7fa-307ca249c9af.lovable.app-1777466759928.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7c22fd21-3a75-4f56-b262-25278f2e2803/id-preview-c5c22c99--c33a9cbe-39e8-4d13-a7fa-307ca249c9af.lovable.app-1777466759928.png" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -56,12 +57,14 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppShell>
-          <Outlet />
-        </AppShell>
-        <Toaster position="top-center" richColors />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppShell>
+            <Outlet />
+          </AppShell>
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

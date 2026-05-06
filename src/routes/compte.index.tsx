@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, FileText, Lock, Trash2 } from "lucide-react";
+import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, FileText, Lock, Trash2, BarChart3 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -16,7 +17,7 @@ function AccountPage() {
   const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const [notif, setNotif] = useState(true);
-  const [dark, setDark] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [stats, setStats] = useState({ following: 0, followers: 0, posts: 0 });
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -43,10 +44,6 @@ function AccountPage() {
     if (profile) { setDisplayName(profile.display_name); setBio(profile.bio ?? ""); }
   }, [profile]);
 
-  function toggleDark(v: boolean) {
-    setDark(v);
-    document.documentElement.classList.toggle("dark", v);
-  }
 
   function pickAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -141,10 +138,11 @@ function AccountPage() {
 
         <div className="mt-6 space-y-1">
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />
+          <Row icon={<BarChart3 className="h-5 w-5 text-primary" />} title="Dashboard" subtitle="Tes statistiques" to="/compte/dashboard" iconBg="bg-primary/10" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
           <ToggleRow icon={<Bell className="h-5 w-5" />} title="Alertes activées" value={notif} onChange={setNotif} />
 
-          <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={dark} onChange={toggleDark} />
+          <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} />
           <Row icon={<Shield className="h-5 w-5" />} title="Confidentialité" to="/compte/confidentialite" />
           <Row icon={<HelpCircle className="h-5 w-5" />} title="Aide et support" to="/compte/aide" />
           

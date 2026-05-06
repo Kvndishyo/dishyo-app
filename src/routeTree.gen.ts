@@ -22,6 +22,7 @@ import { Route as CompteIndexRouteImport } from './routes/compte.index'
 import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
+import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
 import { Route as CompteContactRouteImport } from './routes/compte.contact'
 import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
 import { Route as CompteAmisRouteImport } from './routes/compte.amis'
@@ -94,6 +95,11 @@ const CompteMesPlatsRoute = CompteMesPlatsRouteImport.update({
   path: '/mes-plats',
   getParentRoute: () => CompteRoute,
 } as any)
+const CompteDashboardRoute = CompteDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CompteRoute,
+} as any)
 const CompteContactRoute = CompteContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
+  '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
+  '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/compte/amis': typeof CompteAmisRoute
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
+  '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/compte/amis'
     | '/compte/confidentialite'
     | '/compte/contact'
+    | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
     | '/profil/$handle'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/compte/amis'
     | '/compte/confidentialite'
     | '/compte/contact'
+    | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
     | '/profil/$handle'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/compte/amis'
     | '/compte/confidentialite'
     | '/compte/contact'
+    | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
     | '/profil/$handle'
@@ -359,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteMesPlatsRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/compte/dashboard': {
+      id: '/compte/dashboard'
+      path: '/dashboard'
+      fullPath: '/compte/dashboard'
+      preLoaderRoute: typeof CompteDashboardRouteImport
+      parentRoute: typeof CompteRoute
+    }
     '/compte/contact': {
       id: '/compte/contact'
       path: '/contact'
@@ -411,6 +430,7 @@ interface CompteRouteChildren {
   CompteAmisRoute: typeof CompteAmisRoute
   CompteConfidentialiteRoute: typeof CompteConfidentialiteRoute
   CompteContactRoute: typeof CompteContactRoute
+  CompteDashboardRoute: typeof CompteDashboardRoute
   CompteMesPlatsRoute: typeof CompteMesPlatsRoute
   CompteRestaurateurRoute: typeof CompteRestaurateurRoute
   CompteIndexRoute: typeof CompteIndexRoute
@@ -423,6 +443,7 @@ const CompteRouteChildren: CompteRouteChildren = {
   CompteAmisRoute: CompteAmisRoute,
   CompteConfidentialiteRoute: CompteConfidentialiteRoute,
   CompteContactRoute: CompteContactRoute,
+  CompteDashboardRoute: CompteDashboardRoute,
   CompteMesPlatsRoute: CompteMesPlatsRoute,
   CompteRestaurateurRoute: CompteRestaurateurRoute,
   CompteIndexRoute: CompteIndexRoute,
