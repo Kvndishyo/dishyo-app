@@ -6,6 +6,7 @@ import { timeAgo } from "@/lib/dishyo-db";
 import { toast } from "sonner";
 import { MentionTextarea, HighlightedText } from "./MentionTextarea";
 import { ReportDialog } from "./ReportDialog";
+import { moderateText, checkRateLimit } from "@/lib/moderation";
 
 type Comment = {
   id: string;
@@ -50,6 +51,10 @@ export function CommentSheet({
   async function send() {
     const v = text.trim();
     if (!v) return;
+    const ok = await checkRateLimit("comment");
+    if (!ok) return toast.error("Trop de commentaires, attends un peu.");
+    const m = await moderateText(v, "commentaire");
+    if (!m.safe) return toast.error(`Commentaire refusé : ${m.reason}`);
     const payload: any = { post_id: postId, user_id: currentUserId, body: v };
     if (replyTo) payload.parent_id = replyTo.id;
     const { data, error } = await supabase

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { toast } from "sonner";
+import { ModerationPanel } from "@/components/dishyo/ModerationPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Dishyo — Dashboard admin" }] }),
@@ -32,6 +33,7 @@ function AdminPage() {
   const [busy, setBusy] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [filter, setFilter] = useState<"open" | "answered" | "all">("open");
+  const [tab, setTab] = useState<"support" | "moderation">("support");
 
   useEffect(() => {
     if (!authLoading && !session) navigate({ to: "/auth" });
@@ -111,6 +113,22 @@ function AdminPage() {
       </header>
 
       <div className="flex gap-2 px-4 py-3">
+        {(["support", "moderation"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+              tab === t ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+            }`}
+          >
+            {t === "support" ? "Support" : "Modération"}
+          </button>
+        ))}
+      </div>
+
+      {tab === "moderation" && <ModerationPanel />}
+
+      {tab === "support" && <div className="flex gap-2 px-4 pb-3">
         {(["open", "answered", "all"] as const).map((f) => (
           <button
             key={f}
@@ -122,9 +140,9 @@ function AdminPage() {
             {f === "open" ? "Ouverts" : f === "answered" ? "Répondus" : "Tous"}
           </button>
         ))}
-      </div>
+      </div>}
 
-      <div className="space-y-2 px-3 pb-24">
+      {tab === "support" && <div className="space-y-2 px-3 pb-24">
         {messages.length === 0 && (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
             Aucun message {filter === "open" ? "en attente" : filter === "answered" ? "répondu" : ""}.
@@ -155,7 +173,7 @@ function AdminPage() {
             </p>
           </button>
         ))}
-      </div>
+      </div>}
 
       {selected && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center">

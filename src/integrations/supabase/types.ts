@@ -146,6 +146,27 @@ export type Database = {
           },
         ]
       }
+      forbidden_words: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          word: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          word: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          word?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string
@@ -213,6 +234,7 @@ export type Database = {
           category: string | null
           created_at: string
           expires_at: string
+          hidden: boolean
           id: string
           photo_url: string
           recipe: string | null
@@ -225,6 +247,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           expires_at?: string
+          hidden?: boolean
           id?: string
           photo_url: string
           recipe?: string | null
@@ -237,6 +260,7 @@ export type Database = {
           category?: string | null
           created_at?: string
           expires_at?: string
+          hidden?: boolean
           id?: string
           photo_url?: string
           recipe?: string | null
@@ -386,6 +410,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: { _action: string; _max: number; _window_seconds: number }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
