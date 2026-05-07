@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search, Share2, UserPlus, UserCheck } from "lucide-react";
+import { Search, Share2, UserPlus, UserCheck, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchUsersOptions } from "@/lib/queries";
