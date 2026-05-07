@@ -87,9 +87,14 @@ function SearchPage() {
       </header>
 
       <div className="px-5 py-4">
-        <button onClick={share} className="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3.5 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98]">
-          <Share2 className="h-5 w-5" /> Inviter des amis
-        </button>
+        <div className="mb-6 grid grid-cols-2 gap-2">
+          <button onClick={share} className="flex items-center justify-center gap-2 rounded-2xl bg-primary px-3 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98]">
+            <Share2 className="h-4 w-4" /> Inviter
+          </button>
+          <Link to="/carte" className="flex items-center justify-center gap-2 rounded-2xl bg-accent px-3 py-3.5 text-sm font-semibold text-accent-foreground transition active:scale-[0.98]">
+            <MapPin className="h-4 w-4" /> Carte des plats
+          </Link>
+        </div>
 
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           {q ? "Résultats" : "Découvrir"}
