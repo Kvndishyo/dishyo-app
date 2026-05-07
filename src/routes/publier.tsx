@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
 import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 import { compressImage } from "@/lib/imageCompression";
+import { moderateText, moderateImageDataUrl, checkRateLimit } from "@/lib/moderation";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/publier")({
@@ -101,6 +102,22 @@ function PublishPage() {
     if (!file || !title.trim() || !session) return toast.error("Photo et titre requis");
     setBusy(true);
     try {
+      // Anti-spam
+      const ok = await checkRateLimit("post");
+      if (!ok) { toast.error("Tu publies trop vite — réessaie dans quelques minutes."); return; }
+
+      // Modération texte
+      const textToCheck = [title, restaurant, recipe].filter(Boolean).join("\n");
+      if (textToCheck.trim()) {
+        const m = await moderateText(textToCheck, "publication culinaire");
+        if (!m.safe) { toast.error(`Publication refusée : ${m.reason}`); return; }
+      }
+
+      // Modération image
+      const dataUrl = preview && preview.startsWith("data:") ? preview : await fileToDataUrl(file);
+      const mi = await moderateImageDataUrl(dataUrl);
+      if (!mi.safe) { toast.error(`Photo refusée : ${mi.reason}`); return; }
+
       const ext = file.name.split(".").pop() ?? "jpg";
       const path = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("dish-photos").upload(path, file);
@@ -124,6 +141,15 @@ function PublishPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function fileToDataUrl(f: File): Promise<string> {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result as string);
+      r.onerror = rej;
+      r.readAsDataURL(f);
+    });
   }
 
   const canPublish = !!file && title.trim().length > 0 && !busy;
