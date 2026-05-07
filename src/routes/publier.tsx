@@ -241,6 +241,22 @@ function PublishPage() {
           />
         </div>
 
+        <div>
+          {geo ? (
+            <div className="flex items-center gap-2 rounded-2xl bg-accent/40 px-4 py-3 text-sm">
+              <MapPin className="h-4 w-4 text-primary" />
+              <span className="flex-1 truncate">{geo.place_name ?? `${geo.lat.toFixed(3)}, ${geo.lng.toFixed(3)}`}</span>
+              <button onClick={() => setGeo(null)} className="rounded-full p-1 hover:bg-muted"><X className="h-4 w-4" /></button>
+            </div>
+          ) : (
+            <button onClick={addLocation} disabled={geoBusy}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground hover:border-primary hover:text-foreground disabled:opacity-50">
+              <MapPin className="h-4 w-4" />
+              {geoBusy ? "Localisation…" : "Ajouter ma position (optionnel)"}
+            </button>
+          )}
+        </div>
+
         <button onClick={publish} disabled={!canPublish}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-4 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98] disabled:opacity-50 disabled:shadow-none">
           <Utensils className="h-5 w-5" />
