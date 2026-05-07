@@ -236,7 +236,10 @@ export type Database = {
           expires_at: string
           hidden: boolean
           id: string
+          lat: number | null
+          lng: number | null
           photo_url: string
+          place_name: string | null
           recipe: string | null
           restaurant: string | null
           title: string
@@ -249,7 +252,10 @@ export type Database = {
           expires_at?: string
           hidden?: boolean
           id?: string
+          lat?: number | null
+          lng?: number | null
           photo_url: string
+          place_name?: string | null
           recipe?: string | null
           restaurant?: string | null
           title: string
@@ -262,7 +268,10 @@ export type Database = {
           expires_at?: string
           hidden?: boolean
           id?: string
+          lat?: number | null
+          lng?: number | null
           photo_url?: string
+          place_name?: string | null
           recipe?: string | null
           restaurant?: string | null
           title?: string
@@ -422,6 +431,23 @@ export type Database = {
         Returns: boolean
       }
       is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
+      nearby_posts: {
+        Args: { _lat: number; _lng: number; _radius_km: number }
+        Returns: {
+          category: string
+          created_at: string
+          distance_km: number
+          expires_at: string
+          id: string
+          lat: number
+          lng: number
+          photo_url: string
+          place_name: string
+          restaurant: string
+          title: string
+          user_id: string
+        }[]
+      }
       search_users: {
         Args: { q: string }
         Returns: {
