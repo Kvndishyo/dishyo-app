@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon } from "lucide-react";
+import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon, MapPin, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { CATEGORIES } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
 import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 import { compressImage } from "@/lib/imageCompression";
 import { moderateText, moderateImageDataUrl, checkRateLimit } from "@/lib/moderation";
+import { getCurrentPosition, reverseGeocode } from "@/lib/geo";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/publier")({
@@ -35,6 +36,22 @@ function PublishPage() {
   const [recipe, setRecipe] = useState("");
   const [busy, setBusy] = useState(false);
   const [draftLoaded, setDraftLoaded] = useState(false);
+  const [geo, setGeo] = useState<{ lat: number; lng: number; place_name: string | null } | null>(null);
+  const [geoBusy, setGeoBusy] = useState(false);
+
+  async function addLocation() {
+    setGeoBusy(true);
+    try {
+      const pos = await getCurrentPosition();
+      const place = await reverseGeocode(pos.lat, pos.lng);
+      setGeo({ ...pos, place_name: place });
+      toast.success(place ? `Position : ${place}` : "Position ajoutée");
+    } catch (e: any) {
+      toast.error(e.message ?? "Position indisponible");
+    } finally {
+      setGeoBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!authLoading && !session) navigate({ to: "/auth" });
@@ -129,7 +146,8 @@ function PublishPage() {
         title: title.trim(),
         restaurant: restaurant.trim() || null,
         category, recipe: recipe.trim() || null, visibility,
-      });
+        lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
+      } as any);
       if (error) throw error;
       localStorage.removeItem(DRAFT_KEY);
       qc.invalidateQueries({ queryKey: ["feed"] });
