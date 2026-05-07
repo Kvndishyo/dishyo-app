@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -140,14 +140,13 @@ function MapPage() {
         </h2>
         <div className="flex gap-3 overflow-x-auto pb-2">
           {pins.map((p) => (
-            <Link key={p.id} to="/profil/$handle" params={{ handle: p.user_id }}
-              className="block w-36 shrink-0 overflow-hidden rounded-2xl bg-card shadow-card">
+            <div key={p.id} className="block w-36 shrink-0 overflow-hidden rounded-2xl bg-card shadow-card">
               <img src={p.photo_url} alt={p.title} className="h-28 w-full object-cover" />
               <div className="p-2">
                 <p className="truncate text-xs font-semibold">{p.title}</p>
                 <p className="text-[10px] text-muted-foreground">{p.distance_km.toFixed(1)} km</p>
               </div>
-            </Link>
+            </div>
           ))}
           {pins.length === 0 && !loading && (
             <p className="text-xs text-muted-foreground">Aucun plat actif autour de toi pour ce rayon.</p>
