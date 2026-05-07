@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon } from "lucide-react";
+import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon, MapPin, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { CATEGORIES } from "@/lib/dishyo-db";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
 import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 import { compressImage } from "@/lib/imageCompression";
 import { moderateText, moderateImageDataUrl, checkRateLimit } from "@/lib/moderation";
+import { getCurrentPosition, reverseGeocode } from "@/lib/geo";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/publier")({
@@ -35,6 +36,22 @@ function PublishPage() {
   const [recipe, setRecipe] = useState("");
   const [busy, setBusy] = useState(false);
   const [draftLoaded, setDraftLoaded] = useState(false);
+  const [geo, setGeo] = useState<{ lat: number; lng: number; place_name: string | null } | null>(null);
+  const [geoBusy, setGeoBusy] = useState(false);
+
+  async function addLocation() {
+    setGeoBusy(true);
+    try {
+      const pos = await getCurrentPosition();
+      const place = await reverseGeocode(pos.lat, pos.lng);
+      setGeo({ ...pos, place_name: place });
+      toast.success(place ? `Position : ${place}` : "Position ajoutée");
+    } catch (e: any) {
+      toast.error(e.message ?? "Position indisponible");
+    } finally {
+      setGeoBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!authLoading && !session) navigate({ to: "/auth" });
@@ -129,7 +146,8 @@ function PublishPage() {
         title: title.trim(),
         restaurant: restaurant.trim() || null,
         category, recipe: recipe.trim() || null, visibility,
-      });
+        lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
+      } as any);
       if (error) throw error;
       localStorage.removeItem(DRAFT_KEY);
       qc.invalidateQueries({ queryKey: ["feed"] });
@@ -221,6 +239,22 @@ function PublishPage() {
             rows={4}
             className="w-full resize-none rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
           />
+        </div>
+
+        <div>
+          {geo ? (
+            <div className="flex items-center gap-2 rounded-2xl bg-accent/40 px-4 py-3 text-sm">
+              <MapPin className="h-4 w-4 text-primary" />
+              <span className="flex-1 truncate">{geo.place_name ?? `${geo.lat.toFixed(3)}, ${geo.lng.toFixed(3)}`}</span>
+              <button onClick={() => setGeo(null)} className="rounded-full p-1 hover:bg-muted"><X className="h-4 w-4" /></button>
+            </div>
+          ) : (
+            <button onClick={addLocation} disabled={geoBusy}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground hover:border-primary hover:text-foreground disabled:opacity-50">
+              <MapPin className="h-4 w-4" />
+              {geoBusy ? "Localisation…" : "Ajouter ma position (optionnel)"}
+            </button>
+          )}
         </div>
 
         <button onClick={publish} disabled={!canPublish}

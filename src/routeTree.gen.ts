@@ -15,6 +15,7 @@ import { Route as PublierRouteImport } from './routes/publier'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as CompteRouteImport } from './routes/compte'
 import { Route as CguRouteImport } from './routes/cgu'
+import { Route as CarteRouteImport } from './routes/carte'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -58,6 +59,11 @@ const CompteRoute = CompteRouteImport.update({
 const CguRoute = CguRouteImport.update({
   id: '/cgu',
   path: '/cgu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarteRoute = CarteRouteImport.update({
+  id: '/carte',
+  path: '/carte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/carte': typeof CarteRoute
   '/cgu': typeof CguRoute
   '/compte': typeof CompteRouteWithChildren
   '/confidentialite': typeof ConfidentialiteRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/carte': typeof CarteRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/publier': typeof PublierRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/carte': typeof CarteRoute
   '/cgu': typeof CguRoute
   '/compte': typeof CompteRouteWithChildren
   '/confidentialite': typeof ConfidentialiteRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/carte'
     | '/cgu'
     | '/compte'
     | '/confidentialite'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/carte'
     | '/cgu'
     | '/confidentialite'
     | '/publier'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/carte'
     | '/cgu'
     | '/compte'
     | '/confidentialite'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  CarteRoute: typeof CarteRoute
   CguRoute: typeof CguRoute
   CompteRoute: typeof CompteRouteWithChildren
   ConfidentialiteRoute: typeof ConfidentialiteRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       path: '/cgu'
       fullPath: '/cgu'
       preLoaderRoute: typeof CguRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carte': {
+      id: '/carte'
+      path: '/carte'
+      fullPath: '/carte'
+      preLoaderRoute: typeof CarteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -456,6 +476,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  CarteRoute: CarteRoute,
   CguRoute: CguRoute,
   CompteRoute: CompteRouteWithChildren,
   ConfidentialiteRoute: ConfidentialiteRoute,
