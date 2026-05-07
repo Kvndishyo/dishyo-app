@@ -142,7 +142,7 @@ function AdminPage() {
         ))}
       </div>}
 
-      <div className="space-y-2 px-3 pb-24">
+      {tab === "support" && <div className="space-y-2 px-3 pb-24">
         {messages.length === 0 && (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
             Aucun message {filter === "open" ? "en attente" : filter === "answered" ? "répondu" : ""}.
@@ -173,7 +173,7 @@ function AdminPage() {
             </p>
           </button>
         ))}
-      </div>
+      </div>}
 
       {selected && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center">
