@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { moderateText as moderateTextFn, moderateImage as moderateImageFn } from "@/server/moderation.functions";
+import { moderateText as moderateTextFn, moderateImage as moderateImageFn } from "@/lib/moderation.functions";
 
 export type ModResult = { safe: boolean; reason: string; category?: string };
 
