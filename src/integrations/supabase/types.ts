@@ -369,7 +369,7 @@ export type Database = {
           id: string
           status: string
           subject: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           ai_reply?: string | null
@@ -379,7 +379,7 @@ export type Database = {
           id?: string
           status?: string
           subject: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           ai_reply?: string | null
@@ -389,7 +389,7 @@ export type Database = {
           id?: string
           status?: string
           subject?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
