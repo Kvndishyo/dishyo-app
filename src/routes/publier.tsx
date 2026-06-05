@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 import { compressImage } from "@/lib/imageCompression";
 import { moderateText, moderateImageDataUrl, checkRateLimit } from "@/lib/moderation";
