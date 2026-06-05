@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PhotoEditor } from "@/components/dishyo/PhotoEditor";
 import { compressImage } from "@/lib/imageCompression";
 import { moderateText, moderateImageDataUrl, checkRateLimit } from "@/lib/moderation";
@@ -210,29 +211,38 @@ function PublishPage() {
 
         <div className="grid grid-cols-2 gap-2">
           <VisBtn active={visibility === "friends"} onClick={() => setVisibility("friends")} icon={<Users className="h-4 w-4" />} label="Amis" />
-          <VisBtn active={visibility === "public"} onClick={() => setVisibility("public")} icon={<Globe className="h-4 w-4" />} label="Public" />
+          <VisBtn active={visibility === "public"} onClick={() => setVisibility("public")} icon={<Globe className="h-4 w-4" />} label="Amis + Followers" />
         </div>
 
         <div>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Catégorie</h3>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => {
-              const active = category === c.name;
-              return (
-                <button key={c.name} onClick={() => setCategory(active ? null : c.name)}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm transition ${active ? "bg-primary text-primary-foreground shadow-glow" : "bg-muted text-foreground hover:bg-accent"}`}>
-                  <span>{c.emoji}</span><span className="font-medium">{c.name}</span>
-                </button>
-              );
-            })}
-          </div>
+          <Select value={category ?? ""} onValueChange={(v) => setCategory(v || null)}>
+            <SelectTrigger className="h-12 rounded-2xl bg-muted px-4 text-sm">
+              <SelectValue placeholder="Choisir une catégorie" />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map((c) => (
+                <SelectItem key={c.name} value={c.name}>
+                  <span className="mr-2">{c.emoji}</span>{c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Nom du plat *"
-            className="w-full rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
-          <input value={restaurant} onChange={(e) => setRestaurant(e.target.value)} placeholder="Restaurant (optionnel) 📍"
-            className="w-full rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+          <MentionTextarea
+            asInput
+            value={title} onChange={setTitle}
+            placeholder="Nom du plat * (@mention #hashtag)"
+            className="w-full rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+          />
+          <MentionTextarea
+            asInput
+            value={restaurant} onChange={setRestaurant}
+            placeholder="Restaurant (optionnel) 📍 (@mention)"
+            className="w-full rounded-2xl bg-muted px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+          />
           <MentionTextarea
             value={recipe} onChange={setRecipe}
             placeholder="Décris ton plat ou ta recette… (@mention #hashtag)"
