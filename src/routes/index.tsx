@@ -6,9 +6,11 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { timeAgo } from "@/lib/dishyo-db";
 import { feedInfiniteOptions } from "@/lib/queries";
 import { PostCard } from "@/components/dishyo/PostCard";
+import { SponsoredAdCard, type SponsoredAd } from "@/components/dishyo/SponsoredAdCard";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/dishyo/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentPosition } from "@/lib/geo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
