@@ -39,6 +39,7 @@ function HomePage() {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
+  const [ads, setAds] = useState<SponsoredAd[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const feed = useInfiniteQuery({
