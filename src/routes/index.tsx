@@ -6,9 +6,11 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { timeAgo } from "@/lib/dishyo-db";
 import { feedInfiniteOptions } from "@/lib/queries";
 import { PostCard } from "@/components/dishyo/PostCard";
+import { SponsoredAdCard, type SponsoredAd } from "@/components/dishyo/SponsoredAdCard";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/dishyo/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentPosition } from "@/lib/geo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,6 +39,7 @@ function HomePage() {
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
+  const [ads, setAds] = useState<SponsoredAd[]>([]);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const feed = useInfiniteQuery({
@@ -80,6 +83,22 @@ function HomePage() {
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${uid}` }, load)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
+  }, [session]);
+
+  // Load location-relevant sponsored ads
+  useEffect(() => {
+    if (!session) { setAds([]); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { lat, lng } = await getCurrentPosition();
+        const { data } = await supabase.rpc("nearby_ads", { _lat: lat, _lng: lng });
+        if (!cancelled) setAds((data ?? []) as SponsoredAd[]);
+      } catch {
+        if (!cancelled) setAds([]);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [session]);
 
   async function openNotifs() {
@@ -147,14 +166,20 @@ function HomePage() {
             </Link>
           </div>
         ) : (
-          posts.map((p) => (
-            <PostCard
-              key={p.id}
-              post={p}
-              currentUserId={session.user.id}
-              onHide={() => qc.invalidateQueries({ queryKey: ["feed"] })}
-            />
-          ))
+          posts.map((p, i) => {
+            const showAdAfter = ads.length > 0 && i > 0 && (i + 1) % 4 === 0;
+            const ad = showAdAfter ? ads[Math.floor(i / 4) % ads.length] : null;
+            return (
+              <div key={p.id}>
+                <PostCard
+                  post={p}
+                  currentUserId={session.user.id}
+                  onHide={() => qc.invalidateQueries({ queryKey: ["feed"] })}
+                />
+                {ad && <SponsoredAdCard key={`ad-${i}-${ad.id}`} ad={ad} />}
+              </div>
+            );
+          })
         )}
         <div ref={sentinelRef} />
         {feed.isFetchingNextPage && (

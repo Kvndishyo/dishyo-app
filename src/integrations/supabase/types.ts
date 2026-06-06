@@ -360,6 +360,60 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsored_ads: {
+        Row: {
+          active: boolean
+          created_at: string
+          cta_label: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          lat: number
+          link_url: string | null
+          lng: number
+          photo_url: string | null
+          radius_km: number
+          restaurant_name: string
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          lat: number
+          link_url?: string | null
+          lng: number
+          photo_url?: string | null
+          radius_km?: number
+          restaurant_name: string
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          lat?: number
+          link_url?: string | null
+          lng?: number
+          photo_url?: string | null
+          radius_km?: number
+          restaurant_name?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_messages: {
         Row: {
           ai_reply: string | null
@@ -431,6 +485,21 @@ export type Database = {
         Returns: boolean
       }
       is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
+      nearby_ads: {
+        Args: { _lat: number; _lng: number }
+        Returns: {
+          cta_label: string
+          description: string
+          distance_km: number
+          id: string
+          lat: number
+          link_url: string
+          lng: number
+          photo_url: string
+          restaurant_name: string
+          title: string
+        }[]
+      }
       nearby_posts: {
         Args: { _lat: number; _lng: number; _radius_km: number }
         Returns: {
