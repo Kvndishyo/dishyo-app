@@ -85,6 +85,22 @@ function HomePage() {
     return () => { supabase.removeChannel(ch); };
   }, [session]);
 
+  // Load location-relevant sponsored ads
+  useEffect(() => {
+    if (!session) { setAds([]); return; }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { lat, lng } = await getCurrentPosition();
+        const { data } = await supabase.rpc("nearby_ads", { _lat: lat, _lng: lng });
+        if (!cancelled) setAds((data ?? []) as SponsoredAd[]);
+      } catch {
+        if (!cancelled) setAds([]);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [session]);
+
   async function openNotifs() {
     setNotifOpen(true);
     if (!session) return;
