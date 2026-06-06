@@ -166,14 +166,20 @@ function HomePage() {
             </Link>
           </div>
         ) : (
-          posts.map((p) => (
-            <PostCard
-              key={p.id}
-              post={p}
-              currentUserId={session.user.id}
-              onHide={() => qc.invalidateQueries({ queryKey: ["feed"] })}
-            />
-          ))
+          posts.map((p, i) => {
+            const showAdAfter = ads.length > 0 && i > 0 && (i + 1) % 4 === 0;
+            const ad = showAdAfter ? ads[Math.floor(i / 4) % ads.length] : null;
+            return (
+              <div key={p.id}>
+                <PostCard
+                  post={p}
+                  currentUserId={session.user.id}
+                  onHide={() => qc.invalidateQueries({ queryKey: ["feed"] })}
+                />
+                {ad && <SponsoredAdCard key={`ad-${i}-${ad.id}`} ad={ad} />}
+              </div>
+            );
+          })
         )}
         <div ref={sentinelRef} />
         {feed.isFetchingNextPage && (
