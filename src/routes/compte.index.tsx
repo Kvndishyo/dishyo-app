@@ -6,6 +6,8 @@ import { useTheme } from "@/hooks/useTheme";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { PushToggle } from "@/components/dishyo/PushToggle";
+
 
 export const Route = createFileRoute("/compte/")({
   head: () => ({ meta: [{ title: "Dishyo — Mon compte" }] }),
@@ -140,7 +142,7 @@ function AccountPage() {
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />
           <Row icon={<BarChart3 className="h-5 w-5 text-primary" />} title="Dashboard" subtitle="Tes statistiques" to="/compte/dashboard" iconBg="bg-primary/10" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
-          <ToggleRow icon={<Bell className="h-5 w-5" />} title="Alertes activées" value={notif} onChange={setNotif} />
+          <PushToggle Row={ToggleRow} />
 
           <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} />
           <Row icon={<Shield className="h-5 w-5" />} title="Confidentialité" to="/compte/confidentialite" />
