@@ -39,20 +39,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       <AnimatePresence>{showSplash && <SplashScreen />}</AnimatePresence>
 
       <motion.main
-        key={location.pathname}
         drag={onTab ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.15}
         onDragEnd={handleSwipe}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
         className="flex-1 pb-24"
       >
         {children}
       </motion.main>
 
-      {onTab && (
+
+      {!/^\/(auth|reset-password)/.test(location.pathname) && (
         <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-[520px] -translate-x-1/2 border-t border-border bg-background/95 backdrop-blur-xl">
           <ul className="grid grid-cols-4 px-2 pb-[env(safe-area-inset-bottom)] pt-2">
             {TABS.map((t) => {
