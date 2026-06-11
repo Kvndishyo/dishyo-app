@@ -30,6 +30,7 @@ import { Route as CompteAmisRouteImport } from './routes/compte.amis'
 import { Route as CompteAideRouteImport } from './routes/compte.aide'
 import { Route as CompteAbonnesRouteImport } from './routes/compte.abonnes'
 import { Route as CompteAbonnementsRouteImport } from './routes/compte.abonnements'
+import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -136,6 +137,11 @@ const CompteAbonnementsRoute = CompteAbonnementsRouteImport.update({
   path: '/abonnements',
   getParentRoute: () => CompteRoute,
 } as any)
+const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
+  id: '/api/public/push-dispatch',
+  path: '/api/public/push-dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte': typeof CompteIndexRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/compte/restaurateur'
     | '/profil/$handle'
     | '/compte/'
+    | '/api/public/push-dispatch'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/compte/restaurateur'
     | '/profil/$handle'
     | '/compte'
+    | '/api/public/push-dispatch'
   id:
     | '__root__'
     | '/'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/compte/restaurateur'
     | '/profil/$handle'
     | '/compte/'
+    | '/api/public/push-dispatch'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -289,6 +301,7 @@ export interface RootRouteChildren {
   RechercheRoute: typeof RechercheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ProfilHandleRoute: typeof ProfilHandleRoute
+  ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -440,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteAbonnementsRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/api/public/push-dispatch': {
+      id: '/api/public/push-dispatch'
+      path: '/api/public/push-dispatch'
+      fullPath: '/api/public/push-dispatch'
+      preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -484,6 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   RechercheRoute: RechercheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ProfilHandleRoute: ProfilHandleRoute,
+  ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

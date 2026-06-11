@@ -63,8 +63,13 @@ export const Route = createFileRoute("/api/public/push-dispatch")({
             };
             try {
               const payload = await buildPushPayload({ data, options: { ttl: 60 } }, subscription, vapid);
-              const res = await fetch(s.endpoint, payload);
+              const res = await fetch(s.endpoint, {
+                method: payload.method,
+                headers: payload.headers,
+                body: new Uint8Array(payload.body).buffer,
+              });
               if (res.status === 201 || res.status === 200) {
+
                 sent++;
               } else if (res.status === 404 || res.status === 410) {
                 stale.push(s.endpoint);
