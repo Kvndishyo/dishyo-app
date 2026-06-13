@@ -56,7 +56,7 @@ export const moderateImage = createServerFn({ method: "POST" })
           messages: [{
             role: "user",
             content: [
-              { type: "text", text: `Tu es un modérateur pour Dishyo, app de partage de plats. Analyse cette image: contient-elle de la nudité, du contenu sexuel, de la violence, du contenu choquant, ou autre chose qu'un plat / une scène culinaire ? Réponds UNIQUEMENT en JSON: {"safe": true|false, "category": "ok|nudity|violence|shock|off_topic", "reason": "court motif en français"}.` },
+              { type: "text", text: `Tu es un modérateur TRÈS permissif pour Dishyo, app food/lifestyle. Bloque UNIQUEMENT si l'image contient clairement: nudité explicite, contenu sexuel, violence graphique/sang, contenu choquant, ou contenu haineux. ACCEPTE absolument tout le reste — plats, ingrédients, boissons, restaurants, tables, mains, emballages, selfies food, photos floues, desserts, snacks, marchés, ustensiles, scènes du quotidien. En cas de doute, autorise toujours. Réponds UNIQUEMENT en JSON: {"safe": true|false, "category": "ok|nudity|violence|shock|hate", "reason": "court motif en français"}.` },
               { type: "image_url", image_url: { url: data.imageBase64 } },
             ],
           }],
@@ -68,7 +68,7 @@ export const moderateImage = createServerFn({ method: "POST" })
       const content = j?.choices?.[0]?.message?.content ?? "{}";
       const parsed = JSON.parse(content);
       return {
-        safe: Boolean(parsed.safe),
+        safe: parsed.safe !== false,
         reason: String(parsed.reason ?? ""),
         category: String(parsed.category ?? "ok"),
       };
