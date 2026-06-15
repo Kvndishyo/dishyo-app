@@ -19,14 +19,30 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptCookies, setAcceptCookies] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && session) navigate({ to: "/" });
   }, [session, loading, navigate]);
 
+  function validatePassword(pw: string): string | null {
+    if (pw.length < 8) return "Le mot de passe doit faire au moins 8 caractères.";
+    if (!/[A-Z]/.test(pw)) return "Ajoute au moins une majuscule.";
+    if (!/[a-z]/.test(pw)) return "Ajoute au moins une minuscule.";
+    if (!/[0-9]/.test(pw)) return "Ajoute au moins un chiffre.";
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (mode === "signup") {
+      if (!acceptTerms) return toast.error("Tu dois accepter les CGU et la politique de confidentialité.");
+      if (!acceptCookies) return toast.error("Tu dois accepter l'utilisation des cookies essentiels.");
+      const pwErr = validatePassword(password);
+      if (pwErr) return toast.error(pwErr);
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -34,10 +50,18 @@ function AuthPage() {
           email, password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { display_name: displayName || email.split("@")[0] },
+            data: {
+              display_name: displayName || email.split("@")[0],
+              accepted_terms_at: new Date().toISOString(),
+              accepted_cookies_at: new Date().toISOString(),
+            },
           },
         });
         if (error) throw error;
+        try {
+          localStorage.setItem("dishyo_cookie_consent", "essential");
+          localStorage.setItem("dishyo_terms_accepted_at", new Date().toISOString());
+        } catch {}
         toast.success("Compte créé ! Bienvenue 🍽️");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
