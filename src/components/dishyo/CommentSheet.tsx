@@ -48,25 +48,31 @@ export function CommentSheet({
 
   useEffect(() => { if (open) load(); /* eslint-disable-next-line */ }, [open, postId]);
 
+  const [sending, setSending] = useState(false);
   async function send() {
     const v = text.trim();
-    if (!v) return;
-    const ok = await checkRateLimit("comment");
-    if (!ok) return toast.error("Trop de commentaires, attends un peu.");
-    const m = await moderateText(v, "commentaire");
-    if (!m.safe) return toast.error(`Commentaire refusé : ${m.reason}`);
-    const payload: any = { post_id: postId, user_id: currentUserId, body: v };
-    if (replyTo) payload.parent_id = replyTo.id;
-    const { data, error } = await supabase
-      .from("comments")
-      .insert(payload)
-      .select("id,body,created_at,user_id,parent_id,profiles!comments_user_id_profiles_fkey(handle,display_name,avatar_url)")
-      .single();
-    if (error) return toast.error(error.message);
-    setComments((c) => [...c, data as unknown as Comment]);
-    setText("");
-    setReplyTo(null);
-    onAdded?.();
+    if (!v || sending) return;
+    setSending(true);
+    try {
+      const ok = await checkRateLimit("comment");
+      if (!ok) return toast.error("Trop de commentaires, attends un peu.");
+      const m = await moderateText(v, "commentaire");
+      if (!m.safe) return toast.error(`Commentaire refusé : ${m.reason}`);
+      const payload: any = { post_id: postId, user_id: currentUserId, body: v };
+      if (replyTo) payload.parent_id = replyTo.id;
+      const { data, error } = await supabase
+        .from("comments")
+        .insert(payload)
+        .select("id,body,created_at,user_id,parent_id,profiles!comments_user_id_profiles_fkey(handle,display_name,avatar_url)")
+        .single();
+      if (error) return toast.error(error.message);
+      setComments((c) => (c.some((x) => x.id === (data as any).id) ? c : [...c, data as unknown as Comment]));
+      setText("");
+      setReplyTo(null);
+      onAdded?.();
+    } finally {
+      setSending(false);
+    }
   }
 
   async function toggleLike(c: Comment) {
