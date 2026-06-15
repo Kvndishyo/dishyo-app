@@ -167,7 +167,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
         </button>
       </div>
 
-      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsDelta((c) => c + 1)} />
+      <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsAdded((c) => c + 1)} />
 
       <ReportDialog open={reportOpen} onClose={() => setReportOpen(false)} targetType="post" targetId={post.id} />
 
