@@ -297,7 +297,6 @@ export type Database = {
           handle: string
           id: string
           restaurateur: boolean
-          restaurateur_plan: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -307,7 +306,6 @@ export type Database = {
           handle: string
           id: string
           restaurateur?: boolean
-          restaurateur_plan?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -317,7 +315,6 @@ export type Database = {
           handle?: string
           id?: string
           restaurateur?: boolean
-          restaurateur_plan?: string | null
         }
         Relationships: []
       }
@@ -557,7 +554,6 @@ export type Database = {
           handle: string
           id: string
           restaurateur: boolean
-          restaurateur_plan: string | null
         }[]
         SetofOptions: {
           from: "*"
