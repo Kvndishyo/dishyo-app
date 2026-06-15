@@ -36,8 +36,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Dishyo — Partage tes plats" },
       { name: "twitter:description", content: "Dishyo : partage tes plats préférés avec tes amis. Les publications disparaissent au bout de 48h." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7c22fd21-3a75-4f56-b262-25278f2e2803/id-preview-c5c22c99--c33a9cbe-39e8-4d13-a7fa-307ca249c9af.lovable.app-1777466759928.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7c22fd21-3a75-4f56-b262-25278f2e2803/id-preview-c5c22c99--c33a9cbe-39e8-4d13-a7fa-307ca249c9af.lovable.app-1777466759928.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/UkRhRvJBOTQhsxn3fvoRil0NTev1/social-images/social-1781554861195-Page_de_chargement_V1.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/UkRhRvJBOTQhsxn3fvoRil0NTev1/social-images/social-1781554861195-Page_de_chargement_V1.webp" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
