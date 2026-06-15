@@ -7,7 +7,7 @@ export type DbProfile = {
   avatar_url: string | null;
   bio: string | null;
   restaurateur: boolean;
-  restaurateur_plan: string | null;
+  
 };
 
 export type DbPost = {
