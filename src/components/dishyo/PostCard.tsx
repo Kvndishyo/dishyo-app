@@ -19,21 +19,31 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [burst, setBurst] = useState(0);
-  const myInitial = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
-  const [liked, setLiked] = useState<string | null>(myInitial);
-  const [delta, setDelta] = useState(0);
-  const [commentsDelta, setCommentsDelta] = useState(0);
+  const serverMyLike = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
+  const [liked, setLiked] = useState<string | null>(serverMyLike);
+  const [commentsAdded, setCommentsAdded] = useState(0);
+  const seenCommentsCountRef = useRef(post.comments?.[0]?.count ?? 0);
   const lastTapRef = useRef(0);
 
-  const totalLikes = post.likes.length + delta;
+  // Derive total without double-counting: adjust by diff between optimistic local state and the latest server snapshot.
+  const serverHasMine = !!serverMyLike;
+  const localHasMine = !!liked;
+  const likeAdjustment = (localHasMine ? 1 : 0) - (serverHasMine ? 1 : 0);
+  const totalLikes = post.likes.length + likeAdjustment;
   const author = post.profiles;
-  const commentsCount = (post.comments?.[0]?.count ?? 0) + commentsDelta;
+  // When the server count catches up with locally-added comments, drop the optimistic offset.
+  const serverCommentsCount = post.comments?.[0]?.count ?? 0;
+  if (serverCommentsCount > seenCommentsCountRef.current && commentsAdded > 0) {
+    const advanced = serverCommentsCount - seenCommentsCountRef.current;
+    seenCommentsCountRef.current = serverCommentsCount;
+    queueMicrotask(() => setCommentsAdded((c) => Math.max(0, c - advanced)));
+  }
+  const commentsCount = serverCommentsCount + commentsAdded;
 
   async function setReaction(emoji: string | null) {
     const wasLiked = !!liked;
     setLiked(emoji);
-    if (!wasLiked && emoji) { setDelta((d) => d + 1); setBurst((b) => b + 1); }
-    if (wasLiked && !emoji) setDelta((d) => d - 1);
+    if (!wasLiked && emoji) setBurst((b) => b + 1);
 
     if (!emoji) {
       const { error } = await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", currentUserId);
