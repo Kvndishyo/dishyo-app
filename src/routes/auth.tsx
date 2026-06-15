@@ -124,12 +124,29 @@ function AuthPage() {
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
           />
           <input
-            type="password" placeholder="Mot de passe" required minLength={6}
+            type="password" placeholder="Mot de passe" required minLength={mode === "signup" ? 8 : 6}
             value={password} onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
           />
+          {mode === "signup" && (
+            <>
+              <p className="px-1 text-[11px] text-muted-foreground">8 caractères min., avec majuscule, minuscule et chiffre.</p>
+              <label className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
+                <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
+                <span>
+                  J'accepte les{" "}
+                  <Link to="/cgu" className="text-primary underline">CGU</Link>{" "}et la{" "}
+                  <Link to="/confidentialite" className="text-primary underline">politique de confidentialité</Link>.
+                </span>
+              </label>
+              <label className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
+                <input type="checkbox" checked={acceptCookies} onChange={(e) => setAcceptCookies(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
+                <span>J'accepte l'utilisation des cookies essentiels nécessaires au fonctionnement de Dishyo.</span>
+              </label>
+            </>
+          )}
           <button
-            type="submit" disabled={busy}
+            type="submit" disabled={busy || (mode === "signup" && (!acceptTerms || !acceptCookies))}
             className="w-full rounded-2xl bg-primary py-3 font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
           >{busy ? "..." : mode === "login" ? "Se connecter" : "Créer mon compte"}</button>
         </form>
