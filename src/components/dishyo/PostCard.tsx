@@ -134,37 +134,58 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
 
       <div className="mt-3 flex items-center gap-2">
         <div className="relative">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.88 }}
+            whileHover={{ scale: 1.04 }}
             onClick={() => liked ? setReaction(null) : setReactionsOpen((v) => !v)}
             onContextMenu={(e) => { e.preventDefault(); setReactionsOpen(true); }}
             className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
           >
-            <motion.span animate={{ scale: liked ? [1, 1.4, 1] : 1 }} transition={{ duration: 0.4 }}>
-              <Heart className={`h-5 w-5 ${liked ? "fill-primary text-primary" : ""}`} />
+            <motion.span
+              key={liked ?? "none"}
+              initial={{ scale: 0.6, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 600, damping: 14 }}
+            >
+              <Heart className={`h-5 w-5 transition-colors ${liked ? "fill-primary text-primary" : ""}`} />
             </motion.span>
-            {liked ? <span>{liked}</span> : null}
-            <span className="font-medium">{totalLikes}</span>
-          </button>
+            {liked ? (
+              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 12 }}>{liked}</motion.span>
+            ) : null}
+            <motion.span key={totalLikes} initial={{ y: -6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="font-medium">{totalLikes}</motion.span>
+          </motion.button>
           <AnimatePresence>
             {reactionsOpen && (
               <motion.div
-                initial={{ opacity: 0, y: 6, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 6, scale: 0.9 }}
+                initial={{ opacity: 0, y: 10, scale: 0.85 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.85 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
                 className="absolute bottom-full left-0 mb-2 flex max-w-[min(90vw,360px)] gap-1 overflow-x-auto rounded-2xl bg-card p-2 shadow-card"
                 onClick={(e) => e.stopPropagation()}
               >
-                {REACTIONS.map((r) => (
-                  <button key={r} onClick={() => { setReaction(r); setReactionsOpen(false); }} className="flex-shrink-0 rounded-full px-2 text-2xl transition hover:scale-125">
+                {REACTIONS.map((r, i) => (
+                  <motion.button
+                    key={r}
+                    initial={{ scale: 0, y: 6 }}
+                    animate={{ scale: 1, y: 0 }}
+                    transition={{ delay: i * 0.025, type: "spring", stiffness: 500, damping: 14 }}
+                    whileHover={{ scale: 1.4, y: -4 }}
+                    whileTap={{ scale: 0.85 }}
+                    onClick={() => { setReaction(r); setReactionsOpen(false); }}
+                    className="flex-shrink-0 rounded-full px-2 text-2xl"
+                  >
                     {r}
-                  </button>
+                  </motion.button>
                 ))}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        <button onClick={() => setCommentsOpen(true)} className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent">
+        <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.04 }} onClick={() => setCommentsOpen(true)} className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent">
           <MessageCircle className="h-5 w-5" />
           <span className="font-medium">{commentsCount}</span>
-        </button>
+        </motion.button>
       </div>
 
       <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsAdded((c) => c + 1)} />
