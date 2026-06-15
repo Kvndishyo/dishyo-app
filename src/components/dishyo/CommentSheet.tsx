@@ -48,25 +48,31 @@ export function CommentSheet({
 
   useEffect(() => { if (open) load(); /* eslint-disable-next-line */ }, [open, postId]);
 
+  const [sending, setSending] = useState(false);
   async function send() {
     const v = text.trim();
-    if (!v) return;
-    const ok = await checkRateLimit("comment");
-    if (!ok) return toast.error("Trop de commentaires, attends un peu.");
-    const m = await moderateText(v, "commentaire");
-    if (!m.safe) return toast.error(`Commentaire refusé : ${m.reason}`);
-    const payload: any = { post_id: postId, user_id: currentUserId, body: v };
-    if (replyTo) payload.parent_id = replyTo.id;
-    const { data, error } = await supabase
-      .from("comments")
-      .insert(payload)
-      .select("id,body,created_at,user_id,parent_id,profiles!comments_user_id_profiles_fkey(handle,display_name,avatar_url)")
-      .single();
-    if (error) return toast.error(error.message);
-    setComments((c) => [...c, data as unknown as Comment]);
-    setText("");
-    setReplyTo(null);
-    onAdded?.();
+    if (!v || sending) return;
+    setSending(true);
+    try {
+      const ok = await checkRateLimit("comment");
+      if (!ok) return toast.error("Trop de commentaires, attends un peu.");
+      const m = await moderateText(v, "commentaire");
+      if (!m.safe) return toast.error(`Commentaire refusé : ${m.reason}`);
+      const payload: any = { post_id: postId, user_id: currentUserId, body: v };
+      if (replyTo) payload.parent_id = replyTo.id;
+      const { data, error } = await supabase
+        .from("comments")
+        .insert(payload)
+        .select("id,body,created_at,user_id,parent_id,profiles!comments_user_id_profiles_fkey(handle,display_name,avatar_url)")
+        .single();
+      if (error) return toast.error(error.message);
+      setComments((c) => (c.some((x) => x.id === (data as any).id) ? c : [...c, data as unknown as Comment]));
+      setText("");
+      setReplyTo(null);
+      onAdded?.();
+    } finally {
+      setSending(false);
+    }
   }
 
   async function toggleLike(c: Comment) {
@@ -173,9 +179,9 @@ export function CommentSheet({
                   className="w-full rounded-full bg-muted px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
                 />
               </div>
-              <button onClick={send} disabled={!text.trim()} className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow transition disabled:opacity-40">
-                <Send className="h-4 w-4" />
-              </button>
+              <motion.button onClick={send} disabled={!text.trim() || sending} whileTap={{ scale: 0.85 }} whileHover={{ scale: 1.05 }} className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow transition disabled:opacity-40">
+                <Send className={`h-4 w-4 ${sending ? "animate-pulse" : ""}`} />
+              </motion.button>
             </div>
           </motion.div>
           {reportId && (

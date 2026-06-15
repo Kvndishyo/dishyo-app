@@ -2,6 +2,7 @@ import { Outlet, createRootRouteWithContext, HeadContent, Scripts, Link } from "
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import appCss from "../styles.css?url";
 import { AppShell } from "@/components/dishyo/AppShell";
+import { CookieConsent } from "@/components/dishyo/CookieConsent";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { Toaster } from "sonner";
@@ -64,6 +65,7 @@ function RootComponent() {
           <AppShell>
             <Outlet />
           </AppShell>
+          <CookieConsent />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </ThemeProvider>
