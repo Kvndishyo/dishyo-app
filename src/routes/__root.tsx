@@ -65,6 +65,7 @@ function RootComponent() {
           <AppShell>
             <Outlet />
           </AppShell>
+          <CookieConsent />
           <Toaster position="top-center" richColors />
         </AuthProvider>
       </ThemeProvider>
