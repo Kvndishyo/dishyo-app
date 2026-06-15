@@ -223,25 +223,33 @@ function HomePage() {
                       const handle = n.actor?.handle ?? "";
                       const name = n.actor?.display_name ?? "Quelqu'un";
                       const avatar = n.actor?.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${handle || "user"}`;
+                      const goTo = () => {
+                        setNotifOpen(false);
+                        if (n.type === "follow" && handle) {
+                          navigate({ to: "/profil/$handle", params: { handle } });
+                        } else if ((n.type === "like" || n.type === "comment")) {
+                          navigate({ to: "/compte/mes-plats" });
+                        } else if (handle) {
+                          navigate({ to: "/profil/$handle", params: { handle } });
+                        }
+                      };
                       return (
-                        <li key={n.id} className="flex items-center gap-3 px-4 py-3">
-                          {handle ? (
-                            <Link to="/profil/$handle" params={{ handle }} onClick={() => setNotifOpen(false)} className="relative flex-shrink-0">
-                              <img src={avatar} alt="" className="h-11 w-11 rounded-full object-cover" />
-                              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background shadow-soft">{icon}</span>
-                            </Link>
-                          ) : (
-                            <div className="relative flex-shrink-0">
-                              <img src={avatar} alt="" className="h-11 w-11 rounded-full object-cover" />
-                              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background shadow-soft">{icon}</span>
-                            </div>
-                          )}
+                        <motion.li
+                          key={n.id}
+                          whileTap={{ scale: 0.98, backgroundColor: "hsl(var(--muted))" }}
+                          onClick={goTo}
+                          className="flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-muted"
+                        >
+                          <div className="relative flex-shrink-0">
+                            <img src={avatar} alt="" className="h-11 w-11 rounded-full object-cover" />
+                            <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background shadow-soft">{icon}</span>
+                          </div>
                           <div className="min-w-0 flex-1 text-sm">
                             <span className="font-semibold">{name}</span>{" "}
                             <span className="text-muted-foreground">{text}</span>
                             <div className="text-xs text-muted-foreground">{timeAgo(n.created_at)}</div>
                           </div>
-                        </li>
+                        </motion.li>
                       );
                     })}
                   </ul>
