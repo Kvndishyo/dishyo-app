@@ -51,8 +51,15 @@ function AdminPage() {
   }
 
   useEffect(() => {
-    if (isAdmin) load();
-  }, [isAdmin, filter]);
+    if (isSupport) load();
+  }, [isSupport, filter]);
+
+  useEffect(() => {
+    if (rolesLoading) return;
+    if (tab === "support" && !isSupport) setTab(isModerator ? "moderation" : isAdmin ? "users" : tab);
+    if (tab === "moderation" && !isModerator) setTab(isSupport ? "support" : isAdmin ? "users" : tab);
+    if (tab === "users" && !isAdmin) setTab(isSupport ? "support" : isModerator ? "moderation" : tab);
+  }, [rolesLoading, isSupport, isModerator, isAdmin, tab]);
 
   async function generateAI(msg: SupportMessage) {
     setGenerating(true);
