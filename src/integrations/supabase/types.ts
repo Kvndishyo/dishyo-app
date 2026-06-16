@@ -500,6 +500,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_search_users: {
+        Args: { q: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          email: string
+          handle: string
+          roles: string[]
+          user_id: string
+        }[]
+      }
+      admin_set_role: {
+        Args: {
+          should_grant: boolean
+          target_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       check_rate_limit: {
         Args: { _action: string; _max: number; _window_seconds: number }
         Returns: boolean
@@ -565,7 +584,7 @@ export type Database = {
       update_my_handle: { Args: { new_handle: string }; Returns: string }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "moderator" | "support"
       post_visibility: "public" | "friends"
       report_status: "open" | "reviewed" | "dismissed" | "actioned"
       report_target: "post" | "comment" | "profile"
@@ -696,7 +715,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "moderator", "support"],
       post_visibility: ["public", "friends"],
       report_status: ["open", "reviewed", "dismissed", "actioned"],
       report_target: ["post", "comment", "profile"],
