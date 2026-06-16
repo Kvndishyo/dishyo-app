@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Sparkles, Send, RefreshCw, CheckCircle2, Mail, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useStaffRoles } from "@/hooks/useIsAdmin";
 import { toast } from "sonner";
 import { ModerationPanel } from "@/components/dishyo/ModerationPanel";
+import { UserPermissionsPanel } from "@/components/dishyo/UserPermissionsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Dishyo — Dashboard admin" }] }),
@@ -23,17 +24,19 @@ type SupportMessage = {
   created_at: string;
 };
 
+type Tab = "support" | "moderation" | "users";
+
 function AdminPage() {
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
-  const { isAdmin, loading: adminLoading } = useIsAdmin();
+  const { isAdmin, isModerator, isSupport, isStaff, loading: rolesLoading } = useStaffRoles();
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [selected, setSelected] = useState<SupportMessage | null>(null);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [filter, setFilter] = useState<"open" | "answered" | "all">("open");
-  const [tab, setTab] = useState<"support" | "moderation">("support");
+  const [tab, setTab] = useState<Tab>("support");
 
   useEffect(() => {
     if (!authLoading && !session) navigate({ to: "/auth" });
