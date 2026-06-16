@@ -93,19 +93,25 @@ function AdminPage() {
     load();
   }
 
-  if (authLoading || adminLoading) {
+  if (authLoading || rolesLoading) {
     return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Chargement…</div>;
   }
 
-  if (!isAdmin) {
+  if (!isStaff) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <h1 className="text-2xl font-bold">Accès refusé</h1>
-        <p className="text-muted-foreground">Cette page est réservée aux administrateurs Dishyo.</p>
+        <p className="text-muted-foreground">Cette page est réservée à l'équipe Dishyo.</p>
         <Link to="/" className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">Retour</Link>
       </div>
     );
   }
+
+  const tabs: { key: Tab; label: string; visible: boolean }[] = [
+    { key: "support", label: "Support", visible: isSupport },
+    { key: "moderation", label: "Modération", visible: isModerator },
+    { key: "users", label: "Permissions", visible: isAdmin },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,28 +121,33 @@ function AdminPage() {
         </Link>
         <div className="flex-1">
           <h1 className="text-lg font-bold">Dashboard admin</h1>
-          <p className="text-xs text-muted-foreground">Messages support · {messages.length}</p>
+          <p className="text-xs text-muted-foreground">
+            {[isAdmin && "admin", !isAdmin && isModerator && "modérateur", !isAdmin && isSupport && "support"].filter(Boolean).join(" · ") || "équipe"}
+          </p>
         </div>
-        <button onClick={load} className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-muted">
-          <RefreshCw className="h-4 w-4" />
-        </button>
+        {tab === "support" && isSupport && (
+          <button onClick={load} className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-muted">
+            <RefreshCw className="h-4 w-4" />
+          </button>
+        )}
       </header>
 
       <div className="flex gap-2 px-4 py-3">
-        {(["support", "moderation"] as const).map((t) => (
+        {tabs.filter((t) => t.visible).map((t) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={t.key}
+            onClick={() => setTab(t.key)}
             className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-              tab === t ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+              tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
             }`}
           >
-            {t === "support" ? "Support" : "Modération"}
+            {t.label}
           </button>
         ))}
       </div>
 
-      {tab === "moderation" && <ModerationPanel />}
+      {tab === "moderation" && isModerator && <ModerationPanel />}
+      {tab === "users" && isAdmin && session && <UserPermissionsPanel currentUserId={session.user.id} />}
 
       {tab === "support" && <div className="flex gap-2 px-4 pb-3">
         {(["open", "answered", "all"] as const).map((f) => (
