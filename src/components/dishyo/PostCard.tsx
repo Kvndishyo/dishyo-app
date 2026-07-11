@@ -161,19 +161,20 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.85 }}
                 transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                className="absolute bottom-full left-0 mb-2 flex max-w-[min(90vw,360px)] gap-1 overflow-x-auto rounded-2xl bg-card p-2 shadow-card"
+                className="absolute bottom-full left-0 z-30 mb-2 grid w-[280px] max-w-[90vw] grid-cols-6 gap-1 rounded-2xl bg-card p-2 shadow-card"
                 onClick={(e) => e.stopPropagation()}
               >
                 {REACTIONS.map((r, i) => (
                   <motion.button
                     key={r}
-                    initial={{ scale: 0, y: 6 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ delay: i * 0.025, type: "spring", stiffness: 500, damping: 14 }}
-                    whileHover={{ scale: 1.4, y: -4 }}
+                    type="button"
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: i * 0.012, type: "spring", stiffness: 700, damping: 18 }}
+                    whileHover={{ scale: 1.15 }}
                     whileTap={{ scale: 0.85 }}
                     onClick={() => { setReaction(r); setReactionsOpen(false); }}
-                    className="flex-shrink-0 rounded-full px-2 text-2xl"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl text-2xl leading-none hover:bg-muted"
                   >
                     {r}
                   </motion.button>
