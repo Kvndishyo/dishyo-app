@@ -155,7 +155,7 @@ function PublishPage() {
       localStorage.removeItem(DRAFT_KEY);
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["my-posts"] });
-      toast.success("Plat publié ! Disparait dans 48h ✨");
+      toast.success(`Plat publié ! Disparaît dans ${duration}h ✨`);
       navigate({ to: "/" });
     } catch (e: any) {
       toast.error(e.message ?? "Erreur publication");
