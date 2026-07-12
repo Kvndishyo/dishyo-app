@@ -217,6 +217,23 @@ function PublishPage() {
         </div>
 
         <div>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Durée de visibilité</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {([24, 48, 72] as const).map((h) => (
+              <button
+                key={h}
+                type="button"
+                onClick={() => setDuration(h)}
+                className={`rounded-2xl py-3 text-sm font-semibold transition ${duration === h ? "bg-primary text-primary-foreground shadow-glow" : "bg-muted text-foreground hover:bg-accent"}`}
+              >
+                {h}h
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">Ton plat disparaîtra automatiquement après ce délai.</p>
+        </div>
+
+        <div>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Catégorie</h3>
           <input
             type="text"
