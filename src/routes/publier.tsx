@@ -36,6 +36,7 @@ function PublishPage() {
   const [restaurant, setRestaurant] = useState("");
   const [recipe, setRecipe] = useState("");
   const [busy, setBusy] = useState(false);
+  const [duration, setDuration] = useState<24 | 48 | 72>(48);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [geo, setGeo] = useState<{ lat: number; lng: number; place_name: string | null } | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
