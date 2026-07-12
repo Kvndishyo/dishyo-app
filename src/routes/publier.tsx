@@ -148,6 +148,7 @@ function PublishPage() {
         title: title.trim(),
         restaurant: restaurant.trim() || null,
         category, recipe: recipe.trim() || null, visibility,
+        expires_at: new Date(Date.now() + duration * 3600 * 1000).toISOString(),
         lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
       } as any);
       if (error) throw error;
