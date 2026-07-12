@@ -36,6 +36,7 @@ function PublishPage() {
   const [restaurant, setRestaurant] = useState("");
   const [recipe, setRecipe] = useState("");
   const [busy, setBusy] = useState(false);
+  const [duration, setDuration] = useState<24 | 48 | 72>(48);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [geo, setGeo] = useState<{ lat: number; lng: number; place_name: string | null } | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
@@ -147,13 +148,14 @@ function PublishPage() {
         title: title.trim(),
         restaurant: restaurant.trim() || null,
         category, recipe: recipe.trim() || null, visibility,
+        expires_at: new Date(Date.now() + duration * 3600 * 1000).toISOString(),
         lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
       } as any);
       if (error) throw error;
       localStorage.removeItem(DRAFT_KEY);
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["my-posts"] });
-      toast.success("Plat publié ! Disparait dans 48h ✨");
+      toast.success(`Plat publié ! Disparaît dans ${duration}h ✨`);
       navigate({ to: "/" });
     } catch (e: any) {
       toast.error(e.message ?? "Erreur publication");
@@ -212,6 +214,23 @@ function PublishPage() {
         <div className="grid grid-cols-2 gap-2">
           <VisBtn active={visibility === "friends"} onClick={() => setVisibility("friends")} icon={<Users className="h-4 w-4" />} label="Amis" />
           <VisBtn active={visibility === "public"} onClick={() => setVisibility("public")} icon={<Globe className="h-4 w-4" />} label="Amis + Followers" />
+        </div>
+
+        <div>
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Durée de visibilité</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {([24, 48, 72] as const).map((h) => (
+              <button
+                key={h}
+                type="button"
+                onClick={() => setDuration(h)}
+                className={`rounded-2xl py-3 text-sm font-semibold transition ${duration === h ? "bg-primary text-primary-foreground shadow-glow" : "bg-muted text-foreground hover:bg-accent"}`}
+              >
+                {h}h
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">Ton plat disparaîtra automatiquement après ce délai.</p>
         </div>
 
         <div>
