@@ -3,6 +3,7 @@ import { Home, Search, PlusCircle, User } from "lucide-react";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
 import { SplashScreen } from "./SplashScreen";
+import { Onboarding } from "./Onboarding";
 
 const TABS = [
   { to: "/", label: "Accueil", icon: Home },
@@ -37,6 +38,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-[520px] flex-col bg-background">
       <AnimatePresence>{showSplash && <SplashScreen />}</AnimatePresence>
+      {!showSplash && <Onboarding />}
 
       <motion.main
         drag={onTab ? "x" : false}
