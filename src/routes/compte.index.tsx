@@ -156,6 +156,7 @@ function AccountPage() {
         <div className="mt-6 space-y-1">
           <Row icon={<FileText className="h-5 w-5" />} title="Conditions d'utilisation" to="/cgu" />
           <Row icon={<Lock className="h-5 w-5" />} title="Politique de confidentialité" to="/confidentialite" />
+          <Row icon={<FileText className="h-5 w-5" />} title="Mentions légales" to="/mentions-legales" />
         </div>
 
         <div className="mt-8 space-y-2">

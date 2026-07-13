@@ -10,7 +10,7 @@ function CGU() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/85 px-3 py-3 backdrop-blur-xl">
-        <Link to="/compte/aide" className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-muted">
+        <Link to="/compte" className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-lg font-semibold">Conditions Générales d'Utilisation</h1>
