@@ -56,7 +56,7 @@ export const moderateImage = createServerFn({ method: "POST" })
           messages: [{
             role: "user",
             content: [
-              { type: "text", text: `Tu es un modérateur TRÈS permissif pour Dishyo, app food/lifestyle. Bloque UNIQUEMENT si l'image contient clairement: nudité explicite, contenu sexuel, violence graphique/sang, contenu choquant, ou contenu haineux. ACCEPTE absolument tout le reste — plats, ingrédients, boissons, restaurants, tables, mains, emballages, selfies food, photos floues, desserts, snacks, marchés, ustensiles, scènes du quotidien. En cas de doute, autorise toujours. Réponds UNIQUEMENT en JSON: {"safe": true|false, "category": "ok|nudity|violence|shock|hate", "reason": "court motif en français"}.` },
+              { type: "text", text: `Tu es un modérateur pour Dishyo, application de partage de plats. Bloque l'image si elle contient : nudité ou sous-vêtements suggestifs, contenu sexuel ou fétichiste, violence, sang/gore, cadavres ou souffrance animale, drogues illicites, armes menaçantes, symboles haineux/nazis, contenu choquant ou pédopornographique, publicité/spam manifestement hors-sujet (capture d'écran de site marchand, texte plein écran commercial). ACCEPTE largement tout le reste : plats, ingrédients, boissons alcoolisées adultes, tables, restaurants, mains, emballages, selfies avec de la nourriture, marchés, ustensiles, animaux de compagnie, scènes du quotidien. En cas de doute raisonnable, autorise. Réponds UNIQUEMENT en JSON: {"safe": true|false, "category": "ok|nudity|sexual|violence|gore|drugs|weapons|hate|shock|spam", "reason": "court motif en français"}.` },
               { type: "image_url", image_url: { url: data.imageBase64 } },
             ],
           }],
