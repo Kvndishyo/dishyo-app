@@ -149,6 +149,18 @@ function HomePage() {
         </button>
       </header>
 
+      <div className="sticky top-[65px] z-20 flex gap-2 border-b border-border bg-background/85 px-4 py-2 backdrop-blur-xl">
+        {(["friends", "public"] as const).map((s) => (
+          <button
+            key={s}
+            onClick={() => setScope(s)}
+            className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${scope === s ? "bg-primary text-primary-foreground shadow-glow" : "bg-muted text-foreground hover:bg-accent"}`}
+          >
+            {s === "friends" ? "👥 Amis" : "🌍 Public"}
+          </button>
+        ))}
+      </div>
+
       <div className="pt-4">
         {loading ? (
           <div className="space-y-6 px-4">
