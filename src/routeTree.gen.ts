@@ -22,6 +22,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CompteIndexRouteImport } from './routes/compte.index'
 import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
+import { Route as PlatIdRouteImport } from './routes/plat.$id'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
 import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
@@ -98,6 +99,11 @@ const ProfilHandleRoute = ProfilHandleRouteImport.update({
   path: '/profil/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlatIdRoute = PlatIdRouteImport.update({
+  id: '/plat/$id',
+  path: '/plat/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
   id: '/restaurateur',
   path: '/restaurateur',
@@ -170,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte': typeof CompteIndexRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
+    | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
     | '/api/public/push-dispatch'
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
+    | '/plat/$id'
     | '/profil/$handle'
     | '/compte'
     | '/api/public/push-dispatch'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
+    | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
     | '/api/public/push-dispatch'
@@ -313,6 +325,7 @@ export interface RootRouteChildren {
   PublierRoute: typeof PublierRoute
   RechercheRoute: typeof RechercheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  PlatIdRoute: typeof PlatIdRoute
   ProfilHandleRoute: typeof ProfilHandleRoute
   ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
 }
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       path: '/profil/$handle'
       fullPath: '/profil/$handle'
       preLoaderRoute: typeof ProfilHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plat/$id': {
+      id: '/plat/$id'
+      path: '/plat/$id'
+      fullPath: '/plat/$id'
+      preLoaderRoute: typeof PlatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compte/restaurateur': {
@@ -524,6 +544,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublierRoute: PublierRoute,
   RechercheRoute: RechercheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  PlatIdRoute: PlatIdRoute,
   ProfilHandleRoute: ProfilHandleRoute,
   ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
 }
