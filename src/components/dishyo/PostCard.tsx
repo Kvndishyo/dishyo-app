@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -186,6 +186,22 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
         <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.04 }} onClick={() => setCommentsOpen(true)} className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent">
           <MessageCircle className="h-5 w-5" />
           <span className="font-medium">{commentsCount}</span>
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.04 }}
+          onClick={async () => {
+            const url = `${window.location.origin}/plat/${post.id}`;
+            const shareData = { title: post.title, text: `${post.title} sur Dishyo`, url };
+            try {
+              if (navigator.share) await navigator.share(shareData);
+              else { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+            } catch {}
+          }}
+          className="ml-auto flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
+          aria-label="Partager"
+        >
+          <Share2 className="h-5 w-5" />
         </motion.button>
       </div>
 

@@ -40,10 +40,18 @@ function HomePage() {
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
   const [ads, setAds] = useState<SponsoredAd[]>([]);
+  const [scope, setScope] = useState<"friends" | "public">(() => {
+    if (typeof window === "undefined") return "friends";
+    return (localStorage.getItem("dishyo:feed-scope") as "friends" | "public") ?? "friends";
+  });
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    try { localStorage.setItem("dishyo:feed-scope", scope); } catch {}
+  }, [scope]);
+
   const feed = useInfiniteQuery({
-    ...feedInfiniteOptions(),
+    ...feedInfiniteOptions(scope, session?.user.id),
     enabled: !!session,
   });
   const posts = feed.data?.pages.flat() ?? [];
@@ -140,6 +148,18 @@ function HomePage() {
           )}
         </button>
       </header>
+
+      <div className="sticky top-[65px] z-20 flex gap-2 border-b border-border bg-background/85 px-4 py-2 backdrop-blur-xl">
+        {(["friends", "public"] as const).map((s) => (
+          <button
+            key={s}
+            onClick={() => setScope(s)}
+            className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${scope === s ? "bg-primary text-primary-foreground shadow-glow" : "bg-muted text-foreground hover:bg-accent"}`}
+          >
+            {s === "friends" ? "👥 Amis" : "🌍 Public"}
+          </button>
+        ))}
+      </div>
 
       <div className="pt-4">
         {loading ? (

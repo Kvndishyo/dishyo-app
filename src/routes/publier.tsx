@@ -212,8 +212,8 @@ function PublishPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <VisBtn active={visibility === "friends"} onClick={() => setVisibility("friends")} icon={<Users className="h-4 w-4" />} label="Amis" />
-          <VisBtn active={visibility === "public"} onClick={() => setVisibility("public")} icon={<Globe className="h-4 w-4" />} label="Amis + Followers" />
+          <VisBtn active={visibility === "friends"} onClick={() => setVisibility("friends")} icon={<Users className="h-4 w-4" />} label="Amis (mutuels)" />
+          <VisBtn active={visibility === "public"} onClick={() => setVisibility("public")} icon={<Globe className="h-4 w-4" />} label="Tout le monde" />
         </div>
 
         <div>
