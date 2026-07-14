@@ -187,6 +187,22 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
           <MessageCircle className="h-5 w-5" />
           <span className="font-medium">{commentsCount}</span>
         </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.04 }}
+          onClick={async () => {
+            const url = `${window.location.origin}/plat/${post.id}`;
+            const shareData = { title: post.title, text: `${post.title} sur Dishyo`, url };
+            try {
+              if (navigator.share) await navigator.share(shareData);
+              else { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+            } catch {}
+          }}
+          className="ml-auto flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
+          aria-label="Partager"
+        >
+          <Share2 className="h-5 w-5" />
+        </motion.button>
       </div>
 
       <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsAdded((c) => c + 1)} />
