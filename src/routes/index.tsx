@@ -40,10 +40,18 @@ function HomePage() {
   const [notifs, setNotifs] = useState<Notif[]>([]);
   const [unread, setUnread] = useState(0);
   const [ads, setAds] = useState<SponsoredAd[]>([]);
+  const [scope, setScope] = useState<"friends" | "public">(() => {
+    if (typeof window === "undefined") return "friends";
+    return (localStorage.getItem("dishyo:feed-scope") as "friends" | "public") ?? "friends";
+  });
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    try { localStorage.setItem("dishyo:feed-scope", scope); } catch {}
+  }, [scope]);
+
   const feed = useInfiniteQuery({
-    ...feedInfiniteOptions(),
+    ...feedInfiniteOptions(scope, session?.user.id),
     enabled: !!session,
   });
   const posts = feed.data?.pages.flat() ?? [];
