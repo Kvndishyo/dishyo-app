@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
