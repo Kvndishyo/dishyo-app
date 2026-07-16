@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "dishyo-mcp",
+      "version": "0.1.0",
+      "title": "Dishyo MCP"
+    },
+    "tools": [
+      {
+        "name": "search_public_dishes",
+        "title": "Rechercher des plats publics",
+        "description": "Liste les plats publics récents (non expirés) partagés sur Dishyo. Retourne id, titre, restaurant, catégorie, photo, auteur (handle) et date d'expiration.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Filtre optionnel sur le titre ou le restaurant.",
+              "type": "string"
+            },
+            "category": {
+              "description": "Filtre optionnel par catégorie (ex: Pizza, Dessert).",
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "description": "Nombre max de résultats (1-50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_public_dish",
+        "title": "Détails d'un plat public",
+        "description": "Récupère un plat public Dishyo par son id : titre, restaurant, catégorie, recette, photo, auteur et date d'expiration.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "Identifiant UUID du plat."
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_profiles",
+        "title": "Rechercher des profils Dishyo",
+        "description": "Recherche des profils publics Dishyo par handle ou nom d'affichage. Retourne handle, nom, bio et avatar.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Terme de recherche (handle ou nom)."
+            },
+            "limit": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
