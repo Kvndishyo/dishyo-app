@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as PublierRouteImport } from './routes/publier'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as CompteRouteImport } from './routes/compte'
 import { Route as CguRouteImport } from './routes/cgu'
@@ -32,7 +33,10 @@ import { Route as CompteAmisRouteImport } from './routes/compte.amis'
 import { Route as CompteAideRouteImport } from './routes/compte.aide'
 import { Route as CompteAbonnesRouteImport } from './routes/compte.abonnes'
 import { Route as CompteAbonnementsRouteImport } from './routes/compte.abonnements'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -52,6 +56,11 @@ const PublierRoute = PublierRouteImport.update({
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
   id: '/mentions-legales',
   path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
@@ -149,11 +158,29 @@ const CompteAbonnementsRoute = CompteAbonnementsRouteImport.update({
   path: '/abonnements',
   getParentRoute: () => CompteRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
   id: '/api/public/push-dispatch',
   path: '/api/public/push-dispatch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -163,10 +190,13 @@ export interface FileRoutesByFullPath {
   '/cgu': typeof CguRoute
   '/compte': typeof CompteRouteWithChildren
   '/confidentialite': typeof ConfidentialiteRoute
+  '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte/abonnements': typeof CompteAbonnementsRoute
   '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
@@ -179,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRoutesByTo {
@@ -188,10 +219,13 @@ export interface FileRoutesByTo {
   '/carte': typeof CarteRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte/abonnements': typeof CompteAbonnementsRoute
   '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
@@ -204,6 +238,7 @@ export interface FileRoutesByTo {
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte': typeof CompteIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRoutesById {
@@ -215,10 +250,13 @@ export interface FileRoutesById {
   '/cgu': typeof CguRoute
   '/compte': typeof CompteRouteWithChildren
   '/confidentialite': typeof ConfidentialiteRoute
+  '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte/abonnements': typeof CompteAbonnementsRoute
   '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
@@ -231,6 +269,7 @@ export interface FileRoutesById {
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRouteTypes {
@@ -243,10 +282,13 @@ export interface FileRouteTypes {
     | '/cgu'
     | '/compte'
     | '/confidentialite'
+    | '/mcp'
     | '/mentions-legales'
     | '/publier'
     | '/recherche'
     | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/compte/abonnements'
     | '/compte/abonnes'
     | '/compte/aide'
@@ -259,6 +301,7 @@ export interface FileRouteTypes {
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/push-dispatch'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -268,10 +311,13 @@ export interface FileRouteTypes {
     | '/carte'
     | '/cgu'
     | '/confidentialite'
+    | '/mcp'
     | '/mentions-legales'
     | '/publier'
     | '/recherche'
     | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/compte/abonnements'
     | '/compte/abonnes'
     | '/compte/aide'
@@ -284,6 +330,7 @@ export interface FileRouteTypes {
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/push-dispatch'
   id:
     | '__root__'
@@ -294,10 +341,13 @@ export interface FileRouteTypes {
     | '/cgu'
     | '/compte'
     | '/confidentialite'
+    | '/mcp'
     | '/mentions-legales'
     | '/publier'
     | '/recherche'
     | '/reset-password'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/compte/abonnements'
     | '/compte/abonnes'
     | '/compte/aide'
@@ -310,6 +360,7 @@ export interface FileRouteTypes {
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
+    | '/.mcp/invoke-tool/$tool'
     | '/api/public/push-dispatch'
   fileRoutesById: FileRoutesById
 }
@@ -321,12 +372,16 @@ export interface RootRouteChildren {
   CguRoute: typeof CguRoute
   CompteRoute: typeof CompteRouteWithChildren
   ConfidentialiteRoute: typeof ConfidentialiteRoute
+  McpRoute: typeof McpRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   PublierRoute: typeof PublierRoute
   RechercheRoute: typeof RechercheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   PlatIdRoute: typeof PlatIdRoute
   ProfilHandleRoute: typeof ProfilHandleRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
 }
 
@@ -358,6 +413,13 @@ declare module '@tanstack/react-router' {
       path: '/mentions-legales'
       fullPath: '/mentions-legales'
       preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/confidentialite': {
@@ -493,11 +555,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteAbonnementsRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/push-dispatch': {
       id: '/api/public/push-dispatch'
       path: '/api/public/push-dispatch'
       fullPath: '/api/public/push-dispatch'
       preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -540,12 +623,17 @@ const rootRouteChildren: RootRouteChildren = {
   CguRoute: CguRoute,
   CompteRoute: CompteRouteWithChildren,
   ConfidentialiteRoute: ConfidentialiteRoute,
+  McpRoute: McpRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   PublierRoute: PublierRoute,
   RechercheRoute: RechercheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   PlatIdRoute: PlatIdRoute,
   ProfilHandleRoute: ProfilHandleRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
 }
 export const routeTree = rootRouteImport
