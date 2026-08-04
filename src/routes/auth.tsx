@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/dishyo/Logo";
+import { MIN_AGE, maxBirthdateInput, minBirthdateInput, validateBirthdate } from "@/lib/age";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Dishyo — Connexion" }] }),
@@ -21,6 +22,8 @@ function AuthPage() {
   const [displayName, setDisplayName] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptCookies, setAcceptCookies] = useState(false);
+  const [birthdate, setBirthdate] = useState("");
+  const [attestAge, setAttestAge] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -38,6 +41,9 @@ function AuthPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (mode === "signup") {
+      const ageErr = validateBirthdate(birthdate);
+      if (ageErr) return toast.error(ageErr);
+      if (!attestAge) return toast.error(`Tu dois certifier avoir au moins ${MIN_AGE} ans.`);
       if (!acceptTerms) return toast.error("Tu dois accepter les CGU et la politique de confidentialité.");
       if (!acceptCookies) return toast.error("Tu dois accepter l'utilisation des cookies essentiels.");
       const pwErr = validatePassword(password);
@@ -52,8 +58,10 @@ function AuthPage() {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               display_name: displayName || email.split("@")[0],
+              birthdate,
               accepted_terms_at: new Date().toISOString(),
               accepted_cookies_at: new Date().toISOString(),
+              age_attested_at: new Date().toISOString(),
             },
           },
         });
@@ -131,6 +139,22 @@ function AuthPage() {
           {mode === "signup" && (
             <>
               <p className="px-1 text-[11px] text-muted-foreground">8 caractères min., avec majuscule, minuscule et chiffre.</p>
+              <div>
+                <label className="px-1 text-[11px] font-medium text-muted-foreground">Date de naissance</label>
+                <input
+                  type="date" required
+                  value={birthdate} onChange={(e) => setBirthdate(e.target.value)}
+                  max={maxBirthdateInput()} min={minBirthdateInput()}
+                  className="mt-1 w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+                />
+                <p className="px-1 pt-1 text-[11px] text-muted-foreground">
+                  Dishyo est interdit aux moins de {MIN_AGE} ans. Ta date de naissance reste privée.
+                </p>
+              </div>
+              <label className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
+                <input type="checkbox" checked={attestAge} onChange={(e) => setAttestAge(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
+                <span>Je certifie sur l'honneur avoir au moins {MIN_AGE} ans et que ma date de naissance est exacte.</span>
+              </label>
               <label className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
                 <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
                 <span>
@@ -146,7 +170,7 @@ function AuthPage() {
             </>
           )}
           <button
-            type="submit" disabled={busy || (mode === "signup" && (!acceptTerms || !acceptCookies))}
+            type="submit" disabled={busy || (mode === "signup" && (!acceptTerms || !acceptCookies || !attestAge || !birthdate))}
             className="w-full rounded-2xl bg-primary py-3 font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
           >{busy ? "..." : mode === "login" ? "Se connecter" : "Créer mon compte"}</button>
         </form>

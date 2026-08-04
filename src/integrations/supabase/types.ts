@@ -474,6 +474,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_ages: {
+        Row: {
+          birthdate: string
+          created_at: string
+          updated_at: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          birthdate: string
+          created_at?: string
+          updated_at?: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          birthdate?: string
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -582,6 +606,7 @@ export type Database = {
         }
       }
       update_my_handle: { Args: { new_handle: string }; Returns: string }
+      verify_my_age: { Args: { _birthdate: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user" | "moderator" | "support"
