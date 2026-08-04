@@ -58,8 +58,10 @@ function AuthPage() {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               display_name: displayName || email.split("@")[0],
+              birthdate,
               accepted_terms_at: new Date().toISOString(),
               accepted_cookies_at: new Date().toISOString(),
+              age_attested_at: new Date().toISOString(),
             },
           },
         });
