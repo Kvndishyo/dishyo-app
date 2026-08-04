@@ -41,6 +41,9 @@ function AuthPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (mode === "signup") {
+      const ageErr = validateBirthdate(birthdate);
+      if (ageErr) return toast.error(ageErr);
+      if (!attestAge) return toast.error(`Tu dois certifier avoir au moins ${MIN_AGE} ans.`);
       if (!acceptTerms) return toast.error("Tu dois accepter les CGU et la politique de confidentialité.");
       if (!acceptCookies) return toast.error("Tu dois accepter l'utilisation des cookies essentiels.");
       const pwErr = validatePassword(password);
