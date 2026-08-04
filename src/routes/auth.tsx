@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/dishyo/Logo";
+import { MIN_AGE, maxBirthdateInput, minBirthdateInput, validateBirthdate } from "@/lib/age";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Dishyo — Connexion" }] }),
@@ -21,6 +22,8 @@ function AuthPage() {
   const [displayName, setDisplayName] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptCookies, setAcceptCookies] = useState(false);
+  const [birthdate, setBirthdate] = useState("");
+  const [attestAge, setAttestAge] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
