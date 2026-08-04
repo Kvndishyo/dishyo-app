@@ -139,6 +139,22 @@ function AuthPage() {
           {mode === "signup" && (
             <>
               <p className="px-1 text-[11px] text-muted-foreground">8 caractères min., avec majuscule, minuscule et chiffre.</p>
+              <div>
+                <label className="px-1 text-[11px] font-medium text-muted-foreground">Date de naissance</label>
+                <input
+                  type="date" required
+                  value={birthdate} onChange={(e) => setBirthdate(e.target.value)}
+                  max={maxBirthdateInput()} min={minBirthdateInput()}
+                  className="mt-1 w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+                />
+                <p className="px-1 pt-1 text-[11px] text-muted-foreground">
+                  Dishyo est interdit aux moins de {MIN_AGE} ans. Ta date de naissance reste privée.
+                </p>
+              </div>
+              <label className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
+                <input type="checkbox" checked={attestAge} onChange={(e) => setAttestAge(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
+                <span>Je certifie sur l'honneur avoir au moins {MIN_AGE} ans et que ma date de naissance est exacte.</span>
+              </label>
               <label className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
                 <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
                 <span>
@@ -154,7 +170,7 @@ function AuthPage() {
             </>
           )}
           <button
-            type="submit" disabled={busy || (mode === "signup" && (!acceptTerms || !acceptCookies))}
+            type="submit" disabled={busy || (mode === "signup" && (!acceptTerms || !acceptCookies || !attestAge || !birthdate))}
             className="w-full rounded-2xl bg-primary py-3 font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
           >{busy ? "..." : mode === "login" ? "Se connecter" : "Créer mon compte"}</button>
         </form>
