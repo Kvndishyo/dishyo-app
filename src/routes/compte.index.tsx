@@ -7,6 +7,7 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PushToggle } from "@/components/dishyo/PushToggle";
+import { AgeSettings } from "@/components/dishyo/AgeSettings";
 
 
 export const Route = createFileRoute("/compte/")({
@@ -145,6 +146,7 @@ function AccountPage() {
           <PushToggle Row={ToggleRow} />
 
           <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} />
+          <AgeSettings />
           <Row icon={<Shield className="h-5 w-5" />} title="Confidentialité" to="/compte/confidentialite" />
           <Row icon={<HelpCircle className="h-5 w-5" />} title="Aide et support" to="/compte/aide" />
           
