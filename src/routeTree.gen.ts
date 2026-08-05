@@ -33,6 +33,7 @@ import { Route as CompteAmisRouteImport } from './routes/compte.amis'
 import { Route as CompteAideRouteImport } from './routes/compte.aide'
 import { Route as CompteAbonnesRouteImport } from './routes/compte.abonnes'
 import { Route as CompteAbonnementsRouteImport } from './routes/compte.abonnements'
+import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
@@ -159,6 +160,11 @@ const CompteAbonnementsRoute = CompteAbonnementsRouteImport.update({
   path: '/abonnements',
   getParentRoute: () => CompteRoute,
 } as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
   Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
     id: '/.well-known/oauth-protected-resource',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/compte/abonnements': typeof CompteAbonnementsRoute
   '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/compte/abonnements': typeof CompteAbonnementsRoute
   '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/assistant': typeof ApiAssistantRoute
   '/compte/abonnements': typeof CompteAbonnementsRoute
   '/compte/abonnes': typeof CompteAbonnesRoute
   '/compte/aide': typeof CompteAideRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/api/assistant'
     | '/compte/abonnements'
     | '/compte/abonnes'
     | '/compte/aide'
@@ -328,6 +338,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/api/assistant'
     | '/compte/abonnements'
     | '/compte/abonnes'
     | '/compte/aide'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/api/assistant'
     | '/compte/abonnements'
     | '/compte/abonnes'
     | '/compte/aide'
@@ -391,6 +403,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiAssistantRoute: typeof ApiAssistantRoute
   PlatIdRoute: typeof PlatIdRoute
   ProfilHandleRoute: typeof ProfilHandleRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -568,6 +581,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteAbonnementsRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/oauth-protected-resource': {
       id: '/.well-known/oauth-protected-resource'
       path: '/.well-known/oauth-protected-resource'
@@ -651,6 +671,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiAssistantRoute: ApiAssistantRoute,
   PlatIdRoute: PlatIdRoute,
   ProfilHandleRoute: ProfilHandleRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
