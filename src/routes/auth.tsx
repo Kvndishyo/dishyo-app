@@ -93,11 +93,20 @@ function AuthPage() {
     }
   }
 
+  const oauthRedirect = () => `${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}`;
+
   async function handleGoogle() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}` });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: oauthRedirect() });
     if (result.error) { toast.error("Connexion Google échouée"); setBusy(false); }
   }
+
+  async function handleApple() {
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("apple", { redirect_uri: oauthRedirect() });
+    if (result.error) { toast.error("Connexion Apple échouée"); setBusy(false); }
+  }
+
 
   async function handleReset() {
     if (!email) return toast.error("Entre ton email d'abord");
