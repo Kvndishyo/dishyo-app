@@ -46,7 +46,7 @@ export const moderateImage = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }): Promise<ModerationResult> => {
     const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) return { safe: true, reason: "no api key" };
+    if (!apiKey) return { safe: false, reason: "Modération indisponible, réessaie plus tard.", category: "unavailable" };
     try {
       const r = await fetch(LOVABLE_AI_URL, {
         method: "POST",
@@ -56,23 +56,33 @@ export const moderateImage = createServerFn({ method: "POST" })
           messages: [{
             role: "user",
             content: [
-              { type: "text", text: `Tu es un modérateur pour Dishyo, application de partage de plats. Bloque l'image si elle contient : nudité ou sous-vêtements suggestifs, contenu sexuel ou fétichiste, violence, sang/gore, cadavres ou souffrance animale, drogues illicites, armes menaçantes, symboles haineux/nazis, contenu choquant ou pédopornographique, publicité/spam manifestement hors-sujet (capture d'écran de site marchand, texte plein écran commercial). ACCEPTE largement tout le reste : plats, ingrédients, boissons alcoolisées adultes, tables, restaurants, mains, emballages, selfies avec de la nourriture, marchés, ustensiles, animaux de compagnie, scènes du quotidien. En cas de doute raisonnable, autorise. Réponds UNIQUEMENT en JSON: {"safe": true|false, "category": "ok|nudity|sexual|violence|gore|drugs|weapons|hate|shock|spam", "reason": "court motif en français"}.` },
+              { type: "text", text: `Tu es le modérateur de Dishyo, une application dédiée EXCLUSIVEMENT au partage de nourriture.
+
+RÈGLE PRINCIPALE : l'image DOIT montrer de la nourriture ou une boisson de manière clairement identifiable (plat cuisiné, assiette, dessert, pâtisserie, fruits/légumes, ingrédients, street food, boisson, table garnie, plan rapproché d'un repas). Une personne, un animal, un paysage, un objet, un texte, une capture d'écran, un selfie, un meme, un intérieur de restaurant vide ou une photo floue SANS nourriture visible et reconnaissable au premier plan doit être REFUSÉ avec category "not_food".
+Une photo où de la nourriture est présente mais reste le sujet principal (ex : quelqu'un qui tient son plat) est ACCEPTÉE.
+
+REFUSE AUSSI : nudité ou sous-vêtements, contenu sexuel, violence, sang/gore, cadavres, drogues illicites, armes, symboles haineux, contenu choquant, publicité/spam hors-sujet.
+
+Réponds UNIQUEMENT en JSON: {"safe": true|false, "is_food": true|false, "category": "ok|not_food|nudity|sexual|violence|gore|drugs|weapons|hate|shock|spam", "reason": "court motif en français"}. Si is_food vaut false, safe DOIT valoir false et reason doit expliquer que seules les photos de nourriture sont autorisées.` } },
               { type: "image_url", image_url: { url: data.imageBase64 } },
             ],
           }],
           response_format: { type: "json_object" },
         }),
       });
-      if (!r.ok) return { safe: true, reason: "moderation unavailable" };
+      if (!r.ok) return { safe: false, reason: "Vérification de la photo impossible, réessaie.", category: "unavailable" };
       const j = await r.json();
       const content = j?.choices?.[0]?.message?.content ?? "{}";
       const parsed = JSON.parse(content);
       return {
-        safe: parsed.safe !== false,
-        reason: String(parsed.reason ?? ""),
-        category: String(parsed.category ?? "ok"),
+        safe: parsed.safe !== false && parsed.is_food !== false,
+        reason:
+          parsed.is_food === false
+            ? "Dishyo n'accepte que les photos de nourriture ou de boissons."
+            : String(parsed.reason ?? ""),
+        category: parsed.is_food === false ? "not_food" : String(parsed.category ?? "ok"),
       };
     } catch {
-      return { safe: true, reason: "moderation error" };
+      return { safe: false, reason: "Vérification de la photo impossible, réessaie.", category: "unavailable" };
     }
   });
