@@ -3,13 +3,17 @@
   "sdk_version": "0.22.2",
   "path": "/mcp",
   "auth": {
-    "type": "none"
+    "type": "oauth",
+    "issuer": "https://sjkvlewvaawtvpnmquqy.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
-      "name": "dishyo-mcp",
+      "name": "dishyo",
       "version": "0.1.0",
-      "title": "Dishyo MCP"
+      "title": "Dishyo: Your Daily Dish"
     },
     "tools": [
       {
