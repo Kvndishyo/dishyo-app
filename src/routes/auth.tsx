@@ -10,11 +10,17 @@ import { MIN_AGE, maxBirthdateInput, minBirthdateInput, validateBirthdate } from
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Dishyo — Connexion" }] }),
+  validateSearch: (s: Record<string, unknown>): { next?: string } =>
+    typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//")
+      ? { next: s.next }
+      : {},
+
   component: AuthPage,
 });
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -27,8 +33,12 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/" });
-  }, [session, loading, navigate]);
+    if (!loading && session) {
+      if (next) window.location.replace(next);
+      else navigate({ to: "/" });
+    }
+  }, [session, loading, navigate, next]);
+
 
   function validatePassword(pw: string): string | null {
     if (pw.length < 8) return "Le mot de passe doit faire au moins 8 caractères.";
@@ -55,7 +65,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email, password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}`,
             data: {
               display_name: displayName || email.split("@")[0],
               birthdate,
@@ -85,7 +95,7 @@ function AuthPage() {
 
   async function handleGoogle() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/` });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}` });
     if (result.error) { toast.error("Connexion Google échouée"); setBusy(false); }
   }
 
