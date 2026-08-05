@@ -10,11 +10,15 @@ import { MIN_AGE, maxBirthdateInput, minBirthdateInput, validateBirthdate } from
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Dishyo — Connexion" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//") ? s.next : undefined,
+  }),
   component: AuthPage,
 });
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -27,8 +31,12 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/" });
-  }, [session, loading, navigate]);
+    if (!loading && session) {
+      if (next) window.location.replace(next);
+      else navigate({ to: "/" });
+    }
+  }, [session, loading, navigate, next]);
+
 
   function validatePassword(pw: string): string | null {
     if (pw.length < 8) return "Le mot de passe doit faire au moins 8 caractères.";
