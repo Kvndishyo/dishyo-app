@@ -39,7 +39,7 @@ export async function moderateImageDataUrl(imageBase64: string): Promise<ModResu
     const r = await moderateImageFn({ data: { imageBase64 } });
     return r as ModResult;
   } catch {
-    return { safe: true, reason: "" };
+    return { safe: false, reason: "Vérification de la photo impossible, réessaie.", category: "unavailable" };
   }
 }
 

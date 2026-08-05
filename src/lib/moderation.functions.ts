@@ -63,7 +63,7 @@ Une photo où de la nourriture est présente mais reste le sujet principal (ex :
 
 REFUSE AUSSI : nudité ou sous-vêtements, contenu sexuel, violence, sang/gore, cadavres, drogues illicites, armes, symboles haineux, contenu choquant, publicité/spam hors-sujet.
 
-Réponds UNIQUEMENT en JSON: {"safe": true|false, "is_food": true|false, "category": "ok|not_food|nudity|sexual|violence|gore|drugs|weapons|hate|shock|spam", "reason": "court motif en français"}. Si is_food vaut false, safe DOIT valoir false et reason doit expliquer que seules les photos de nourriture sont autorisées.` } },
+Réponds UNIQUEMENT en JSON: {"safe": true|false, "is_food": true|false, "category": "ok|not_food|nudity|sexual|violence|gore|drugs|weapons|hate|shock|spam", "reason": "court motif en français"}. Si is_food vaut false, safe DOIT valoir false et reason doit expliquer que seules les photos de nourriture sont autorisées.` },
               { type: "image_url", image_url: { url: data.imageBase64 } },
             ],
           }],
