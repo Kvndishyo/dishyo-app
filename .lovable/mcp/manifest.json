@@ -18,8 +18,8 @@
     "tools": [
       {
         "name": "search_public_dishes",
-        "title": "Rechercher des plats publics",
-        "description": "Liste les plats publics récents (non expirés) partagés sur Dishyo. Retourne id, titre, restaurant, catégorie, photo, auteur (handle) et date d'expiration.",
+        "title": "Rechercher des plats",
+        "description": "Liste les plats récents (non expirés) visibles par l'utilisateur connecté. Retourne id, titre, restaurant, catégorie, photo, auteur (handle) et date d'expiration.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -31,11 +31,13 @@
           "properties": {
             "query": {
               "description": "Filtre optionnel sur le titre ou le restaurant.",
-              "type": "string"
+              "type": "string",
+              "maxLength": 80
             },
             "category": {
               "description": "Filtre optionnel par catégorie (ex: Pizza, Dessert).",
-              "type": "string"
+              "type": "string",
+              "maxLength": 50
             },
             "limit": {
               "default": 20,
@@ -50,8 +52,8 @@
       },
       {
         "name": "get_public_dish",
-        "title": "Détails d'un plat public",
-        "description": "Récupère un plat public Dishyo par son id : titre, restaurant, catégorie, recette, photo, auteur et date d'expiration.",
+        "title": "Détails d'un plat",
+        "description": "Récupère un plat Dishyo visible par l'utilisateur connecté : titre, restaurant, catégorie, recette, photo, auteur et date d'expiration.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -77,7 +79,7 @@
       {
         "name": "search_profiles",
         "title": "Rechercher des profils Dishyo",
-        "description": "Recherche des profils publics Dishyo par handle ou nom d'affichage. Retourne handle, nom, bio et avatar.",
+        "description": "Recherche des profils Dishyo par handle ou nom d'affichage, au nom de l'utilisateur connecté. Retourne handle, nom, bio et avatar.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -90,6 +92,7 @@
             "query": {
               "type": "string",
               "minLength": 1,
+              "maxLength": 80,
               "description": "Terme de recherche (handle ou nom)."
             },
             "limit": {
