@@ -63,7 +63,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email, password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}`,
             data: {
               display_name: displayName || email.split("@")[0],
               birthdate,
@@ -93,7 +93,7 @@ function AuthPage() {
 
   async function handleGoogle() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/` });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth${next ? `?next=${encodeURIComponent(next)}` : ""}` });
     if (result.error) { toast.error("Connexion Google échouée"); setBusy(false); }
   }
 
