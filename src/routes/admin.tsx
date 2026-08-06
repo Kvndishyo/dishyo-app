@@ -7,6 +7,8 @@ import { useStaffRoles } from "@/hooks/useIsAdmin";
 import { toast } from "sonner";
 import { ModerationPanel } from "@/components/dishyo/ModerationPanel";
 import { UserPermissionsPanel } from "@/components/dishyo/UserPermissionsPanel";
+import { AdminChatPanel } from "@/components/dishyo/AdminChatPanel";
+import { AdminChatSettingsPanel } from "@/components/dishyo/AdminChatSettingsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Dishyo — Dashboard admin" }] }),
