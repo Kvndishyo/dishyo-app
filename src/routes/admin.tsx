@@ -151,7 +151,11 @@ function AdminPage() {
       </div>
 
       {tab === "moderation" && isModerator && <ModerationPanel />}
-      {tab === "users" && isAdmin && session && <UserPermissionsPanel currentUserId={session.user.id} />}
+      {tab === "users" && isAdmin && session && <UserPermissionsPanel currentUserId={session.user.id} isOwner={isOwner} />}
+      {tab === "chat" && isStaff && session && (
+        <AdminChatPanel currentUserId={session.user.id} isOwner={isOwner} isAdmin={isAdmin} />
+      )}
+      {tab === "chat-settings" && isOwner && session && <AdminChatSettingsPanel currentUserId={session.user.id} />}
 
       {tab === "support" && <div className="flex gap-2 px-4 pb-3">
         {(["open", "answered", "all"] as const).map((f) => (
