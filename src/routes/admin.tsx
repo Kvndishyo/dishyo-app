@@ -24,7 +24,7 @@ type SupportMessage = {
   created_at: string;
 };
 
-type Tab = "support" | "moderation" | "users";
+type Tab = "support" | "moderation" | "users" | "chat" | "chat-settings";
 
 function AdminPage() {
   const navigate = useNavigate();
