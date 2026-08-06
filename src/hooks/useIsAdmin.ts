@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-export type StaffRole = "admin" | "moderator" | "support";
+export type StaffRole = "owner" | "admin" | "moderator" | "support";
+
+const STAFF: StaffRole[] = ["owner", "admin", "moderator", "support"];
 
 export function useStaffRoles() {
   const { session, loading } = useAuth();
@@ -20,7 +22,7 @@ export function useStaffRoles() {
       if (!cancelled) {
         const r = (data ?? [])
           .map((x: { role: string }) => x.role as StaffRole)
-          .filter((x) => x === "admin" || x === "moderator" || x === "support");
+          .filter((x) => STAFF.includes(x));
         setRoles(r);
       }
     })();
@@ -28,11 +30,13 @@ export function useStaffRoles() {
   }, [session, loading]);
 
   const list = roles ?? [];
+  const isOwner = list.includes("owner");
   return {
     roles: list,
-    isAdmin: list.includes("admin"),
-    isModerator: list.includes("moderator") || list.includes("admin"),
-    isSupport: list.includes("support") || list.includes("admin"),
+    isOwner,
+    isAdmin: isOwner || list.includes("admin"),
+    isModerator: isOwner || list.includes("moderator") || list.includes("admin"),
+    isSupport: isOwner || list.includes("support") || list.includes("admin"),
     isStaff: list.length > 0,
     loading: loading || roles === null,
   };
