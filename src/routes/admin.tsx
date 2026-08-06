@@ -7,6 +7,8 @@ import { useStaffRoles } from "@/hooks/useIsAdmin";
 import { toast } from "sonner";
 import { ModerationPanel } from "@/components/dishyo/ModerationPanel";
 import { UserPermissionsPanel } from "@/components/dishyo/UserPermissionsPanel";
+import { AdminChatPanel } from "@/components/dishyo/AdminChatPanel";
+import { AdminChatSettingsPanel } from "@/components/dishyo/AdminChatSettingsPanel";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Dishyo — Dashboard admin" }] }),
@@ -24,12 +26,12 @@ type SupportMessage = {
   created_at: string;
 };
 
-type Tab = "support" | "moderation" | "users";
+type Tab = "support" | "moderation" | "users" | "chat" | "chat-settings";
 
 function AdminPage() {
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
-  const { isAdmin, isModerator, isSupport, isStaff, loading: rolesLoading } = useStaffRoles();
+  const { isAdmin, isModerator, isSupport, isStaff, isOwner, loading: rolesLoading } = useStaffRoles();
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [selected, setSelected] = useState<SupportMessage | null>(null);
   const [draft, setDraft] = useState("");
@@ -111,6 +113,8 @@ function AdminPage() {
     { key: "support", label: "Support", visible: isSupport },
     { key: "moderation", label: "Modération", visible: isModerator },
     { key: "users", label: "Permissions", visible: isAdmin },
+    { key: "chat", label: "Chat équipe", visible: isStaff },
+    { key: "chat-settings", label: "Réglages chat", visible: isOwner },
   ];
 
   return (
@@ -122,7 +126,7 @@ function AdminPage() {
         <div className="flex-1">
           <h1 className="text-lg font-bold">Dashboard admin</h1>
           <p className="text-xs text-muted-foreground">
-            {[isAdmin && "admin", !isAdmin && isModerator && "modérateur", !isAdmin && isSupport && "support"].filter(Boolean).join(" · ") || "équipe"}
+            {[isOwner && "owner", !isOwner && isAdmin && "admin", !isAdmin && isModerator && "modérateur", !isAdmin && isSupport && "support"].filter(Boolean).join(" · ") || "équipe"}
           </p>
         </div>
         {tab === "support" && isSupport && (
@@ -132,12 +136,12 @@ function AdminPage() {
         )}
       </header>
 
-      <div className="flex gap-2 px-4 py-3">
+      <div className="flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none]">
         {tabs.filter((t) => t.visible).map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+            className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
               tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
             }`}
           >
@@ -147,7 +151,11 @@ function AdminPage() {
       </div>
 
       {tab === "moderation" && isModerator && <ModerationPanel />}
-      {tab === "users" && isAdmin && session && <UserPermissionsPanel currentUserId={session.user.id} />}
+      {tab === "users" && isAdmin && session && <UserPermissionsPanel currentUserId={session.user.id} isOwner={isOwner} />}
+      {tab === "chat" && isStaff && session && (
+        <AdminChatPanel currentUserId={session.user.id} isOwner={isOwner} isAdmin={isAdmin} />
+      )}
+      {tab === "chat-settings" && isOwner && session && <AdminChatSettingsPanel currentUserId={session.user.id} />}
 
       {tab === "support" && <div className="flex gap-2 px-4 pb-3">
         {(["open", "answered", "all"] as const).map((f) => (
