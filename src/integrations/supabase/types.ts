@@ -14,6 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_chat_messages: {
+        Row: {
+          body: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          edited_at: string | null
+          id: string
+          pinned: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          edited_at?: string | null
+          id?: string
+          pinned?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          edited_at?: string | null
+          id?: string
+          pinned?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_chat_settings: {
+        Row: {
+          allow_admin_delete: boolean
+          allow_reactions: boolean
+          chat_enabled: boolean
+          id: boolean
+          max_message_length: number
+          pinned_message: string | null
+          read_only: boolean
+          retention_days: number
+          show_roles: boolean
+          slow_mode_seconds: number
+          updated_at: string
+          updated_by: string | null
+          welcome_message: string | null
+        }
+        Insert: {
+          allow_admin_delete?: boolean
+          allow_reactions?: boolean
+          chat_enabled?: boolean
+          id?: boolean
+          max_message_length?: number
+          pinned_message?: string | null
+          read_only?: boolean
+          retention_days?: number
+          show_roles?: boolean
+          slow_mode_seconds?: number
+          updated_at?: string
+          updated_by?: string | null
+          welcome_message?: string | null
+        }
+        Update: {
+          allow_admin_delete?: boolean
+          allow_reactions?: boolean
+          chat_enabled?: boolean
+          id?: boolean
+          max_message_length?: number
+          pinned_message?: string | null
+          read_only?: boolean
+          retention_days?: number
+          show_roles?: boolean
+          slow_mode_seconds?: number
+          updated_at?: string
+          updated_by?: string | null
+          welcome_message?: string | null
+        }
+        Relationships: []
+      }
+      admin_chat_speakers: {
+        Row: {
+          can_speak: boolean
+          created_at: string
+          granted_by: string | null
+          muted_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_speak?: boolean
+          created_at?: string
+          granted_by?: string | null
+          muted_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_speak?: boolean
+          created_at?: string
+          granted_by?: string | null
+          muted_until?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       blocks: {
         Row: {
           blocked_id: string
@@ -524,6 +635,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_chat_authors: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          display_name: string
+          handle: string
+          roles: string[]
+          user_id: string
+        }[]
+      }
+      admin_chat_staff: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          can_speak: boolean
+          display_name: string
+          handle: string
+          muted_until: string
+          roles: string[]
+          user_id: string
+        }[]
+      }
       admin_search_users: {
         Args: { q: string }
         Returns: {
@@ -543,6 +676,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      can_speak_admin_chat: { Args: { _user_id: string }; Returns: boolean }
       check_rate_limit: {
         Args: { _action: string; _max: number; _window_seconds: number }
         Returns: boolean
@@ -555,6 +689,8 @@ export type Database = {
         Returns: boolean
       }
       is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
+      is_owner: { Args: { _user_id: string }; Returns: boolean }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       nearby_ads: {
         Args: { _lat: number; _lng: number }
         Returns: {
