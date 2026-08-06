@@ -126,7 +126,7 @@ function AdminPage() {
         <div className="flex-1">
           <h1 className="text-lg font-bold">Dashboard admin</h1>
           <p className="text-xs text-muted-foreground">
-            {[isAdmin && "admin", !isAdmin && isModerator && "modérateur", !isAdmin && isSupport && "support"].filter(Boolean).join(" · ") || "équipe"}
+            {[isOwner && "owner", !isOwner && isAdmin && "admin", !isAdmin && isModerator && "modérateur", !isAdmin && isSupport && "support"].filter(Boolean).join(" · ") || "équipe"}
           </p>
         </div>
         {tab === "support" && isSupport && (
