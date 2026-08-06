@@ -113,6 +113,8 @@ function AdminPage() {
     { key: "support", label: "Support", visible: isSupport },
     { key: "moderation", label: "Modération", visible: isModerator },
     { key: "users", label: "Permissions", visible: isAdmin },
+    { key: "chat", label: "Chat équipe", visible: isStaff },
+    { key: "chat-settings", label: "Réglages chat", visible: isOwner },
   ];
 
   return (
