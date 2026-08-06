@@ -609,7 +609,7 @@ export type Database = {
       verify_my_age: { Args: { _birthdate: string }; Returns: string }
     }
     Enums: {
-      app_role: "admin" | "user" | "moderator" | "support"
+      app_role: "admin" | "user" | "moderator" | "support" | "owner"
       post_visibility: "public" | "friends"
       report_status: "open" | "reviewed" | "dismissed" | "actioned"
       report_target: "post" | "comment" | "profile"
@@ -740,7 +740,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user", "moderator", "support"],
+      app_role: ["admin", "user", "moderator", "support", "owner"],
       post_visibility: ["public", "friends"],
       report_status: ["open", "reviewed", "dismissed", "actioned"],
       report_target: ["post", "comment", "profile"],
