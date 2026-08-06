@@ -31,7 +31,7 @@ type Tab = "support" | "moderation" | "users" | "chat" | "chat-settings";
 function AdminPage() {
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
-  const { isAdmin, isModerator, isSupport, isStaff, loading: rolesLoading } = useStaffRoles();
+  const { isAdmin, isModerator, isSupport, isStaff, isOwner, loading: rolesLoading } = useStaffRoles();
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [selected, setSelected] = useState<SupportMessage | null>(null);
   const [draft, setDraft] = useState("");
