@@ -136,12 +136,12 @@ function AdminPage() {
         )}
       </header>
 
-      <div className="flex gap-2 px-4 py-3">
+      <div className="flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none]">
         {tabs.filter((t) => t.visible).map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+            className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
               tab === t.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
             }`}
           >
