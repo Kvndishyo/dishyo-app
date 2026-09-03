@@ -31,7 +31,7 @@ function PublishPage() {
   const [editorSrc, setEditorSrc] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [visibility, setVisibility] = useState<"friends" | "public">("public");
-  const [category, setCategory] = useState<string | null>(null);
+  
   const [title, setTitle] = useState("");
   const [restaurant, setRestaurant] = useState("");
   const [recipe, setRecipe] = useState("");
@@ -68,7 +68,7 @@ function PublishPage() {
         if (d.title) setTitle(d.title);
         if (d.restaurant) setRestaurant(d.restaurant);
         if (d.recipe) setRecipe(d.recipe);
-        if (d.category) setCategory(d.category);
+        
         if (d.visibility) setVisibility(d.visibility);
         if (d.photoDataUrl) {
           setPreview(d.photoDataUrl);
