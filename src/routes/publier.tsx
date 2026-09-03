@@ -84,7 +84,7 @@ function PublishPage() {
   // Save draft on changes
   useEffect(() => {
     if (!draftLoaded) return;
-    const hasContent = preview || title || restaurant || recipe || category;
+    const hasContent = preview || title || restaurant || recipe;
     if (!hasContent) {
       localStorage.removeItem(DRAFT_KEY);
       return;
@@ -92,13 +92,13 @@ function PublishPage() {
     const t = setTimeout(() => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
-          title, restaurant, recipe, category, visibility,
+          title, restaurant, recipe, visibility,
           photoDataUrl: preview?.startsWith("data:") ? preview : null,
         }));
       } catch {}
     }, 400);
     return () => clearTimeout(t);
-  }, [draftLoaded, title, restaurant, recipe, category, visibility, preview]);
+  }, [draftLoaded, title, restaurant, recipe, visibility, preview]);
 
   function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -147,7 +147,7 @@ function PublishPage() {
         photo_url: pub.publicUrl,
         title: title.trim(),
         restaurant: restaurant.trim() || null,
-        category, recipe: recipe.trim() || null, visibility,
+        recipe: recipe.trim() || null, visibility,
         expires_at: new Date(Date.now() + duration * 3600 * 1000).toISOString(),
         lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
       } as any);
