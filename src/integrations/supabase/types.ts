@@ -310,6 +310,51 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          push_announce: boolean
+          push_comment: boolean
+          push_follow: boolean
+          push_like: boolean
+          push_post: boolean
+          quiet_enabled: boolean
+          quiet_end: string
+          quiet_start: string
+          tz_offset_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          push_announce?: boolean
+          push_comment?: boolean
+          push_follow?: boolean
+          push_like?: boolean
+          push_post?: boolean
+          quiet_enabled?: boolean
+          quiet_end?: string
+          quiet_start?: string
+          tz_offset_minutes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          push_announce?: boolean
+          push_comment?: boolean
+          push_follow?: boolean
+          push_like?: boolean
+          push_post?: boolean
+          quiet_enabled?: boolean
+          quiet_end?: string
+          quiet_start?: string
+          tz_offset_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -435,7 +480,9 @@ export type Database = {
           created_at: string
           endpoint: string
           id: string
+          native_token: string | null
           p256dh: string
+          platform: string
           user_agent: string | null
           user_id: string
         }
@@ -444,7 +491,9 @@ export type Database = {
           created_at?: string
           endpoint: string
           id?: string
+          native_token?: string | null
           p256dh: string
+          platform?: string
           user_agent?: string | null
           user_id: string
         }
@@ -453,7 +502,9 @@ export type Database = {
           created_at?: string
           endpoint?: string
           id?: string
+          native_token?: string | null
           p256dh?: string
+          platform?: string
           user_agent?: string | null
           user_id?: string
         }
@@ -722,6 +773,10 @@ export type Database = {
           title: string
           user_id: string
         }[]
+      }
+      push_allowed: {
+        Args: { _type: string; _user_id: string }
+        Returns: boolean
       }
       search_users: {
         Args: { q: string }
