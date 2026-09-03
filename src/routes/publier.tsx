@@ -233,18 +233,6 @@ function PublishPage() {
           <p className="mt-1 text-[11px] text-muted-foreground">Ton plat disparaîtra automatiquement après ce délai.</p>
         </div>
 
-        <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Catégorie</h3>
-          <input
-            type="text"
-            value={category ?? ""}
-            onChange={(e) => setCategory(e.target.value.slice(0, 40) || null)}
-            placeholder="Ex : Pizza, Brunch, Ramen, Healthy…"
-            maxLength={40}
-            className="h-12 w-full rounded-2xl bg-muted px-4 text-sm outline-none focus:ring-2 focus:ring-primary/30"
-          />
-          <p className="mt-1 text-[11px] text-muted-foreground">Écris ta propre catégorie — un ou deux mots suffisent.</p>
-        </div>
 
         <div className="space-y-2">
           <MentionTextarea
