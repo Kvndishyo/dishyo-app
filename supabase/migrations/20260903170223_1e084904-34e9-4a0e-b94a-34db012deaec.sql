@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.push_allowed(uuid, text) FROM PUBLIC, anon, authenticated;

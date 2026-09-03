@@ -1,7 +1,7 @@
 /* Dishyo push service worker — handles Web Push notifications only.
    This is NOT an app-shell SW; it does not cache HTML or assets. */
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
@@ -19,11 +19,12 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: payload.body,
-    icon: "/apple-touch-icon.png",
+    icon: payload.image || "/apple-touch-icon.png",
     badge: "/favicon.png",
+    image: payload.image || undefined,
     data: { url: payload.url || "/" },
-    tag: payload.tag || undefined,
-    renotify: !!payload.tag,
+    tag: payload.tag || "dishyo",
+    renotify: true,
     vibrate: [80, 40, 80],
   };
 
@@ -37,7 +38,7 @@ self.addEventListener("notificationclick", (event) => {
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
       for (const c of clients) {
         if ("focus" in c) {
-          c.navigate(url);
+          if ("navigate" in c) c.navigate(url);
           return c.focus();
         }
       }
