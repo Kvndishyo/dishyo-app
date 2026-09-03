@@ -31,7 +31,7 @@ function PublishPage() {
   const [editorSrc, setEditorSrc] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [visibility, setVisibility] = useState<"friends" | "public">("public");
-  const [category, setCategory] = useState<string | null>(null);
+  
   const [title, setTitle] = useState("");
   const [restaurant, setRestaurant] = useState("");
   const [recipe, setRecipe] = useState("");
@@ -68,7 +68,7 @@ function PublishPage() {
         if (d.title) setTitle(d.title);
         if (d.restaurant) setRestaurant(d.restaurant);
         if (d.recipe) setRecipe(d.recipe);
-        if (d.category) setCategory(d.category);
+        
         if (d.visibility) setVisibility(d.visibility);
         if (d.photoDataUrl) {
           setPreview(d.photoDataUrl);
@@ -84,7 +84,7 @@ function PublishPage() {
   // Save draft on changes
   useEffect(() => {
     if (!draftLoaded) return;
-    const hasContent = preview || title || restaurant || recipe || category;
+    const hasContent = preview || title || restaurant || recipe;
     if (!hasContent) {
       localStorage.removeItem(DRAFT_KEY);
       return;
@@ -92,13 +92,13 @@ function PublishPage() {
     const t = setTimeout(() => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
-          title, restaurant, recipe, category, visibility,
+          title, restaurant, recipe, visibility,
           photoDataUrl: preview?.startsWith("data:") ? preview : null,
         }));
       } catch {}
     }, 400);
     return () => clearTimeout(t);
-  }, [draftLoaded, title, restaurant, recipe, category, visibility, preview]);
+  }, [draftLoaded, title, restaurant, recipe, visibility, preview]);
 
   function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -147,7 +147,7 @@ function PublishPage() {
         photo_url: pub.publicUrl,
         title: title.trim(),
         restaurant: restaurant.trim() || null,
-        category, recipe: recipe.trim() || null, visibility,
+        recipe: recipe.trim() || null, visibility,
         expires_at: new Date(Date.now() + duration * 3600 * 1000).toISOString(),
         lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
       } as any);
@@ -233,18 +233,6 @@ function PublishPage() {
           <p className="mt-1 text-[11px] text-muted-foreground">Ton plat disparaîtra automatiquement après ce délai.</p>
         </div>
 
-        <div>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Catégorie</h3>
-          <input
-            type="text"
-            value={category ?? ""}
-            onChange={(e) => setCategory(e.target.value.slice(0, 40) || null)}
-            placeholder="Ex : Pizza, Brunch, Ramen, Healthy…"
-            maxLength={40}
-            className="h-12 w-full rounded-2xl bg-muted px-4 text-sm outline-none focus:ring-2 focus:ring-primary/30"
-          />
-          <p className="mt-1 text-[11px] text-muted-foreground">Écris ta propre catégorie — un ou deux mots suffisent.</p>
-        </div>
 
         <div className="space-y-2">
           <MentionTextarea
