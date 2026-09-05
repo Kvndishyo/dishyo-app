@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as PublierRouteImport } from './routes/publier'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
@@ -21,6 +22,7 @@ import { Route as CarteRouteImport } from './routes/carte'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MessagesIndexRouteImport } from './routes/messages.index'
 import { Route as CompteIndexRouteImport } from './routes/compte.index'
 import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as PlatIdRouteImport } from './routes/plat.$id'
@@ -53,6 +55,11 @@ const RechercheRoute = RechercheRouteImport.update({
 const PublierRoute = PublierRouteImport.update({
   id: '/publier',
   path: '/publier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -99,6 +106,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesIndexRoute = MessagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MessagesRoute,
 } as any)
 const CompteIndexRoute = CompteIndexRouteImport.update({
   id: '/',
@@ -204,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -222,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
+  '/messages/': typeof MessagesIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
@@ -253,6 +267,7 @@ export interface FileRoutesByTo {
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte': typeof CompteIndexRoute
+  '/messages': typeof MessagesIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
@@ -268,6 +283,7 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -286,6 +302,7 @@ export interface FileRoutesById {
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
+  '/messages/': typeof MessagesIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
@@ -302,6 +319,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/mcp'
     | '/mentions-legales'
+    | '/messages'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -320,6 +338,7 @@ export interface FileRouteTypes {
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
+    | '/messages/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/push-dispatch'
@@ -351,6 +370,7 @@ export interface FileRouteTypes {
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte'
+    | '/messages'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/push-dispatch'
@@ -365,6 +385,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/mcp'
     | '/mentions-legales'
+    | '/messages'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -383,6 +404,7 @@ export interface FileRouteTypes {
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
+    | '/messages/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/push-dispatch'
@@ -398,6 +420,7 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   McpRoute: typeof McpRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MessagesRoute: typeof MessagesRouteWithChildren
   PublierRoute: typeof PublierRoute
   RechercheRoute: typeof RechercheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -432,6 +455,13 @@ declare module '@tanstack/react-router' {
       path: '/publier'
       fullPath: '/publier'
       preLoaderRoute: typeof PublierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -496,6 +526,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/messages/': {
+      id: '/messages/'
+      path: '/'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof MessagesIndexRouteImport
+      parentRoute: typeof MessagesRoute
     }
     '/compte/': {
       id: '/compte/'
@@ -655,6 +692,18 @@ const CompteRouteChildren: CompteRouteChildren = {
 const CompteRouteWithChildren =
   CompteRoute._addFileChildren(CompteRouteChildren)
 
+interface MessagesRouteChildren {
+  MessagesIndexRoute: typeof MessagesIndexRoute
+}
+
+const MessagesRouteChildren: MessagesRouteChildren = {
+  MessagesIndexRoute: MessagesIndexRoute,
+}
+
+const MessagesRouteWithChildren = MessagesRoute._addFileChildren(
+  MessagesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -665,6 +714,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   McpRoute: McpRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MessagesRoute: MessagesRouteWithChildren,
   PublierRoute: PublierRoute,
   RechercheRoute: RechercheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
