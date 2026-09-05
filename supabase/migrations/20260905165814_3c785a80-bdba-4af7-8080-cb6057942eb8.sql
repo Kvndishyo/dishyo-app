@@ -1,0 +1,10 @@
+REVOKE ALL ON FUNCTION public.is_conversation_member(uuid, uuid) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.bump_conversation_on_message() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.start_direct_conversation(uuid) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.create_group_conversation(text, uuid[]) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.my_conversations() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.mark_conversation_read(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.start_direct_conversation(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.create_group_conversation(text, uuid[]) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.my_conversations() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.mark_conversation_read(uuid) TO authenticated;
