@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as PublierRouteImport } from './routes/publier'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
@@ -53,6 +54,11 @@ const RechercheRoute = RechercheRouteImport.update({
 const PublierRoute = PublierRouteImport.update({
   id: '/publier',
   path: '/publier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/messages': typeof MessagesRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByTo {
   '/confidentialite': typeof ConfidentialiteRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/messages': typeof MessagesRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/mcp': typeof McpRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/messages': typeof MessagesRoute
   '/publier': typeof PublierRoute
   '/recherche': typeof RechercheRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -302,6 +311,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/mcp'
     | '/mentions-legales'
+    | '/messages'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/mcp'
     | '/mentions-legales'
+    | '/messages'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/confidentialite'
     | '/mcp'
     | '/mentions-legales'
+    | '/messages'
     | '/publier'
     | '/recherche'
     | '/reset-password'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   McpRoute: typeof McpRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MessagesRoute: typeof MessagesRoute
   PublierRoute: typeof PublierRoute
   RechercheRoute: typeof RechercheRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/publier'
       fullPath: '/publier'
       preLoaderRoute: typeof PublierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -665,6 +685,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   McpRoute: McpRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MessagesRoute: MessagesRoute,
   PublierRoute: PublierRoute,
   RechercheRoute: RechercheRoute,
   ResetPasswordRoute: ResetPasswordRoute,
