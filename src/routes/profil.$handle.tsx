@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, UserPlus, UserCheck } from "lucide-react";
+import { ArrowLeft, UserPlus, UserCheck, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
+import { startDirect } from "@/lib/chat";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileByHandleOptions, userPostsOptions } from "@/lib/queries";
