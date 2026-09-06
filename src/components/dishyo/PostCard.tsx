@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2 } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { CommentSheet } from "./CommentSheet";
 import { HighlightedText } from "./MentionTextarea";
 import { ReportDialog } from "./ReportDialog";
 import { ExpiryRing } from "./ExpiryRing";
+import { ShareToChatSheet } from "./ShareToChatSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [shareChatOpen, setShareChatOpen] = useState(false);
   const [burst, setBurst] = useState(0);
   const serverMyLike = post.likes.find((l) => l.user_id === currentUserId)?.emoji ?? null;
   const [liked, setLiked] = useState<string | null>(serverMyLike);
@@ -190,6 +192,15 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
         <motion.button
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.04 }}
+          onClick={() => setShareChatOpen(true)}
+          className="ml-auto flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
+          aria-label="Envoyer en message"
+        >
+          <Send className="h-5 w-5" />
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.04 }}
           onClick={async () => {
             const url = `${window.location.origin}/plat/${post.id}`;
             const shareData = { title: post.title, text: `${post.title} sur Dishyo`, url };
@@ -198,7 +209,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
               else { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
             } catch {}
           }}
-          className="ml-auto flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
+          className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"
           aria-label="Partager"
         >
           <Share2 className="h-5 w-5" />
@@ -206,6 +217,8 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
       </div>
 
       <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsAdded((c) => c + 1)} />
+
+      <ShareToChatSheet open={shareChatOpen} onClose={() => setShareChatOpen(false)} postId={post.id} />
 
       <ReportDialog open={reportOpen} onClose={() => setReportOpen(false)} targetType="post" targetId={post.id} />
 
