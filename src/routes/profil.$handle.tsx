@@ -90,7 +90,20 @@ function ProfilePage() {
                 {following ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
                 {following ? "Suivi" : followsMe ? "Suivre en retour" : "Suivre"}
               </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const convId = await startDirect(profile.id);
+                    navigate({ to: "/messages/$id", params: { id: convId } });
+                  } catch {
+                    toast.error("Discussion indisponible");
+                  }
+                }}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-muted py-2.5 text-sm font-semibold transition hover:bg-accent">
+                <MessageCircle className="h-4 w-4" /> Message
+              </button>
             </div>
+
           )}
         </div>
 
