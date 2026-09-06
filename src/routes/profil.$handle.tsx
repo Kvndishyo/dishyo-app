@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, UserPlus, UserCheck } from "lucide-react";
+import { ArrowLeft, UserPlus, UserCheck, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
+import { startDirect } from "@/lib/chat";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileByHandleOptions, userPostsOptions } from "@/lib/queries";
@@ -90,7 +92,20 @@ function ProfilePage() {
                 {following ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
                 {following ? "Suivi" : followsMe ? "Suivre en retour" : "Suivre"}
               </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const convId = await startDirect(profile.id);
+                    navigate({ to: "/messages/$id", params: { id: convId } });
+                  } catch {
+                    toast.error("Discussion indisponible");
+                  }
+                }}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl bg-muted py-2.5 text-sm font-semibold transition hover:bg-accent">
+                <MessageCircle className="h-4 w-4" /> Message
+              </button>
             </div>
+
           )}
         </div>
 

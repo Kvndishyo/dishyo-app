@@ -1,15 +1,17 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Home, Search, PlusCircle, User } from "lucide-react";
+import { Home, Search, PlusCircle, MessageCircle, User } from "lucide-react";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
 import { SplashScreen } from "./SplashScreen";
 import { Onboarding } from "./Onboarding";
 import { AgeGate } from "./AgeGate";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 const TABS = [
   { to: "/", label: "Accueil", icon: Home },
   { to: "/recherche", label: "Recherche", icon: Search },
   { to: "/publier", label: "Publier", icon: PlusCircle },
+  { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/compte", label: "Compte", icon: User },
 ] as const;
 
@@ -17,6 +19,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [showSplash, setShowSplash] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const { total: unread } = useUnreadMessages();
 
   useEffect(() => {
     const t = setTimeout(() => setShowSplash(false), 1300);
@@ -55,9 +58,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {!/^\/(auth|reset-password)/.test(location.pathname) && (
         <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-[520px] -translate-x-1/2 border-t border-border bg-background/95 backdrop-blur-xl">
-          <ul className="grid grid-cols-4 px-2 pb-[env(safe-area-inset-bottom)] pt-2">
+          <ul className="grid grid-cols-5 px-2 pb-[env(safe-area-inset-bottom)] pt-2">
             {TABS.map((t) => {
-              const active = location.pathname === t.to;
+              const active = t.to === "/" ? location.pathname === "/" : location.pathname.startsWith(t.to);
               const Icon = t.icon;
               return (
                 <li key={t.to}>
@@ -71,6 +74,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                       }`}
                       strokeWidth={active ? 2.4 : 1.8}
                     />
+                    {t.to === "/messages" && unread > 0 && (
+                      <span className="absolute right-3 top-0 min-w-[18px] rounded-full bg-primary px-1 text-center text-[10px] font-bold leading-[18px] text-primary-foreground">
+                        {unread > 99 ? "99+" : unread}
+                      </span>
+                    )}
                     <span
                       className={`text-[11px] transition-colors ${
                         active ? "font-semibold text-primary" : "text-muted-foreground"
