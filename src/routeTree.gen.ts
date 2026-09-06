@@ -26,6 +26,7 @@ import { Route as MessagesIndexRouteImport } from './routes/messages.index'
 import { Route as CompteIndexRouteImport } from './routes/compte.index'
 import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as PlatIdRouteImport } from './routes/plat.$id'
+import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
 import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
@@ -126,6 +127,11 @@ const PlatIdRoute = PlatIdRouteImport.update({
   id: '/plat/$id',
   path: '/plat/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesIdRoute = MessagesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MessagesRoute,
 } as any)
 const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
   id: '/restaurateur',
@@ -232,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte': typeof CompteIndexRoute
@@ -299,6 +307,7 @@ export interface FileRoutesById {
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
   '/profil/$handle': typeof ProfilHandleRoute
   '/compte/': typeof CompteIndexRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
     | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
+    | '/messages/$id'
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
@@ -367,6 +377,7 @@ export interface FileRouteTypes {
     | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
+    | '/messages/$id'
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte'
@@ -401,6 +412,7 @@ export interface FileRouteTypes {
     | '/compte/dashboard'
     | '/compte/mes-plats'
     | '/compte/restaurateur'
+    | '/messages/$id'
     | '/plat/$id'
     | '/profil/$handle'
     | '/compte/'
@@ -555,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/messages/$id': {
+      id: '/messages/$id'
+      path: '/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof MessagesIdRouteImport
+      parentRoute: typeof MessagesRoute
+    }
     '/compte/restaurateur': {
       id: '/compte/restaurateur'
       path: '/restaurateur'
@@ -693,10 +712,12 @@ const CompteRouteWithChildren =
   CompteRoute._addFileChildren(CompteRouteChildren)
 
 interface MessagesRouteChildren {
+  MessagesIdRoute: typeof MessagesIdRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
 }
 
 const MessagesRouteChildren: MessagesRouteChildren = {
+  MessagesIdRoute: MessagesIdRoute,
   MessagesIndexRoute: MessagesIndexRoute,
 }
 
