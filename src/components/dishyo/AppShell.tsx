@@ -1,16 +1,17 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Home, Search, PlusCircle, MessageCircle, User } from "lucide-react";
+import { Home, Search, MessageCircle, User } from "lucide-react";
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
 import { SplashScreen } from "./SplashScreen";
 import { Onboarding } from "./Onboarding";
 import { AgeGate } from "./AgeGate";
+import { Logo } from "./Logo";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 
 const TABS = [
   { to: "/", label: "Accueil", icon: Home },
   { to: "/recherche", label: "Recherche", icon: Search },
-  { to: "/publier", label: "Publier", icon: PlusCircle },
+  { to: "/publier", label: "Publier", icon: null },
   { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/compte", label: "Compte", icon: User },
 ] as const;
