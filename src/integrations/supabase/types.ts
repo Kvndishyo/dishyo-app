@@ -568,6 +568,29 @@ export type Database = {
         }
         Relationships: []
       }
+      post_expiry_reminders: {
+        Row: {
+          post_id: string
+          sent_at: string
+        }
+        Insert: {
+          post_id: string
+          sent_at?: string
+        }
+        Update: {
+          post_id?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_expiry_reminders_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           category: string | null
@@ -731,6 +754,32 @@ export type Database = {
           target_type?: Database["public"]["Enums"]["report_target"]
         }
         Relationships: []
+      }
+      saved_posts: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_posts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sponsored_ads: {
         Row: {

@@ -28,6 +28,7 @@ import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as PlatIdRouteImport } from './routes/plat.$id'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
+import { Route as CompteNotificationsRouteImport } from './routes/compte.notifications'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
 import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
 import { Route as CompteContactRouteImport } from './routes/compte.contact'
@@ -40,6 +41,7 @@ import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
+import { Route as ApiPublicExpiryRemindersRouteImport } from './routes/api/public/expiry-reminders'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
@@ -138,6 +140,11 @@ const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
   path: '/restaurateur',
   getParentRoute: () => CompteRoute,
 } as any)
+const CompteNotificationsRoute = CompteNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => CompteRoute,
+} as any)
 const CompteMesPlatsRoute = CompteMesPlatsRouteImport.update({
   id: '/mes-plats',
   path: '/mes-plats',
@@ -200,6 +207,12 @@ const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
   path: '/api/public/push-dispatch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicExpiryRemindersRoute =
+  ApiPublicExpiryRemindersRouteImport.update({
+    id: '/api/public/expiry-reminders',
+    path: '/api/public/expiry-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -237,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/compte/contact': typeof CompteContactRoute
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
+  '/compte/notifications': typeof CompteNotificationsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
@@ -245,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/messages/': typeof MessagesIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/expiry-reminders': typeof ApiPublicExpiryRemindersRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRoutesByTo {
@@ -270,6 +285,7 @@ export interface FileRoutesByTo {
   '/compte/contact': typeof CompteContactRoute
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
+  '/compte/notifications': typeof CompteNotificationsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
@@ -278,6 +294,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/expiry-reminders': typeof ApiPublicExpiryRemindersRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRoutesById {
@@ -306,6 +323,7 @@ export interface FileRoutesById {
   '/compte/contact': typeof CompteContactRoute
   '/compte/dashboard': typeof CompteDashboardRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
+  '/compte/notifications': typeof CompteNotificationsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
@@ -314,6 +332,7 @@ export interface FileRoutesById {
   '/messages/': typeof MessagesIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/expiry-reminders': typeof ApiPublicExpiryRemindersRoute
   '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
 }
 export interface FileRouteTypes {
@@ -343,6 +362,7 @@ export interface FileRouteTypes {
     | '/compte/contact'
     | '/compte/dashboard'
     | '/compte/mes-plats'
+    | '/compte/notifications'
     | '/compte/restaurateur'
     | '/messages/$id'
     | '/plat/$id'
@@ -351,6 +371,7 @@ export interface FileRouteTypes {
     | '/messages/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/expiry-reminders'
     | '/api/public/push-dispatch'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -376,6 +397,7 @@ export interface FileRouteTypes {
     | '/compte/contact'
     | '/compte/dashboard'
     | '/compte/mes-plats'
+    | '/compte/notifications'
     | '/compte/restaurateur'
     | '/messages/$id'
     | '/plat/$id'
@@ -384,6 +406,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/expiry-reminders'
     | '/api/public/push-dispatch'
   id:
     | '__root__'
@@ -411,6 +434,7 @@ export interface FileRouteTypes {
     | '/compte/contact'
     | '/compte/dashboard'
     | '/compte/mes-plats'
+    | '/compte/notifications'
     | '/compte/restaurateur'
     | '/messages/$id'
     | '/plat/$id'
@@ -419,6 +443,7 @@ export interface FileRouteTypes {
     | '/messages/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/expiry-reminders'
     | '/api/public/push-dispatch'
   fileRoutesById: FileRoutesById
 }
@@ -443,6 +468,7 @@ export interface RootRouteChildren {
   ProfilHandleRoute: typeof ProfilHandleRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicExpiryRemindersRoute: typeof ApiPublicExpiryRemindersRoute
   ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
 }
 
@@ -581,6 +607,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteRestaurateurRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/compte/notifications': {
+      id: '/compte/notifications'
+      path: '/notifications'
+      fullPath: '/compte/notifications'
+      preLoaderRoute: typeof CompteNotificationsRouteImport
+      parentRoute: typeof CompteRoute
+    }
     '/compte/mes-plats': {
       id: '/compte/mes-plats'
       path: '/mes-plats'
@@ -665,6 +698,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/expiry-reminders': {
+      id: '/api/public/expiry-reminders'
+      path: '/api/public/expiry-reminders'
+      fullPath: '/api/public/expiry-reminders'
+      preLoaderRoute: typeof ApiPublicExpiryRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -691,6 +731,7 @@ interface CompteRouteChildren {
   CompteContactRoute: typeof CompteContactRoute
   CompteDashboardRoute: typeof CompteDashboardRoute
   CompteMesPlatsRoute: typeof CompteMesPlatsRoute
+  CompteNotificationsRoute: typeof CompteNotificationsRoute
   CompteRestaurateurRoute: typeof CompteRestaurateurRoute
   CompteIndexRoute: typeof CompteIndexRoute
 }
@@ -704,6 +745,7 @@ const CompteRouteChildren: CompteRouteChildren = {
   CompteContactRoute: CompteContactRoute,
   CompteDashboardRoute: CompteDashboardRoute,
   CompteMesPlatsRoute: CompteMesPlatsRoute,
+  CompteNotificationsRoute: CompteNotificationsRoute,
   CompteRestaurateurRoute: CompteRestaurateurRoute,
   CompteIndexRoute: CompteIndexRoute,
 }
@@ -747,6 +789,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfilHandleRoute: ProfilHandleRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicExpiryRemindersRoute: ApiPublicExpiryRemindersRoute,
   ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
 }
 export const routeTree = rootRouteImport
