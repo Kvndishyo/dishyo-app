@@ -54,8 +54,8 @@ function NotificationsSettingsPage() {
       try {
         const [p, d] = await Promise.all([loadPrefs({}), loadDevices({})]);
         if (!alive) return;
-        setPrefs(p);
-        setDevices(d as Device[]);
+        if (p) setPrefs(p);
+        setDevices(Array.isArray(d) ? (d as Device[]) : []);
       } catch (e: any) {
         toast.error(e?.message ?? "Chargement impossible");
       } finally {
