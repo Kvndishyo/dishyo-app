@@ -221,6 +221,15 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
         <motion.button
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.04 }}
+          onClick={toggleSave}
+          className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm transition ${saved ? "bg-primary/15 text-primary" : "bg-muted hover:bg-accent"}`}
+          aria-label={saved ? "Retirer des favoris" : "Enregistrer"}
+        >
+          <Bookmark className={`h-5 w-5 ${saved ? "fill-primary" : ""}`} />
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.04 }}
           onClick={async () => {
             const url = `${window.location.origin}/plat/${post.id}`;
             const shareData = { title: post.title, text: `${post.title} sur Dishyo`, url };
