@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, FileText, Lock, Trash2, BarChart3 } from "lucide-react";
+import { Pencil, Utensils, Star, Bell, Moon, Shield, HelpCircle, ChevronRight, LogOut, ShieldCheck, Camera, FileText, Lock, Trash2, BarChart3, Bookmark } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
@@ -141,6 +141,8 @@ function AccountPage() {
 
         <div className="mt-6 space-y-1">
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />
+          <Row icon={<Bookmark className="h-5 w-5 text-primary" />} title="Mes favoris" subtitle="Les plats que tu as enregistrés" to="/compte/favoris" iconBg="bg-primary/10" />
+          <Row icon={<Bell className="h-5 w-5" />} title="Notifications" subtitle="Types, heures calmes et appareils" to="/compte/notifications" />
           <Row icon={<BarChart3 className="h-5 w-5 text-primary" />} title="Dashboard" subtitle="Tes statistiques" to="/compte/dashboard" iconBg="bg-primary/10" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
           <PushToggle Row={ToggleRow} />

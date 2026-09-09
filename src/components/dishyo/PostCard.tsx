@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2, Send } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2, Send, Bookmark } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { savedIdsQueryOptions } from "@/lib/queries";
 import { type DbPost, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
 import { CommentSheet } from "./CommentSheet";
 import { HighlightedText } from "./MentionTextarea";
@@ -26,6 +27,25 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const [commentsAdded, setCommentsAdded] = useState(0);
   const seenCommentsCountRef = useRef(post.comments?.[0]?.count ?? 0);
   const lastTapRef = useRef(0);
+  const { data: savedIds } = useQuery(savedIdsQueryOptions(currentUserId));
+  const [savedOverride, setSavedOverride] = useState<boolean | null>(null);
+  const saved = savedOverride ?? !!savedIds?.has(post.id);
+
+  async function toggleSave() {
+    const next = !saved;
+    setSavedOverride(next);
+    const { error } = next
+      ? await supabase.from("saved_posts").upsert({ post_id: post.id, user_id: currentUserId }, { onConflict: "user_id,post_id" })
+      : await supabase.from("saved_posts").delete().eq("post_id", post.id).eq("user_id", currentUserId);
+    if (error) {
+      setSavedOverride(!next);
+      return toast.error("Erreur");
+    }
+    toast.success(next ? "Ajouté à tes favoris" : "Retiré des favoris");
+    qc.invalidateQueries({ queryKey: ["saved-ids"] });
+    qc.invalidateQueries({ queryKey: ["saved-posts"] });
+  }
+
 
   // Derive total without double-counting: adjust by diff between optimistic local state and the latest server snapshot.
   const serverHasMine = !!serverMyLike;
@@ -197,6 +217,15 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
           aria-label="Envoyer en message"
         >
           <Send className="h-5 w-5" />
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.04 }}
+          onClick={toggleSave}
+          className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm transition ${saved ? "bg-primary/15 text-primary" : "bg-muted hover:bg-accent"}`}
+          aria-label={saved ? "Retirer des favoris" : "Enregistrer"}
+        >
+          <Bookmark className={`h-5 w-5 ${saved ? "fill-primary" : ""}`} />
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.9 }}
