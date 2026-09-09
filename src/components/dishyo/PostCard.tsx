@@ -27,6 +27,25 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const [commentsAdded, setCommentsAdded] = useState(0);
   const seenCommentsCountRef = useRef(post.comments?.[0]?.count ?? 0);
   const lastTapRef = useRef(0);
+  const { data: savedIds } = useQuery(savedIdsQueryOptions(currentUserId));
+  const [savedOverride, setSavedOverride] = useState<boolean | null>(null);
+  const saved = savedOverride ?? !!savedIds?.has(post.id);
+
+  async function toggleSave() {
+    const next = !saved;
+    setSavedOverride(next);
+    const { error } = next
+      ? await supabase.from("saved_posts").upsert({ post_id: post.id, user_id: currentUserId }, { onConflict: "user_id,post_id" })
+      : await supabase.from("saved_posts").delete().eq("post_id", post.id).eq("user_id", currentUserId);
+    if (error) {
+      setSavedOverride(!next);
+      return toast.error("Erreur");
+    }
+    toast.success(next ? "Ajouté à tes favoris" : "Retiré des favoris");
+    qc.invalidateQueries({ queryKey: ["saved-ids"] });
+    qc.invalidateQueries({ queryKey: ["saved-posts"] });
+  }
+
 
   // Derive total without double-counting: adjust by diff between optimistic local state and the latest server snapshot.
   const serverHasMine = !!serverMyLike;
