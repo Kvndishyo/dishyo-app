@@ -110,3 +110,36 @@ export const postByIdOptions = (id: string) =>
     },
     staleTime: 30_000,
   });
+
+export const savedIdsQueryOptions = (uid: string | undefined) =>
+  queryOptions({
+    queryKey: ["saved-ids", uid],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("saved_posts")
+        .select("post_id")
+        .eq("user_id", uid!);
+      if (error) throw error;
+      return new Set((data ?? []).map((r: any) => r.post_id as string));
+    },
+    staleTime: 60_000,
+  });
+
+export const savedPostsQueryOptions = (uid: string | undefined) =>
+  queryOptions({
+    queryKey: ["saved-posts", uid],
+    enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("saved_posts")
+        .select(`created_at, posts!saved_posts_post_id_fkey(${POST_SELECT})`)
+        .eq("user_id", uid!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? [])
+        .map((r: any) => r.posts)
+        .filter(Boolean) as unknown as DbPost[];
+    },
+    staleTime: 30_000,
+  });

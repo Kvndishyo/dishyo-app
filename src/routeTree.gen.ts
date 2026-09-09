@@ -30,6 +30,7 @@ import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
 import { Route as CompteNotificationsRouteImport } from './routes/compte.notifications'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
+import { Route as CompteFavorisRouteImport } from './routes/compte.favoris'
 import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
 import { Route as CompteContactRouteImport } from './routes/compte.contact'
 import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
@@ -150,6 +151,11 @@ const CompteMesPlatsRoute = CompteMesPlatsRouteImport.update({
   path: '/mes-plats',
   getParentRoute: () => CompteRoute,
 } as any)
+const CompteFavorisRoute = CompteFavorisRouteImport.update({
+  id: '/favoris',
+  path: '/favoris',
+  getParentRoute: () => CompteRoute,
+} as any)
 const CompteDashboardRoute = CompteDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/dashboard': typeof CompteDashboardRoute
+  '/compte/favoris': typeof CompteFavorisRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/notifications': typeof CompteNotificationsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
@@ -284,6 +291,7 @@ export interface FileRoutesByTo {
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/dashboard': typeof CompteDashboardRoute
+  '/compte/favoris': typeof CompteFavorisRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/notifications': typeof CompteNotificationsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/compte/confidentialite': typeof CompteConfidentialiteRoute
   '/compte/contact': typeof CompteContactRoute
   '/compte/dashboard': typeof CompteDashboardRoute
+  '/compte/favoris': typeof CompteFavorisRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/notifications': typeof CompteNotificationsRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
@@ -361,6 +370,7 @@ export interface FileRouteTypes {
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/dashboard'
+    | '/compte/favoris'
     | '/compte/mes-plats'
     | '/compte/notifications'
     | '/compte/restaurateur'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/dashboard'
+    | '/compte/favoris'
     | '/compte/mes-plats'
     | '/compte/notifications'
     | '/compte/restaurateur'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/compte/confidentialite'
     | '/compte/contact'
     | '/compte/dashboard'
+    | '/compte/favoris'
     | '/compte/mes-plats'
     | '/compte/notifications'
     | '/compte/restaurateur'
@@ -621,6 +633,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteMesPlatsRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/compte/favoris': {
+      id: '/compte/favoris'
+      path: '/favoris'
+      fullPath: '/compte/favoris'
+      preLoaderRoute: typeof CompteFavorisRouteImport
+      parentRoute: typeof CompteRoute
+    }
     '/compte/dashboard': {
       id: '/compte/dashboard'
       path: '/dashboard'
@@ -730,6 +749,7 @@ interface CompteRouteChildren {
   CompteConfidentialiteRoute: typeof CompteConfidentialiteRoute
   CompteContactRoute: typeof CompteContactRoute
   CompteDashboardRoute: typeof CompteDashboardRoute
+  CompteFavorisRoute: typeof CompteFavorisRoute
   CompteMesPlatsRoute: typeof CompteMesPlatsRoute
   CompteNotificationsRoute: typeof CompteNotificationsRoute
   CompteRestaurateurRoute: typeof CompteRestaurateurRoute
@@ -744,6 +764,7 @@ const CompteRouteChildren: CompteRouteChildren = {
   CompteConfidentialiteRoute: CompteConfidentialiteRoute,
   CompteContactRoute: CompteContactRoute,
   CompteDashboardRoute: CompteDashboardRoute,
+  CompteFavorisRoute: CompteFavorisRoute,
   CompteMesPlatsRoute: CompteMesPlatsRoute,
   CompteNotificationsRoute: CompteNotificationsRoute,
   CompteRestaurateurRoute: CompteRestaurateurRoute,
