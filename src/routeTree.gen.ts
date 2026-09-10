@@ -28,6 +28,7 @@ import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as PlatIdRouteImport } from './routes/plat.$id'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
+import { Route as ComptePlusRouteImport } from './routes/compte.plus'
 import { Route as CompteNotificationsRouteImport } from './routes/compte.notifications'
 import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
 import { Route as CompteFavorisRouteImport } from './routes/compte.favoris'
@@ -139,6 +140,11 @@ const MessagesIdRoute = MessagesIdRouteImport.update({
 const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
   id: '/restaurateur',
   path: '/restaurateur',
+  getParentRoute: () => CompteRoute,
+} as any)
+const ComptePlusRoute = ComptePlusRouteImport.update({
+  id: '/plus',
+  path: '/plus',
   getParentRoute: () => CompteRoute,
 } as any)
 const CompteNotificationsRoute = CompteNotificationsRouteImport.update({
@@ -258,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/compte/favoris': typeof CompteFavorisRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/notifications': typeof CompteNotificationsRoute
+  '/compte/plus': typeof ComptePlusRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/compte/favoris': typeof CompteFavorisRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/notifications': typeof CompteNotificationsRoute
+  '/compte/plus': typeof ComptePlusRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/compte/favoris': typeof CompteFavorisRoute
   '/compte/mes-plats': typeof CompteMesPlatsRoute
   '/compte/notifications': typeof CompteNotificationsRoute
+  '/compte/plus': typeof ComptePlusRoute
   '/compte/restaurateur': typeof CompteRestaurateurRoute
   '/messages/$id': typeof MessagesIdRoute
   '/plat/$id': typeof PlatIdRoute
@@ -373,6 +382,7 @@ export interface FileRouteTypes {
     | '/compte/favoris'
     | '/compte/mes-plats'
     | '/compte/notifications'
+    | '/compte/plus'
     | '/compte/restaurateur'
     | '/messages/$id'
     | '/plat/$id'
@@ -409,6 +419,7 @@ export interface FileRouteTypes {
     | '/compte/favoris'
     | '/compte/mes-plats'
     | '/compte/notifications'
+    | '/compte/plus'
     | '/compte/restaurateur'
     | '/messages/$id'
     | '/plat/$id'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/compte/favoris'
     | '/compte/mes-plats'
     | '/compte/notifications'
+    | '/compte/plus'
     | '/compte/restaurateur'
     | '/messages/$id'
     | '/plat/$id'
@@ -619,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompteRestaurateurRouteImport
       parentRoute: typeof CompteRoute
     }
+    '/compte/plus': {
+      id: '/compte/plus'
+      path: '/plus'
+      fullPath: '/compte/plus'
+      preLoaderRoute: typeof ComptePlusRouteImport
+      parentRoute: typeof CompteRoute
+    }
     '/compte/notifications': {
       id: '/compte/notifications'
       path: '/notifications'
@@ -752,6 +771,7 @@ interface CompteRouteChildren {
   CompteFavorisRoute: typeof CompteFavorisRoute
   CompteMesPlatsRoute: typeof CompteMesPlatsRoute
   CompteNotificationsRoute: typeof CompteNotificationsRoute
+  ComptePlusRoute: typeof ComptePlusRoute
   CompteRestaurateurRoute: typeof CompteRestaurateurRoute
   CompteIndexRoute: typeof CompteIndexRoute
 }
@@ -767,6 +787,7 @@ const CompteRouteChildren: CompteRouteChildren = {
   CompteFavorisRoute: CompteFavorisRoute,
   CompteMesPlatsRoute: CompteMesPlatsRoute,
   CompteNotificationsRoute: CompteNotificationsRoute,
+  ComptePlusRoute: ComptePlusRoute,
   CompteRestaurateurRoute: CompteRestaurateurRoute,
   CompteIndexRoute: CompteIndexRoute,
 }
