@@ -658,7 +658,11 @@ export type Database = {
           display_name: string
           handle: string
           id: string
+          plus_accent: string | null
+          plus_frame: string | null
+          plus_theme: string | null
           restaurateur: boolean
+          restaurateur_plan: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -667,7 +671,11 @@ export type Database = {
           display_name: string
           handle: string
           id: string
+          plus_accent?: string | null
+          plus_frame?: string | null
+          plus_theme?: string | null
           restaurateur?: boolean
+          restaurateur_plan?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -676,7 +684,11 @@ export type Database = {
           display_name?: string
           handle?: string
           id?: string
+          plus_accent?: string | null
+          plus_frame?: string | null
+          plus_theme?: string | null
           restaurateur?: boolean
+          restaurateur_plan?: string | null
         }
         Relationships: []
       }
@@ -835,6 +847,57 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string
+          id: string
+          interval: string
+          plan: string
+          provider: string | null
+          provider_customer_id: string | null
+          provider_subscription_id: string | null
+          started_at: string
+          status: string
+          trial: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end: string
+          id?: string
+          interval?: string
+          plan: string
+          provider?: string | null
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
+          started_at?: string
+          status?: string
+          trial?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string
+          id?: string
+          interval?: string
+          plan?: string
+          provider?: string | null
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
+          started_at?: string
+          status?: string
+          trial?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       support_messages: {
         Row: {
           ai_reply: string | null
@@ -864,6 +927,24 @@ export type Database = {
           id?: string
           status?: string
           subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trials_used: {
+        Row: {
+          plan: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          plan: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          plan?: string
+          used_at?: string
           user_id?: string
         }
         Relationships: []
@@ -960,6 +1041,7 @@ export type Database = {
         Returns: undefined
       }
       can_speak_admin_chat: { Args: { _user_id: string }; Returns: boolean }
+      cancel_my_subscription: { Args: { _plan: string }; Returns: undefined }
       check_rate_limit: {
         Args: { _action: string; _max: number; _window_seconds: number }
         Returns: boolean
@@ -967,6 +1049,10 @@ export type Database = {
       create_group_conversation: {
         Args: { _member_ids: string[]; _title: string }
         Returns: string
+      }
+      has_active_plan: {
+        Args: { _plan: string; _user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
@@ -1052,7 +1138,11 @@ export type Database = {
           display_name: string
           handle: string
           id: string
+          plus_accent: string | null
+          plus_frame: string | null
+          plus_theme: string | null
           restaurateur: boolean
+          restaurateur_plan: string | null
         }[]
         SetofOptions: {
           from: "*"
@@ -1064,6 +1154,31 @@ export type Database = {
       start_direct_conversation: {
         Args: { _other_user_id: string }
         Returns: string
+      }
+      start_trial: {
+        Args: { _plan: string }
+        Returns: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string
+          id: string
+          interval: string
+          plan: string
+          provider: string | null
+          provider_customer_id: string | null
+          provider_subscription_id: string | null
+          started_at: string
+          status: string
+          trial: boolean
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "subscriptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       update_my_handle: { Args: { new_handle: string }; Returns: string }
       verify_my_age: { Args: { _birthdate: string }; Returns: string }
