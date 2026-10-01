@@ -38,7 +38,7 @@ function PlusPage() {
   const accent = (profile as { plus_accent?: string } | null)?.plus_accent ?? "orange";
   const frame = (profile as { plus_frame?: string } | null)?.plus_frame ?? "none";
 
-  async function savePref(patch: Record<string, string>) {
+  async function savePref(patch: { plus_accent?: string; plus_frame?: string }) {
     if (!profile) return;
     const { error } = await supabase.from("profiles").update(patch).eq("id", profile.id);
     if (error) return toast.error(error.message);
