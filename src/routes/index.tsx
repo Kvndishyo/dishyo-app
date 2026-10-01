@@ -8,6 +8,7 @@ import { feedInfiniteOptions } from "@/lib/queries";
 import { PostCard } from "@/components/dishyo/PostCard";
 import { SponsoredAdCard, type SponsoredAd } from "@/components/dishyo/SponsoredAdCard";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Logo } from "@/components/dishyo/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentPosition } from "@/lib/geo";
@@ -34,6 +35,7 @@ type Notif = {
 
 function HomePage() {
   const { session, loading: authLoading } = useAuth();
+  const { isPlus, loading: subLoading } = useSubscription();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [notifOpen, setNotifOpen] = useState(false);
@@ -95,7 +97,7 @@ function HomePage() {
 
   // Load location-relevant sponsored ads
   useEffect(() => {
-    if (!session) { setAds([]); return; }
+    if (!session || subLoading || isPlus) { setAds([]); return; }
     let cancelled = false;
     (async () => {
       try {
@@ -107,7 +109,7 @@ function HomePage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [session]);
+  }, [session, isPlus, subLoading]);
 
   async function openNotifs() {
     setNotifOpen(true);

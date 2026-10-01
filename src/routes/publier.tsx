@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { MentionTextarea } from "@/components/dishyo/MentionTextarea";
 
@@ -36,7 +37,8 @@ function PublishPage() {
   const [restaurant, setRestaurant] = useState("");
   const [recipe, setRecipe] = useState("");
   const [busy, setBusy] = useState(false);
-  const [duration, setDuration] = useState<24 | 48 | 72>(48);
+  const [duration, setDuration] = useState<24 | 48 | 72 | 168>(48);
+  const { isPlus } = useSubscription();
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [geo, setGeo] = useState<{ lat: number; lng: number; place_name: string | null } | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
@@ -155,7 +157,7 @@ function PublishPage() {
       localStorage.removeItem(DRAFT_KEY);
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["my-posts"] });
-      toast.success(`Plat publié ! Disparaît dans ${duration}h ✨`);
+      toast.success(`Plat publié ! Disparaît dans ${duration === 168 ? "7 jours" : duration + "h"} ✨`);
       navigate({ to: "/" });
     } catch (e: any) {
       toast.error(e.message ?? "Erreur publication");
@@ -218,15 +220,15 @@ function PublishPage() {
 
         <div>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Durée de visibilité</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {([24, 48, 72] as const).map((h) => (
+          <div className={`grid gap-2 ${isPlus ? "grid-cols-4" : "grid-cols-3"}`}>
+            {(isPlus ? ([24, 48, 72, 168] as const) : ([24, 48, 72] as const)).map((h) => (
               <button
                 key={h}
                 type="button"
                 onClick={() => setDuration(h)}
                 className={`rounded-2xl py-3 text-sm font-semibold transition ${duration === h ? "bg-primary text-primary-foreground shadow-glow" : "bg-muted text-foreground hover:bg-accent"}`}
               >
-                {h}h
+                {h === 168 ? "7j ✨" : `${h}h`}
               </button>
             ))}
           </div>
