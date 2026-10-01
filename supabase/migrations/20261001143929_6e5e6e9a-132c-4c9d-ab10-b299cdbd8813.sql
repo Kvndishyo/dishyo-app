@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.enforce_post_duration() FROM PUBLIC, anon, authenticated;
