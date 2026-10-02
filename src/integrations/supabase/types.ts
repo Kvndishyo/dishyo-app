@@ -659,6 +659,7 @@ export type Database = {
           handle: string
           id: string
           plus_accent: string | null
+          plus_active: boolean
           plus_frame: string | null
           plus_theme: string | null
           restaurateur: boolean
@@ -672,6 +673,7 @@ export type Database = {
           handle: string
           id: string
           plus_accent?: string | null
+          plus_active?: boolean
           plus_frame?: string | null
           plus_theme?: string | null
           restaurateur?: boolean
@@ -685,6 +687,7 @@ export type Database = {
           handle?: string
           id?: string
           plus_accent?: string | null
+          plus_active?: boolean
           plus_frame?: string | null
           plus_theme?: string | null
           restaurateur?: boolean
@@ -1139,6 +1142,7 @@ export type Database = {
           handle: string
           id: string
           plus_accent: string | null
+          plus_active: boolean
           plus_frame: string | null
           plus_theme: string | null
           restaurateur: boolean

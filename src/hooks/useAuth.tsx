@@ -10,6 +10,9 @@ type Profile = {
   bio: string | null;
   restaurateur: boolean;
   restaurateur_plan: string | null;
+  plus_active: boolean;
+  plus_accent: string | null;
+  plus_frame: string | null;
 };
 
 type AuthCtx = {
