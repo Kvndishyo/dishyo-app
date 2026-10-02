@@ -9,97 +9,47 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as RechercheRouteImport } from './routes/recherche'
-import { Route as PublierRouteImport } from './routes/publier'
-import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
-import { Route as CompteRouteImport } from './routes/compte'
-import { Route as CguRouteImport } from './routes/cgu'
-import { Route as CarteRouteImport } from './routes/carte'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MessagesIndexRouteImport } from './routes/messages.index'
-import { Route as CompteIndexRouteImport } from './routes/compte.index'
-import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
-import { Route as PlatIdRouteImport } from './routes/plat.$id'
-import { Route as MessagesIdRouteImport } from './routes/messages.$id'
-import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
-import { Route as ComptePlusRouteImport } from './routes/compte.plus'
-import { Route as CompteNotificationsRouteImport } from './routes/compte.notifications'
-import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
-import { Route as CompteFavorisRouteImport } from './routes/compte.favoris'
-import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
-import { Route as CompteContactRouteImport } from './routes/compte.contact'
-import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
-import { Route as CompteAmisRouteImport } from './routes/compte.amis'
-import { Route as CompteAideRouteImport } from './routes/compte.aide'
-import { Route as CompteAbonnesRouteImport } from './routes/compte.abonnes'
-import { Route as CompteAbonnementsRouteImport } from './routes/compte.abonnements'
-import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CarteRouteImport } from './routes/carte'
+import { Route as CguRouteImport } from './routes/cgu'
+import { Route as CompteRouteImport } from './routes/compte'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as PublierRouteImport } from './routes/publier'
+import { Route as RechercheRouteImport } from './routes/recherche'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
-import { Route as ApiPublicExpiryRemindersRouteImport } from './routes/api/public/expiry-reminders'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as ApiAssistantRouteImport } from './routes/api/assistant'
+import { Route as CompteIndexRouteImport } from './routes/compte.index'
+import { Route as CompteAbonnementsRouteImport } from './routes/compte.abonnements'
+import { Route as CompteAbonnesRouteImport } from './routes/compte.abonnes'
+import { Route as CompteAideRouteImport } from './routes/compte.aide'
+import { Route as CompteAmisRouteImport } from './routes/compte.amis'
+import { Route as CompteConfidentialiteRouteImport } from './routes/compte.confidentialite'
+import { Route as CompteContactRouteImport } from './routes/compte.contact'
+import { Route as CompteDashboardRouteImport } from './routes/compte.dashboard'
+import { Route as CompteFavorisRouteImport } from './routes/compte.favoris'
+import { Route as CompteMesPlatsRouteImport } from './routes/compte.mes-plats'
+import { Route as CompteNotificationsRouteImport } from './routes/compte.notifications'
+import { Route as ComptePlusRouteImport } from './routes/compte.plus'
+import { Route as CompteRestaurateurRouteImport } from './routes/compte.restaurateur'
+import { Route as MessagesIndexRouteImport } from './routes/messages.index'
+import { Route as MessagesIdRouteImport } from './routes/messages.$id'
+import { Route as PlatIdRouteImport } from './routes/plat.$id'
+import { Route as ProfilHandleRouteImport } from './routes/profil.$handle'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as ApiPublicExpiryRemindersRouteImport } from './routes/api/public/expiry-reminders'
+import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
 
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RechercheRoute = RechercheRouteImport.update({
-  id: '/recherche',
-  path: '/recherche',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PublierRoute = PublierRouteImport.update({
-  id: '/publier',
-  path: '/publier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
-  id: '/mentions-legales',
-  path: '/mentions-legales',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
-  id: '/confidentialite',
-  path: '/confidentialite',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompteRoute = CompteRouteImport.update({
-  id: '/compte',
-  path: '/compte',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CguRoute = CguRouteImport.update({
-  id: '/cgu',
-  path: '/cgu',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CarteRoute = CarteRouteImport.update({
-  id: '/carte',
-  path: '/carte',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -107,89 +57,81 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MessagesIndexRoute = MessagesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => MessagesRoute,
+const CarteRoute = CarteRouteImport.update({
+  id: '/carte',
+  path: '/carte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CguRoute = CguRouteImport.update({
+  id: '/cgu',
+  path: '/cgu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompteRoute = CompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
+  id: '/mentions-legales',
+  path: '/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublierRoute = PublierRouteImport.update({
+  id: '/publier',
+  path: '/publier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RechercheRoute = RechercheRouteImport.update({
+  id: '/recherche',
+  path: '/recherche',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAssistantRoute = ApiAssistantRouteImport.update({
+  id: '/api/assistant',
+  path: '/api/assistant',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CompteIndexRoute = CompteIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => CompteRoute,
-} as any)
-const ProfilHandleRoute = ProfilHandleRouteImport.update({
-  id: '/profil/$handle',
-  path: '/profil/$handle',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlatIdRoute = PlatIdRouteImport.update({
-  id: '/plat/$id',
-  path: '/plat/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesIdRoute = MessagesIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => MessagesRoute,
-} as any)
-const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
-  id: '/restaurateur',
-  path: '/restaurateur',
-  getParentRoute: () => CompteRoute,
-} as any)
-const ComptePlusRoute = ComptePlusRouteImport.update({
-  id: '/plus',
-  path: '/plus',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteNotificationsRoute = CompteNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteMesPlatsRoute = CompteMesPlatsRouteImport.update({
-  id: '/mes-plats',
-  path: '/mes-plats',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteFavorisRoute = CompteFavorisRouteImport.update({
-  id: '/favoris',
-  path: '/favoris',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteDashboardRoute = CompteDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteContactRoute = CompteContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteConfidentialiteRoute = CompteConfidentialiteRouteImport.update({
-  id: '/confidentialite',
-  path: '/confidentialite',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteAmisRoute = CompteAmisRouteImport.update({
-  id: '/amis',
-  path: '/amis',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteAideRoute = CompteAideRouteImport.update({
-  id: '/aide',
-  path: '/aide',
-  getParentRoute: () => CompteRoute,
-} as any)
-const CompteAbonnesRoute = CompteAbonnesRouteImport.update({
-  id: '/abonnes',
-  path: '/abonnes',
   getParentRoute: () => CompteRoute,
 } as any)
 const CompteAbonnementsRoute = CompteAbonnementsRouteImport.update({
@@ -197,43 +139,101 @@ const CompteAbonnementsRoute = CompteAbonnementsRouteImport.update({
   path: '/abonnements',
   getParentRoute: () => CompteRoute,
 } as any)
-const ApiAssistantRoute = ApiAssistantRouteImport.update({
-  id: '/api/assistant',
-  path: '/api/assistant',
+const CompteAbonnesRoute = CompteAbonnesRouteImport.update({
+  id: '/abonnes',
+  path: '/abonnes',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteAideRoute = CompteAideRouteImport.update({
+  id: '/aide',
+  path: '/aide',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteAmisRoute = CompteAmisRouteImport.update({
+  id: '/amis',
+  path: '/amis',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteConfidentialiteRoute = CompteConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteContactRoute = CompteContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteDashboardRoute = CompteDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteFavorisRoute = CompteFavorisRouteImport.update({
+  id: '/favoris',
+  path: '/favoris',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteMesPlatsRoute = CompteMesPlatsRouteImport.update({
+  id: '/mes-plats',
+  path: '/mes-plats',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteNotificationsRoute = CompteNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => CompteRoute,
+} as any)
+const ComptePlusRoute = ComptePlusRouteImport.update({
+  id: '/plus',
+  path: '/plus',
+  getParentRoute: () => CompteRoute,
+} as any)
+const CompteRestaurateurRoute = CompteRestaurateurRouteImport.update({
+  id: '/restaurateur',
+  path: '/restaurateur',
+  getParentRoute: () => CompteRoute,
+} as any)
+const MessagesIndexRoute = MessagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MessagesRoute,
+} as any)
+const MessagesIdRoute = MessagesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MessagesRoute,
+} as any)
+const PlatIdRoute = PlatIdRouteImport.update({
+  id: '/plat/$id',
+  path: '/plat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
-  id: '/api/public/push-dispatch',
-  path: '/api/public/push-dispatch',
+const ProfilHandleRoute = ProfilHandleRouteImport.update({
+  id: '/profil/$handle',
+  path: '/profil/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicExpiryRemindersRoute =
-  ApiPublicExpiryRemindersRouteImport.update({
-    id: '/api/public/expiry-reminders',
-    path: '/api/public/expiry-reminders',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const ApiPublicExpiryRemindersRoute =
+  ApiPublicExpiryRemindersRouteImport.update({
+    id: '/api/public/expiry-reminders',
+    path: '/api/public/expiry-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
+  id: '/api/public/push-dispatch',
+  path: '/api/public/push-dispatch',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -498,81 +498,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recherche': {
-      id: '/recherche'
-      path: '/recherche'
-      fullPath: '/recherche'
-      preLoaderRoute: typeof RechercheRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/publier': {
-      id: '/publier'
-      path: '/publier'
-      fullPath: '/publier'
-      preLoaderRoute: typeof PublierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mentions-legales': {
-      id: '/mentions-legales'
-      path: '/mentions-legales'
-      fullPath: '/mentions-legales'
-      preLoaderRoute: typeof MentionsLegalesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confidentialite': {
-      id: '/confidentialite'
-      path: '/confidentialite'
-      fullPath: '/confidentialite'
-      preLoaderRoute: typeof ConfidentialiteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compte': {
-      id: '/compte'
-      path: '/compte'
-      fullPath: '/compte'
-      preLoaderRoute: typeof CompteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cgu': {
-      id: '/cgu'
-      path: '/cgu'
-      fullPath: '/cgu'
-      preLoaderRoute: typeof CguRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/carte': {
-      id: '/carte'
-      path: '/carte'
-      fullPath: '/carte'
-      preLoaderRoute: typeof CarteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -582,144 +512,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/messages/': {
-      id: '/messages/'
-      path: '/'
-      fullPath: '/messages/'
-      preLoaderRoute: typeof MessagesIndexRouteImport
-      parentRoute: typeof MessagesRoute
-    }
-    '/compte/': {
-      id: '/compte/'
-      path: '/'
-      fullPath: '/compte/'
-      preLoaderRoute: typeof CompteIndexRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/profil/$handle': {
-      id: '/profil/$handle'
-      path: '/profil/$handle'
-      fullPath: '/profil/$handle'
-      preLoaderRoute: typeof ProfilHandleRouteImport
+    '/carte': {
+      id: '/carte'
+      path: '/carte'
+      fullPath: '/carte'
+      preLoaderRoute: typeof CarteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plat/$id': {
-      id: '/plat/$id'
-      path: '/plat/$id'
-      fullPath: '/plat/$id'
-      preLoaderRoute: typeof PlatIdRouteImport
+    '/cgu': {
+      id: '/cgu'
+      path: '/cgu'
+      fullPath: '/cgu'
+      preLoaderRoute: typeof CguRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/messages/$id': {
-      id: '/messages/$id'
-      path: '/$id'
-      fullPath: '/messages/$id'
-      preLoaderRoute: typeof MessagesIdRouteImport
-      parentRoute: typeof MessagesRoute
+    '/compte': {
+      id: '/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof CompteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/compte/restaurateur': {
-      id: '/compte/restaurateur'
-      path: '/restaurateur'
-      fullPath: '/compte/restaurateur'
-      preLoaderRoute: typeof CompteRestaurateurRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/plus': {
-      id: '/compte/plus'
-      path: '/plus'
-      fullPath: '/compte/plus'
-      preLoaderRoute: typeof ComptePlusRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/notifications': {
-      id: '/compte/notifications'
-      path: '/notifications'
-      fullPath: '/compte/notifications'
-      preLoaderRoute: typeof CompteNotificationsRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/mes-plats': {
-      id: '/compte/mes-plats'
-      path: '/mes-plats'
-      fullPath: '/compte/mes-plats'
-      preLoaderRoute: typeof CompteMesPlatsRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/favoris': {
-      id: '/compte/favoris'
-      path: '/favoris'
-      fullPath: '/compte/favoris'
-      preLoaderRoute: typeof CompteFavorisRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/dashboard': {
-      id: '/compte/dashboard'
-      path: '/dashboard'
-      fullPath: '/compte/dashboard'
-      preLoaderRoute: typeof CompteDashboardRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/contact': {
-      id: '/compte/contact'
-      path: '/contact'
-      fullPath: '/compte/contact'
-      preLoaderRoute: typeof CompteContactRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/confidentialite': {
-      id: '/compte/confidentialite'
+    '/confidentialite': {
+      id: '/confidentialite'
       path: '/confidentialite'
-      fullPath: '/compte/confidentialite'
-      preLoaderRoute: typeof CompteConfidentialiteRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/amis': {
-      id: '/compte/amis'
-      path: '/amis'
-      fullPath: '/compte/amis'
-      preLoaderRoute: typeof CompteAmisRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/aide': {
-      id: '/compte/aide'
-      path: '/aide'
-      fullPath: '/compte/aide'
-      preLoaderRoute: typeof CompteAideRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/abonnes': {
-      id: '/compte/abonnes'
-      path: '/abonnes'
-      fullPath: '/compte/abonnes'
-      preLoaderRoute: typeof CompteAbonnesRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/compte/abonnements': {
-      id: '/compte/abonnements'
-      path: '/abonnements'
-      fullPath: '/compte/abonnements'
-      preLoaderRoute: typeof CompteAbonnementsRouteImport
-      parentRoute: typeof CompteRoute
-    }
-    '/api/assistant': {
-      id: '/api/assistant'
-      path: '/api/assistant'
-      fullPath: '/api/assistant'
-      preLoaderRoute: typeof ApiAssistantRouteImport
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentions-legales': {
+      id: '/mentions-legales'
+      path: '/mentions-legales'
+      fullPath: '/mentions-legales'
+      preLoaderRoute: typeof MentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publier': {
+      id: '/publier'
+      path: '/publier'
+      fullPath: '/publier'
+      preLoaderRoute: typeof PublierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recherche': {
+      id: '/recherche'
+      path: '/recherche'
+      fullPath: '/recherche'
+      preLoaderRoute: typeof RechercheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -729,18 +596,144 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/push-dispatch': {
-      id: '/api/public/push-dispatch'
-      path: '/api/public/push-dispatch'
-      fullPath: '/api/public/push-dispatch'
-      preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/expiry-reminders': {
-      id: '/api/public/expiry-reminders'
-      path: '/api/public/expiry-reminders'
-      fullPath: '/api/public/expiry-reminders'
-      preLoaderRoute: typeof ApiPublicExpiryRemindersRouteImport
+    '/api/assistant': {
+      id: '/api/assistant'
+      path: '/api/assistant'
+      fullPath: '/api/assistant'
+      preLoaderRoute: typeof ApiAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compte/': {
+      id: '/compte/'
+      path: '/'
+      fullPath: '/compte/'
+      preLoaderRoute: typeof CompteIndexRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/abonnements': {
+      id: '/compte/abonnements'
+      path: '/abonnements'
+      fullPath: '/compte/abonnements'
+      preLoaderRoute: typeof CompteAbonnementsRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/abonnes': {
+      id: '/compte/abonnes'
+      path: '/abonnes'
+      fullPath: '/compte/abonnes'
+      preLoaderRoute: typeof CompteAbonnesRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/aide': {
+      id: '/compte/aide'
+      path: '/aide'
+      fullPath: '/compte/aide'
+      preLoaderRoute: typeof CompteAideRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/amis': {
+      id: '/compte/amis'
+      path: '/amis'
+      fullPath: '/compte/amis'
+      preLoaderRoute: typeof CompteAmisRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/confidentialite': {
+      id: '/compte/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/compte/confidentialite'
+      preLoaderRoute: typeof CompteConfidentialiteRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/contact': {
+      id: '/compte/contact'
+      path: '/contact'
+      fullPath: '/compte/contact'
+      preLoaderRoute: typeof CompteContactRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/dashboard': {
+      id: '/compte/dashboard'
+      path: '/dashboard'
+      fullPath: '/compte/dashboard'
+      preLoaderRoute: typeof CompteDashboardRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/favoris': {
+      id: '/compte/favoris'
+      path: '/favoris'
+      fullPath: '/compte/favoris'
+      preLoaderRoute: typeof CompteFavorisRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/mes-plats': {
+      id: '/compte/mes-plats'
+      path: '/mes-plats'
+      fullPath: '/compte/mes-plats'
+      preLoaderRoute: typeof CompteMesPlatsRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/notifications': {
+      id: '/compte/notifications'
+      path: '/notifications'
+      fullPath: '/compte/notifications'
+      preLoaderRoute: typeof CompteNotificationsRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/plus': {
+      id: '/compte/plus'
+      path: '/plus'
+      fullPath: '/compte/plus'
+      preLoaderRoute: typeof ComptePlusRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/compte/restaurateur': {
+      id: '/compte/restaurateur'
+      path: '/restaurateur'
+      fullPath: '/compte/restaurateur'
+      preLoaderRoute: typeof CompteRestaurateurRouteImport
+      parentRoute: typeof CompteRoute
+    }
+    '/messages/': {
+      id: '/messages/'
+      path: '/'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof MessagesIndexRouteImport
+      parentRoute: typeof MessagesRoute
+    }
+    '/messages/$id': {
+      id: '/messages/$id'
+      path: '/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof MessagesIdRouteImport
+      parentRoute: typeof MessagesRoute
+    }
+    '/plat/$id': {
+      id: '/plat/$id'
+      path: '/plat/$id'
+      fullPath: '/plat/$id'
+      preLoaderRoute: typeof PlatIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil/$handle': {
+      id: '/profil/$handle'
+      path: '/profil/$handle'
+      fullPath: '/profil/$handle'
+      preLoaderRoute: typeof ProfilHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -750,11 +743,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/api/public/expiry-reminders': {
+      id: '/api/public/expiry-reminders'
+      path: '/api/public/expiry-reminders'
+      fullPath: '/api/public/expiry-reminders'
+      preLoaderRoute: typeof ApiPublicExpiryRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/push-dispatch': {
+      id: '/api/public/push-dispatch'
+      path: '/api/public/push-dispatch'
+      fullPath: '/api/public/push-dispatch'
+      preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
