@@ -75,5 +75,6 @@ export function usePlusAppearance() {
     root.style.setProperty("--ring", accent.ring);
     root.style.setProperty("--accent", accent.soft);
     root.style.setProperty("--primary-soft", accent.soft);
+    root.style.setProperty("--plus-primary", accent.primary);
   }, [isPlus, loading, profile]);
 }

@@ -7,6 +7,7 @@ import { Onboarding } from "./Onboarding";
 import { AgeGate } from "./AgeGate";
 import { Logo } from "./Logo";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { usePlusAppearance } from "@/hooks/useSubscription";
 
 const TABS = [
   { to: "/", label: "Accueil", icon: Home },
@@ -17,6 +18,7 @@ const TABS = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  usePlusAppearance();
   const [showSplash, setShowSplash] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();

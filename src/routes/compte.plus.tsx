@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { PLUS_ACCENTS, PLUS_FRAMES, PLANS, PLUS_YEARLY } from "@/lib/plans";
+import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 
 export const Route = createFileRoute("/compte/plus")({
   head: () => ({
@@ -134,6 +135,12 @@ function PlusPage() {
 
             <div>
               <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Cadre de photo</h3>
+              {profile && (
+                <div className="mb-4 flex items-center gap-3 rounded-2xl bg-muted/50 p-3">
+                  <ProfileAvatar profile={{ ...profile, plus_active: true, plus_frame: frame }} size="md" />
+                  <div><p className="text-sm font-semibold">Aperçu du profil</p><p className="text-xs text-muted-foreground">Visible partout dans Dishyo</p></div>
+                </div>
+              )}
               <div className="grid grid-cols-4 gap-2">
                 {PLUS_FRAMES.map((f) => (
                   <button

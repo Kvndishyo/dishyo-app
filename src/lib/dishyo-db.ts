@@ -7,7 +7,8 @@ export type DbProfile = {
   avatar_url: string | null;
   bio: string | null;
   restaurateur: boolean;
-  
+  plus_active: boolean;
+  plus_frame: string | null;
 };
 
 export type DbPost = {
@@ -48,8 +49,10 @@ export const CATEGORIES = [
 ] as const;
 
 export const REACTIONS = [
-  "❤️","😍","🔥","🤤","👏","🙌","😋","🤩","😮","😂","🥰","💯","🍽️","👌","💖","🤯","✨","🎉",
+  "❤️", "😍", "🔥", "🤤", "👏", "🙌", "😋", "🤩", "😮", "😂", "🥰", "💯", "🍽️", "👌", "💖", "🤯", "✨", "🎉",
 ] as const;
+
+export const PLUS_REACTIONS = ["🧑‍🍳", "🥂", "🍾", "⭐", "👑", "🫶"] as const;
 
 const HOUR_MS = 3600 * 1000;
 
