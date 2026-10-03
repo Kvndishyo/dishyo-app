@@ -3,6 +3,7 @@ import { Search, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ROLE_META, ROLE_ORDER, type ManagedRole } from "@/lib/roles";
+import { GiftSubscription } from "./GiftSubscription";
 
 type Row = {
   user_id: string;
@@ -127,6 +128,7 @@ export function UserPermissionsPanel({ currentUserId, isOwner }: { currentUserId
                 );
               })}
             </div>
+            {isOwner && <GiftSubscription userId={row.user_id} />}
           </div>
         );
       })}
