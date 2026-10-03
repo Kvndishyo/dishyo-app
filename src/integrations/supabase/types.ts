@@ -1128,6 +1128,23 @@ export type Database = {
           user_id: string
         }[]
       }
+      owner_gift_subscription: {
+        Args: { _days: number; _plan: string; _target: string }
+        Returns: undefined
+      }
+      owner_revoke_subscription: {
+        Args: { _plan: string; _target: string }
+        Returns: undefined
+      }
+      owner_user_subscriptions: {
+        Args: { _target: string }
+        Returns: {
+          current_period_end: string
+          plan: string
+          provider: string
+          status: string
+        }[]
+      }
       push_allowed: {
         Args: { _type: string; _user_id: string }
         Returns: boolean
