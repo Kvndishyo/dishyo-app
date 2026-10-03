@@ -6,6 +6,7 @@ import { searchUsersOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 
 export const Route = createFileRoute("/recherche")({
   head: () => ({ meta: [{ title: "Dishyo — Recherche" }] }),
@@ -107,7 +108,7 @@ function SearchPage() {
             return (
               <li key={u.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
                 <Link to="/profil/$handle" params={{ handle: u.handle }} className="flex flex-1 items-center gap-3">
-                  <img src={u.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${u.handle}`} className="h-12 w-12 rounded-full object-cover" />
+                  <ProfileAvatar profile={u} size="md" />
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="font-semibold">{u.display_name}</span>

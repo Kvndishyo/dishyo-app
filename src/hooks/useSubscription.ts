@@ -69,12 +69,13 @@ export function usePlusAppearance() {
       root.style.removeProperty("--ring");
       root.style.removeProperty("--accent");
       root.style.removeProperty("--primary-soft");
+      root.style.removeProperty("--plus-primary");
       return;
     }
     root.style.setProperty("--primary", accent.primary);
     root.style.setProperty("--ring", accent.ring);
-    root.style.setProperty("--accent", accent.soft);
-    root.style.setProperty("--primary-soft", accent.soft);
+    root.style.setProperty("--accent", `color-mix(in oklch, ${accent.primary} 18%, var(--background))`);
+    root.style.setProperty("--primary-soft", `color-mix(in oklch, ${accent.primary} 18%, var(--background))`);
     root.style.setProperty("--plus-primary", accent.primary);
   }, [isPlus, loading, profile]);
 }

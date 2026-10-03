@@ -1,21 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2, Send, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Clock, MoreHorizontal, Flag, Ban, X, Share2, Send, Bookmark, Lock, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { savedIdsQueryOptions } from "@/lib/queries";
-import { type DbPost, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
+import { type DbPost, PLUS_REACTIONS, REACTIONS, timeRemaining, timeAgo } from "@/lib/dishyo-db";
 import { CommentSheet } from "./CommentSheet";
 import { HighlightedText } from "./MentionTextarea";
 import { ReportDialog } from "./ReportDialog";
-import { ExpiryRing } from "./ExpiryRing";
+import { ProfileAvatar } from "./ProfileAvatar";
 import { ShareToChatSheet } from "./ShareToChatSheet";
 import { supabase } from "@/integrations/supabase/client";
 import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
 
 export function PostCard({ post, currentUserId, onHide }: { post: DbPost; currentUserId: string; onHide?: (postId: string) => void }) {
   const qc = useQueryClient();
+  const { isPlus } = useSubscription();
   const [reactionsOpen, setReactionsOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,6 +54,12 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const localHasMine = !!liked;
   const likeAdjustment = (localHasMine ? 1 : 0) - (serverHasMine ? 1 : 0);
   const totalLikes = post.likes.length + likeAdjustment;
+  const visibleLikes = post.likes.filter((like) => like.user_id !== currentUserId);
+  if (liked) visibleLikes.push({ emoji: liked, user_id: currentUserId });
+  const reactionCounts = visibleLikes.reduce<Record<string, number>>((counts, like) => {
+    counts[like.emoji] = (counts[like.emoji] ?? 0) + 1;
+    return counts;
+  }, {});
   const author = post.profiles;
   // When the server count catches up with locally-added comments, drop the optimistic offset.
   const serverCommentsCount = post.comments?.[0]?.count ?? 0;
@@ -63,16 +71,26 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const commentsCount = serverCommentsCount + commentsAdded;
 
   async function setReaction(emoji: string | null) {
+    if (emoji && (PLUS_REACTIONS as readonly string[]).includes(emoji) && !isPlus) {
+      toast.info("Cette réaction est réservée aux membres Dishyo+");
+      return;
+    }
     const wasLiked = !!liked;
     setLiked(emoji);
     if (!wasLiked && emoji) setBurst((b) => b + 1);
 
     if (!emoji) {
       const { error } = await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", currentUserId);
-      if (error) toast.error("Erreur");
+      if (error) {
+        setLiked(serverMyLike);
+        toast.error(error.message);
+      }
     } else {
       const { error } = await supabase.from("likes").upsert({ post_id: post.id, user_id: currentUserId, emoji }, { onConflict: "post_id,user_id" });
-      if (error) toast.error("Erreur");
+      if (error) {
+        setLiked(serverMyLike);
+        toast.error(error.message);
+      }
     }
     qc.invalidateQueries({ queryKey: ["feed"] });
   }
@@ -101,18 +119,15 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
     <article className="px-4 pb-6">
       <div className="mb-3 flex items-center justify-between">
         <Link to="/profil/$handle" params={{ handle: author.handle }} className="flex items-center gap-3">
-          <ExpiryRing expiresAt={post.expires_at} size={48}>
-            <img
-              src={author.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${author.handle}`}
-              alt={author.display_name}
-              className="h-full w-full object-cover"
-            />
-          </ExpiryRing>
+          <ProfileAvatar profile={author} expiresAt={post.expires_at} size="md" />
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold leading-tight">{author.display_name}</span>
               {author.restaurateur && (
                 <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">★</span>
+              )}
+              {author.plus_active && (
+                <span className="flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary"><Sparkles className="h-2.5 w-2.5" /> Plus</span>
               )}
             </div>
             {currentUserId === author.id && <div className="text-sm text-primary">@{author.handle}</div>}
@@ -169,11 +184,8 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 600, damping: 14 }}
             >
-              <Heart className={`h-5 w-5 transition-colors ${liked ? "fill-primary text-primary" : ""}`} />
+              {liked ? <span className="emoji-glyph text-xl" aria-hidden="true">{liked}</span> : <Heart className="h-5 w-5" />}
             </motion.span>
-            {liked ? (
-              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 12 }}>{liked}</motion.span>
-            ) : null}
             <motion.span key={totalLikes} initial={{ y: -6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="font-medium">{totalLikes}</motion.span>
           </motion.button>
           <AnimatePresence>
@@ -183,9 +195,10 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.85 }}
                 transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                className="absolute bottom-full left-0 z-30 mb-2 grid w-[280px] max-w-[90vw] grid-cols-6 gap-1 rounded-2xl bg-card p-2 shadow-card"
+                className="absolute bottom-full left-0 z-30 mb-2 w-[304px] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-card p-2 shadow-card"
                 onClick={(e) => e.stopPropagation()}
               >
+                <div className="grid grid-cols-6 gap-1">
                 {REACTIONS.map((r, i) => (
                   <motion.button
                     key={r}
@@ -196,11 +209,35 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
                     whileHover={{ scale: 1.15 }}
                     whileTap={{ scale: 0.85 }}
                     onClick={() => { setReaction(r); setReactionsOpen(false); }}
-                    className="flex h-11 w-11 items-center justify-center rounded-xl text-2xl leading-none hover:bg-muted"
+                    className="emoji-glyph flex h-11 w-11 items-center justify-center rounded-xl text-2xl leading-none hover:bg-muted"
+                    aria-label={`Réagir avec ${r}`}
                   >
                     {r}
                   </motion.button>
                 ))}
+                </div>
+                <div className="my-1.5 h-px bg-border" />
+                <div className="mb-1 flex items-center gap-1 px-1 text-[10px] font-semibold uppercase text-primary"><Sparkles className="h-3 w-3" /> Réactions Dishyo+</div>
+                <div className="grid grid-cols-6 gap-1">
+                  {PLUS_REACTIONS.map((r) => (
+                    <motion.button
+                      key={r}
+                      type="button"
+                      whileHover={{ scale: isPlus ? 1.15 : 1 }}
+                      whileTap={{ scale: isPlus ? 0.85 : 1 }}
+                      onClick={() => {
+                        if (!isPlus) return toast.info("Cette réaction est réservée aux membres Dishyo+");
+                        setReaction(r);
+                        setReactionsOpen(false);
+                      }}
+                      className={`emoji-glyph relative flex h-11 w-11 items-center justify-center rounded-xl text-2xl leading-none ${isPlus ? "hover:bg-accent" : "opacity-40"}`}
+                      aria-label={isPlus ? `Réagir avec ${r}` : `${r}, réservé à Dishyo+`}
+                    >
+                      {r}
+                      {!isPlus && <Lock className="absolute bottom-0.5 right-0.5 h-3 w-3 text-muted-foreground" />}
+                    </motion.button>
+                  ))}
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -244,6 +281,22 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
           <Share2 className="h-5 w-5" />
         </motion.button>
       </div>
+
+      {Object.keys(reactionCounts).length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Réactions à cette publication">
+          {Object.entries(reactionCounts).map(([emoji, count]) => (
+            <button
+              key={emoji}
+              type="button"
+              onClick={() => setReaction(liked === emoji ? null : emoji)}
+              className={`emoji-glyph flex h-7 items-center gap-1 rounded-full border px-2 text-sm leading-none transition ${liked === emoji ? "border-primary bg-primary/10" : "border-border bg-card hover:bg-muted"}`}
+              aria-label={`${count} réaction${count > 1 ? "s" : ""} ${emoji}`}
+            >
+              <span>{emoji}</span><span className="font-sans text-[11px] font-semibold text-muted-foreground">{count}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <CommentSheet open={commentsOpen} onClose={() => setCommentsOpen(false)} postId={post.id} postOwnerId={post.user_id} currentUserId={currentUserId} onAdded={() => setCommentsAdded((c) => c + 1)} />
 

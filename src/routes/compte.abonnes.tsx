@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import type { DbProfile } from "@/lib/dishyo-db";
+import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 
 export const Route = createFileRoute("/compte/abonnes")({
   head: () => ({ meta: [{ title: "Dishyo — Abonnés" }] }),
@@ -42,7 +43,7 @@ function FollowersPage() {
           {list.map((u) => (
             <li key={u.id}>
               <Link to="/profil/$handle" params={{ handle: u.handle }} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
-                <img src={u.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${u.handle}`} className="h-12 w-12 rounded-full object-cover" alt="" />
+                <ProfileAvatar profile={u} size="md" />
                 <div>
                   <div className="font-semibold">{u.display_name}</div>
                   <div className="text-xs text-muted-foreground">@{u.handle}</div>

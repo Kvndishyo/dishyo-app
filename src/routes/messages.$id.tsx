@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Image as ImageIcon, Send, Timer, Reply, Trash2, Pencil, X, Smile } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Send, Timer, Reply, Trash2, Pencil, X, Smile, Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,8 +10,9 @@ import { SharedDishCard } from "@/components/dishyo/SharedDishCard";
 import {
   fetchMessages, fetchMembers, fetchReactions, sendMessage, markRead, uploadChatImage,
   toggleReaction, softDeleteMessage, editMessage, chatTime, dayLabel,
-  QUICK_REACTIONS, EPHEMERAL_OPTIONS, type MessageRow, type MemberRow,
+  QUICK_REACTIONS, PLUS_CHAT_REACTIONS, EPHEMERAL_OPTIONS, type MessageRow, type MemberRow,
 } from "@/lib/chat";
+import { useSubscription } from "@/hooks/useSubscription";
 
 export const Route = createFileRoute("/messages/$id")({
   head: () => ({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/messages/$id")({
 function ConversationPage() {
   const { id } = useParams({ from: "/messages/$id" });
   const { session, loading } = useAuth();
+  const { isPlus } = useSubscription();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const uid = session?.user.id;
@@ -212,8 +214,8 @@ function ConversationPage() {
                       ).map(([emoji, count]) => (
                         <button
                           key={emoji}
-                          onClick={() => uid && toggleReaction(m.id, uid, emoji).then(() => qc.invalidateQueries({ queryKey: ["reactions", id] }))}
-                          className="rounded-full bg-muted px-2 py-0.5 text-xs"
+                          onClick={() => uid && toggleReaction(m.id, uid, emoji).then(() => qc.invalidateQueries({ queryKey: ["reactions", id] })).catch((error) => toast.error(error instanceof Error ? error.message : "Réaction impossible"))}
+                          className="emoji-glyph rounded-full bg-muted px-2 py-0.5 text-xs"
                         >
                           {emoji} {count}
                         </button>
@@ -246,20 +248,44 @@ function ConversationPage() {
                   )}
 
                   {picker === m.id && (
-                    <div className={`mt-1 flex flex-wrap gap-1 rounded-2xl bg-card p-2 shadow ${mine ? "justify-end" : ""}`}>
+                    <div className={`mt-1 w-[264px] rounded-2xl border border-border bg-card p-2 shadow-card ${mine ? "ml-auto" : ""}`}>
+                      <div className="grid grid-cols-8 gap-1">
                       {QUICK_REACTIONS.map((e) => (
                         <button
                           key={e}
                           onClick={() => {
                             if (!uid) return;
-                            toggleReaction(m.id, uid, e).then(() => qc.invalidateQueries({ queryKey: ["reactions", id] }));
-                            setPicker(null);
+                            toggleReaction(m.id, uid, e)
+                              .then(() => qc.invalidateQueries({ queryKey: ["reactions", id] }))
+                              .then(() => setPicker(null))
+                              .catch((error) => toast.error(error instanceof Error ? error.message : "Réaction impossible"));
                           }}
-                          className="text-lg"
+                          className="emoji-glyph flex h-7 w-7 items-center justify-center text-lg"
                         >
                           {e}
                         </button>
                       ))}
+                      </div>
+                      <div className="my-1.5 h-px bg-border" />
+                      <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase text-primary"><Sparkles className="h-3 w-3" /> Dishyo+</div>
+                      <div className="grid grid-cols-6 gap-1">
+                        {PLUS_CHAT_REACTIONS.map((e) => (
+                          <button
+                            key={e}
+                            onClick={() => {
+                              if (!uid) return;
+                              if (!isPlus) return toast.info("Cette réaction est réservée aux membres Dishyo+");
+                              toggleReaction(m.id, uid, e)
+                                .then(() => qc.invalidateQueries({ queryKey: ["reactions", id] }))
+                                .then(() => setPicker(null))
+                                .catch((error) => toast.error(error instanceof Error ? error.message : "Réaction impossible"));
+                            }}
+                            className={`emoji-glyph relative flex h-8 w-8 items-center justify-center text-xl ${isPlus ? "" : "opacity-40"}`}
+                          >
+                            {e}{!isPlus && <Lock className="absolute bottom-0 right-0 h-2.5 w-2.5" />}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
