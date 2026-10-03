@@ -127,4 +127,5 @@
   .profile-frame-gold { padding: 3px; background: linear-gradient(135deg, oklch(0.88 0.16 90), oklch(0.68 0.17 65)); box-shadow: 0 0 0 2px var(--background); }
   .profile-frame-gradient { padding: 3px; background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 45%, oklch(0.7 0.2 350))); box-shadow: 0 0 0 2px var(--background); }
   .profile-frame-glow { padding: 3px; background: var(--primary); box-shadow: 0 0 0 2px var(--background), 0 0 18px color-mix(in oklch, var(--primary) 65%, transparent); }
+  .emoji-glyph { font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-variant-emoji: emoji; }
 }
