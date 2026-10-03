@@ -71,16 +71,26 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
   const commentsCount = serverCommentsCount + commentsAdded;
 
   async function setReaction(emoji: string | null) {
+    if (emoji && (PLUS_REACTIONS as readonly string[]).includes(emoji) && !isPlus) {
+      toast.info("Cette réaction est réservée aux membres Dishyo+");
+      return;
+    }
     const wasLiked = !!liked;
     setLiked(emoji);
     if (!wasLiked && emoji) setBurst((b) => b + 1);
 
     if (!emoji) {
       const { error } = await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", currentUserId);
-      if (error) toast.error("Erreur");
+      if (error) {
+        setLiked(serverMyLike);
+        toast.error(error.message);
+      }
     } else {
       const { error } = await supabase.from("likes").upsert({ post_id: post.id, user_id: currentUserId, emoji }, { onConflict: "post_id,user_id" });
-      if (error) toast.error("Erreur");
+      if (error) {
+        setLiked(serverMyLike);
+        toast.error(error.message);
+      }
     }
     qc.invalidateQueries({ queryKey: ["feed"] });
   }

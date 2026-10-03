@@ -31,12 +31,14 @@ export function ProfileAvatar({
 }) {
   const sizeClass = { xs: "h-7 w-7", sm: "h-9 w-9", md: "h-12 w-12", lg: "h-24 w-24" }[size];
   const frameClass = profile.plus_active && profile.plus_frame ? FRAME_CLASSES[profile.plus_frame] : undefined;
+  const hasFrame = Boolean(frameClass);
   const src = profile.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${profile.handle}`;
+  const basePixels = size === "lg" ? 96 : size === "md" ? 48 : size === "sm" ? 36 : 28;
 
   return (
     <span className={cn("relative inline-flex shrink-0 rounded-full", sizeClass, frameClass, className)}>
       {expiresAt ? (
-        <ExpiryRing expiresAt={expiresAt} size={size === "lg" ? 96 : size === "md" ? 48 : size === "sm" ? 36 : 28}>
+        <ExpiryRing expiresAt={expiresAt} size={hasFrame ? basePixels - 6 : basePixels}>
           <img src={src} alt={profile.display_name ?? ""} className="h-full w-full object-cover" />
         </ExpiryRing>
       ) : (

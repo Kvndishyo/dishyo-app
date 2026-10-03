@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, UserPlus, UserCheck, MessageCircle } from "lucide-react";
+import { ArrowLeft, UserPlus, UserCheck, MessageCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { startDirect } from "@/lib/chat";
 import { useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileByHandleOptions, userPostsOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 
 export const Route = createFileRoute("/profil/$handle")({
   component: ProfilePage,
@@ -77,10 +78,11 @@ function ProfilePage() {
 
       <div className="px-5 py-6">
         <div className="flex flex-col items-center text-center">
-          <img src={profile.avatar_url ?? `https://api.dicebear.com/7.x/initials/svg?seed=${profile.handle}`} className="h-24 w-24 rounded-full object-cover ring-4 ring-background shadow-card" />
+          <ProfileAvatar profile={profile} size="lg" className="shadow-card" />
           <h2 className="mt-3 flex items-center gap-2 text-xl font-bold">
             {profile.display_name}
             {profile.restaurateur && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">★ Restaurateur</span>}
+            {profile.plus_active && <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary"><Sparkles className="h-3 w-3" /> Dishyo+</span>}
           </h2>
           {session?.user.id === profile.id && <p className="text-sm text-primary">@{profile.handle}</p>}
           {profile.bio && <p className="mt-2 text-sm text-muted-foreground">{profile.bio}</p>}

@@ -50,6 +50,7 @@ export type MemberRow = {
 };
 
 export const QUICK_REACTIONS = ["❤️", "😂", "🔥", "🤤", "👍", "😮", "😢", "🙏"] as const;
+export const PLUS_CHAT_REACTIONS = ["🧑‍🍳", "🥂", "🍾", "⭐", "👑", "🫶"] as const;
 
 /** Ephemeral options, in seconds (0 = never disappears). */
 export const EPHEMERAL_OPTIONS = [
@@ -181,9 +182,11 @@ export async function toggleReaction(messageId: string, userId: string, emoji: s
     .eq("emoji", emoji)
     .maybeSingle();
   if (data) {
-    await supabase.from("message_reactions").delete().eq("id", (data as { id: string }).id);
+    const { error } = await supabase.from("message_reactions").delete().eq("id", (data as { id: string }).id);
+    if (error) throw error;
   } else {
-    await supabase.from("message_reactions").insert({ message_id: messageId, user_id: userId, emoji });
+    const { error } = await supabase.from("message_reactions").insert({ message_id: messageId, user_id: userId, emoji });
+    if (error) throw error;
   }
 }
 

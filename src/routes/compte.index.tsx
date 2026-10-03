@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PushToggle } from "@/components/dishyo/PushToggle";
 import { AgeSettings } from "@/components/dishyo/AgeSettings";
+import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 
 
 export const Route = createFileRoute("/compte/")({
@@ -94,7 +95,11 @@ function AccountPage() {
           </button>
 
           <div className="relative">
-            <img src={avatarSrc} className="h-24 w-24 rounded-full object-cover ring-4 ring-background shadow-card" alt="" />
+            <ProfileAvatar
+              profile={{ ...profile, avatar_url: avatarSrc }}
+              size="lg"
+              className="shadow-card"
+            />
             {editing && (
               <button
                 onClick={() => galleryRef.current?.click()}
