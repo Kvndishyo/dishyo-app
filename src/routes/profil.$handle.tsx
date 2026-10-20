@@ -8,6 +8,8 @@ import { profileByHandleOptions, userPostsOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
+import { GiftSubscription } from "@/components/dishyo/GiftSubscription";
+import { useStaffRoles } from "@/hooks/useIsAdmin";
 
 export const Route = createFileRoute("/profil/$handle")({
   component: ProfilePage,
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/profil/$handle")({
 function ProfilePage() {
   const { handle } = Route.useParams();
   const { session } = useAuth();
+  const { isOwner } = useStaffRoles();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -108,6 +111,9 @@ function ProfilePage() {
               </button>
             </div>
 
+          )}
+          {isOwner && session?.user.id !== profile.id && (
+            <div className="w-full"><GiftSubscription userId={profile.id} /></div>
           )}
         </div>
 
