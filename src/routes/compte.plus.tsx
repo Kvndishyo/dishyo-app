@@ -7,6 +7,28 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { PLUS_ACCENTS, PLUS_FRAMES, PLANS, PLUS_YEARLY } from "@/lib/plans";
 import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
+import { playSound, setSoundsEnabled, soundsEnabled } from "@/lib/sounds";
+import { useEffect } from "react";
+
+function SoundToggle() {
+  const [on, setOn] = useState(true);
+  useEffect(() => setOn(soundsEnabled()), []);
+  return (
+    <div className="flex items-center justify-between rounded-2xl bg-muted/50 p-3">
+      <div>
+        <p className="text-sm font-semibold">Sons gourmands 🍳</p>
+        <p className="text-xs text-muted-foreground">Pop, grésillement et tintement sur tes interactions</p>
+      </div>
+      <button
+        onClick={() => { const n = !on; setSoundsEnabled(n); setOn(n); if (n) playSound("clink", true); }}
+        className={`rounded-full px-4 py-1.5 text-xs font-semibold ${on ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}
+      >
+        {on ? "Activés" : "Coupés"}
+      </button>
+    </div>
+  );
+}
+
 
 export const Route = createFileRoute("/compte/plus")({
   head: () => ({
@@ -156,6 +178,7 @@ function PlusPage() {
                 ))}
               </div>
             </div>
+            <SoundToggle />
           </div>
         ) : (
           <div className="space-y-3">

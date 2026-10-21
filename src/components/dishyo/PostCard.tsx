@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
+import { playSound } from "@/lib/sounds";
 
 export function PostCard({ post, currentUserId, onHide }: { post: DbPost; currentUserId: string; onHide?: (postId: string) => void }) {
   const qc = useQueryClient();
@@ -78,6 +79,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
     const wasLiked = !!liked;
     setLiked(emoji);
     if (!wasLiked && emoji) setBurst((b) => b + 1);
+    if (emoji) playSound(["🥂", "🍾"].includes(emoji) ? "clink" : emoji === "🔥" ? "sizzle" : "pop", isPlus);
 
     if (!emoji) {
       const { error } = await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", currentUserId);
@@ -148,7 +150,11 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
       </div>
 
       <div className="relative overflow-hidden rounded-2xl shadow-card" onClick={handleImageTap}>
-        <img src={post.photo_url} alt={post.title} className="aspect-square w-full select-none object-cover" />
+        {(post as any).media_type === "video" ? (
+          <video src={post.photo_url} className="aspect-square w-full object-cover" autoPlay muted loop playsInline controls />
+        ) : (
+          <img src={post.photo_url} alt={post.title} className="aspect-square w-full select-none object-cover" />
+        )}
         <AnimatePresence>
           {burst > 0 && (
             <motion.div
