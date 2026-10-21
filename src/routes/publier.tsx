@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon, MapPin, X } from "lucide-react";
+import { ImagePlus, Users, Globe, Utensils, Camera, Image as ImageIcon, MapPin, X, CalendarClock } from "lucide-react";
+import { playSound } from "@/lib/sounds";
 import { useEffect, useRef, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,8 @@ function PublishPage() {
   const [busy, setBusy] = useState(false);
   const [duration, setDuration] = useState<24 | 48 | 72 | 168>(48);
   const { isPlus } = useSubscription();
+  const [mediaType, setMediaType] = useState<"image" | "video">("image");
+  const [scheduleAt, setScheduleAt] = useState("");
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [geo, setGeo] = useState<{ lat: number; lng: number; place_name: string | null } | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
@@ -102,12 +105,23 @@ function PublishPage() {
     return () => clearTimeout(t);
   }, [draftLoaded, title, restaurant, recipe, visibility, preview]);
 
-  function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
+  async function pickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     setPickerOpen(false);
-    if (!f) return;
-    setEditorSrc(URL.createObjectURL(f));
     e.target.value = "";
+    if (!f) return;
+    if (f.type.startsWith("video/")) {
+      if (f.size > 50 * 1024 * 1024) return toast.error("Vidéo trop lourde (50 Mo max)");
+      const url = URL.createObjectURL(f);
+      const dur = await videoDuration(url).catch(() => Infinity);
+      if (dur > 20.5) { URL.revokeObjectURL(url); return toast.error("La vidéo doit faire 20 secondes maximum"); }
+      setMediaType("video");
+      setFile(f);
+      setPreview(url);
+      return;
+    }
+    setMediaType("image");
+    setEditorSrc(URL.createObjectURL(f));
   }
 
   async function handleEditorSave(blob: Blob) {
@@ -120,7 +134,9 @@ function PublishPage() {
   }
 
   async function publish() {
-    if (!file || !title.trim() || !session) return toast.error("Photo et titre requis");
+    if (!file || !title.trim() || !session) return toast.error("Photo/vidéo et titre requis");
+    const publishAt = isPlus && scheduleAt ? new Date(scheduleAt) : new Date();
+    if (isPlus && scheduleAt && publishAt.getTime() < Date.now() - 60_000) return toast.error("Choisis une date future");
     setBusy(true);
     try {
       // Anti-spam
@@ -134,30 +150,36 @@ function PublishPage() {
         if (!m.safe) { toast.error(`Publication refusée : ${m.reason}`); return; }
       }
 
-      // Modération image
-      const dataUrl = preview && preview.startsWith("data:") ? preview : await fileToDataUrl(file);
+      // Modération image (pour une vidéo : image extraite au milieu)
+      const dataUrl = mediaType === "video"
+        ? await videoFrame(preview!)
+        : preview && preview.startsWith("data:") ? preview : await fileToDataUrl(file);
       const mi = await moderateImageDataUrl(dataUrl);
-      if (!mi.safe) { toast.error(`Photo refusée : ${mi.reason}`); return; }
+      if (!mi.safe) { toast.error(`${mediaType === "video" ? "Vidéo" : "Photo"} refusée : ${mi.reason}`); return; }
 
-      const ext = file.name.split(".").pop() ?? "jpg";
+      const ext = file.name.split(".").pop() ?? (mediaType === "video" ? "mp4" : "jpg");
       const path = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("dish-photos").upload(path, file);
+      const { error: upErr } = await supabase.storage.from("dish-photos").upload(path, file, { contentType: file.type });
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from("dish-photos").getPublicUrl(path);
       const { error } = await supabase.from("posts").insert({
         user_id: session.user.id,
         photo_url: pub.publicUrl,
+        media_type: mediaType,
+        publish_at: publishAt.toISOString(),
         title: title.trim(),
         restaurant: restaurant.trim() || null,
         recipe: recipe.trim() || null, visibility,
-        expires_at: new Date(Date.now() + duration * 3600 * 1000).toISOString(),
+        expires_at: new Date(publishAt.getTime() + duration * 3600 * 1000).toISOString(),
         lat: geo?.lat ?? null, lng: geo?.lng ?? null, place_name: geo?.place_name ?? null,
       } as any);
       if (error) throw error;
       localStorage.removeItem(DRAFT_KEY);
       qc.invalidateQueries({ queryKey: ["feed"] });
       qc.invalidateQueries({ queryKey: ["my-posts"] });
-      toast.success(`Plat publié ! Disparaît dans ${duration === 168 ? "7 jours" : duration + "h"} ✨`);
+      playSound("ding", isPlus);
+      if (isPlus && scheduleAt) toast.success(`Plat programmé pour le ${publishAt.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })} ⏰`);
+      else toast.success(`Plat publié ! Disparaît dans ${duration === 168 ? "7 jours" : duration + "h"} ✨`);
       navigate({ to: "/" });
     } catch (e: any) {
       toast.error(e.message ?? "Erreur publication");
@@ -184,20 +206,21 @@ function PublishPage() {
       </header>
 
       <div className="space-y-6 p-5">
-        <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={pickFile} className="hidden" />
-        <input ref={galleryRef} type="file" accept="image/*" onChange={pickFile} className="hidden" />
+        <input ref={cameraRef} type="file" accept="image/*,video/*" capture="environment" onChange={pickFile} className="hidden" />
+        <input ref={galleryRef} type="file" accept="image/*,video/*" onChange={pickFile} className="hidden" />
 
         <div className="relative">
           {preview ? (
             <div className="relative overflow-hidden rounded-2xl shadow-card">
-              <img src={preview} alt="Plat" className="aspect-square w-full object-cover" />
+              {mediaType === "video"
+                ? <video src={preview} className="aspect-square w-full object-cover" autoPlay muted loop playsInline controls />
+                : <img src={preview} alt="Plat" className="aspect-square w-full object-cover" />}
               <div className="absolute bottom-3 right-3 flex gap-2">
-                <button onClick={() => setEditorSrc(preview)} className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
-                  Éditer
-                </button>
-                <button onClick={() => setPickerOpen(true)} className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
-                  Changer
-                </button>
+                {mediaType === "image" && (
+                  <button onClick={() => setEditorSrc(preview)} className="rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur">
+                    Éditer
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -206,8 +229,8 @@ function PublishPage() {
                 <ImagePlus className="h-7 w-7 text-primary" />
               </div>
               <div>
-                <p className="font-semibold">Ajoute une photo de ton plat</p>
-                <p className="mt-1 text-sm text-muted-foreground">Caméra ou galerie</p>
+                <p className="font-semibold">Ajoute une photo ou une vidéo de ton plat</p>
+                <p className="mt-1 text-sm text-muted-foreground">Caméra ou galerie · vidéo 20 s max</p>
               </div>
             </button>
           )}
@@ -233,6 +256,22 @@ function PublishPage() {
             ))}
           </div>
           <p className="mt-1 text-[11px] text-muted-foreground">Ton plat disparaîtra automatiquement après ce délai.</p>
+        </div>
+
+        <div>
+          <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <CalendarClock className="h-3.5 w-3.5" /> Programmer la publication {!isPlus && "· Dishyo+"}
+          </h3>
+          {isPlus ? (
+            <div className="flex gap-2">
+              <input type="datetime-local" value={scheduleAt} onChange={(e) => setScheduleAt(e.target.value)}
+                min={localNow()}
+                className="flex-1 rounded-2xl bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30" />
+              {scheduleAt && <button onClick={() => setScheduleAt("")} className="rounded-2xl bg-muted px-3"><X className="h-4 w-4" /></button>}
+            </div>
+          ) : (
+            <p className="rounded-2xl bg-muted/50 px-4 py-3 text-xs text-muted-foreground">Choisis l'heure de mise en ligne de tes plats avec Dishyo+.</p>
+          )}
         </div>
 
 
@@ -276,7 +315,7 @@ function PublishPage() {
         <button onClick={publish} disabled={!canPublish}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-4 font-semibold text-primary-foreground shadow-glow transition active:scale-[0.98] disabled:opacity-50 disabled:shadow-none">
           <Utensils className="h-5 w-5" />
-          {busy ? "Publication…" : "Publier mon plat"}
+          {busy ? "Publication…" : isPlus && scheduleAt ? "Programmer mon plat" : "Publier mon plat"}
         </button>
       </div>
 
@@ -316,6 +355,38 @@ function PublishPage() {
       {editorSrc && <PhotoEditor src={editorSrc} onCancel={() => setEditorSrc(null)} onSave={handleEditorSave} />}
     </div>
   );
+}
+
+function localNow() {
+  const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+
+function videoDuration(url: string): Promise<number> {
+  return new Promise((res, rej) => {
+    const v = document.createElement("video");
+    v.preload = "metadata";
+    v.onloadedmetadata = () => res(v.duration);
+    v.onerror = rej;
+    v.src = url;
+  });
+}
+
+function videoFrame(url: string): Promise<string> {
+  return new Promise((res, rej) => {
+    const v = document.createElement("video");
+    v.muted = true; v.playsInline = true; v.preload = "auto";
+    v.onloadedmetadata = () => { v.currentTime = Math.min(v.duration / 2, 3); };
+    v.onseeked = () => {
+      const c = document.createElement("canvas");
+      const s = Math.min(1, 768 / Math.max(v.videoWidth, v.videoHeight));
+      c.width = v.videoWidth * s; c.height = v.videoHeight * s;
+      c.getContext("2d")!.drawImage(v, 0, 0, c.width, c.height);
+      res(c.toDataURL("image/jpeg", 0.8));
+    };
+    v.onerror = rej;
+    v.src = url;
+  });
 }
 
 function VisBtn({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
