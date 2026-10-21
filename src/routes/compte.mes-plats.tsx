@@ -43,20 +43,25 @@ function MyPostsPage() {
         )}
         {posts.map((p) => {
           const expired = new Date(p.expires_at).getTime() <= now;
+          const pubAt = (p as any).publish_at ? new Date((p as any).publish_at) : null;
+          const scheduled = !!pubAt && pubAt.getTime() > now;
+          const isVideo = (p as any).media_type === "video";
           return (
             <div key={p.id} className={`flex gap-3 rounded-2xl bg-card p-3 shadow-soft ${expired ? "opacity-70" : ""}`}>
-              <img src={p.photo_url} className={`h-20 w-20 rounded-xl object-cover ${expired ? "grayscale" : ""}`} />
+              {isVideo
+                ? <video src={p.photo_url} muted playsInline className={`h-20 w-20 rounded-xl object-cover ${expired ? "grayscale" : ""}`} />
+                : <img src={p.photo_url} className={`h-20 w-20 rounded-xl object-cover ${expired ? "grayscale" : ""}`} />}
               <div className="flex flex-1 flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold">{p.title}</h3>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${expired ? "bg-muted text-muted-foreground" : "bg-emerald-100 text-emerald-700"}`}>
-                      {expired ? "Expiré" : "Actif"}
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${expired ? "bg-muted text-muted-foreground" : scheduled ? "bg-accent text-accent-foreground" : "bg-emerald-100 text-emerald-700"}`}>
+                      {expired ? "Expiré" : scheduled ? "Programmé" : "Actif"}
                     </span>
                   </div>
                   <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
-                    {expired ? "Expiré" : `Disparaît dans ${timeRemaining(p.expires_at)}`}
+                    {expired ? "Expiré" : scheduled ? `Publié le ${pubAt!.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}` : `Disparaît dans ${timeRemaining(p.expires_at)}`}
                   </div>
                 </div>
                 <button onClick={() => remove(p.id)} className="self-end rounded-full p-2 text-destructive hover:bg-destructive/10">

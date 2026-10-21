@@ -19,7 +19,8 @@ export const feedInfiniteOptions = (scope: FeedScope = "friends", uid?: string) 
       let q = supabase
         .from("posts")
         .select(POST_SELECT)
-        .gt("expires_at", new Date().toISOString());
+        .gt("expires_at", new Date().toISOString())
+        .lte("publish_at", new Date().toISOString());
       if (scope === "public") {
         q = q.eq("visibility", "public");
       } else if (scope === "friends" && uid) {
@@ -79,6 +80,7 @@ export const userPostsOptions = (userId: string | undefined) =>
         .select(POST_SELECT)
         .eq("user_id", userId!)
         .gt("expires_at", new Date().toISOString())
+        .lte("publish_at", new Date().toISOString())
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as unknown as DbPost[];

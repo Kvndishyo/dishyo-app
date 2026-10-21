@@ -45,7 +45,7 @@ function AdminPage() {
   }, [authLoading, session, navigate]);
 
   async function load() {
-    let q = supabase.from("support_messages").select("*").order("created_at", { ascending: false });
+    let q = supabase.from("support_messages").select("*").order("priority", { ascending: false }).order("created_at", { ascending: false });
     if (filter !== "all") q = q.eq("status", filter);
     const { data, error } = await q;
     if (error) return toast.error(error.message);
@@ -195,7 +195,10 @@ function AdminPage() {
                 {m.status}
               </span>
             </div>
-            <p className="mt-2 line-clamp-1 font-semibold">{m.subject}</p>
+            <p className="mt-2 line-clamp-1 font-semibold">
+              {(m as any).priority && <span className="mr-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">⚡ Prioritaire</span>}
+              {m.subject}
+            </p>
             <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{m.body}</p>
             <p className="mt-2 text-[10px] text-muted-foreground">
               {new Date(m.created_at).toLocaleString("fr-FR")}
