@@ -118,6 +118,7 @@ function ConversationPage() {
           ephemeralSeconds: ephemeral,
         });
         setReplyTo(null);
+        import("@/lib/sounds").then((m) => m.playSound("bubble", isPlus));
       }
       setText("");
       qc.invalidateQueries({ queryKey: ["messages", id] });
