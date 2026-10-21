@@ -8,6 +8,13 @@
       "when": 1791036420501,
       "tag": "0000_owner_gift_subscription",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792598605872,
+      "tag": "0001_scheduled_video_priority",
+      "breakpoints": true
     }
   ]
 }

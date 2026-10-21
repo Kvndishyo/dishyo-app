@@ -600,8 +600,10 @@ export type Database = {
           id: string
           lat: number | null
           lng: number | null
+          media_type: string
           photo_url: string
           place_name: string | null
+          publish_at: string
           recipe: string | null
           restaurant: string | null
           title: string
@@ -616,8 +618,10 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          media_type?: string
           photo_url: string
           place_name?: string | null
+          publish_at?: string
           recipe?: string | null
           restaurant?: string | null
           title: string
@@ -632,8 +636,10 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          media_type?: string
           photo_url?: string
           place_name?: string | null
+          publish_at?: string
           recipe?: string | null
           restaurant?: string | null
           title?: string
@@ -908,6 +914,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          priority: boolean
           status: string
           subject: string
           user_id: string
@@ -918,6 +925,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          priority?: boolean
           status?: string
           subject: string
           user_id: string
@@ -928,6 +936,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          priority?: boolean
           status?: string
           subject?: string
           user_id?: string
