@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Send } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -11,6 +12,8 @@ export const Route = createFileRoute("/compte/contact")({
 
 function ContactPage() {
   const { session, profile } = useAuth();
+  const { isPlus, restoPlan } = useSubscription();
+  const isPaid = isPlus || !!restoPlan;
   const [subject, setSubject] = useState("");
   const [email, setEmail] = useState(session?.user.email ?? "");
   const [message, setMessage] = useState("");
@@ -46,6 +49,11 @@ function ContactPage() {
         <p className="text-sm text-muted-foreground">
           {profile ? `Bonjour @${profile.handle} !` : ""} Une question, un bug, une suggestion ? On te répond rapidement.
         </p>
+        {isPaid ? (
+          <div className="rounded-2xl bg-accent/50 px-4 py-3 text-sm font-medium">⚡ Support prioritaire : ton message passe en tête de file.</div>
+        ) : (
+          <Link to="/compte/plus" className="block rounded-2xl bg-muted/60 px-4 py-3 text-xs text-muted-foreground">Avec Dishyo+, tes messages sont traités en priorité ✨</Link>
+        )}
 
         <Field label="Sujet"><input required value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Sujet" className={inputCls} /></Field>
         <Field label="Email"><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} /></Field>
