@@ -8,6 +8,25 @@ export function soundsEnabled(): boolean {
   if (typeof window === "undefined") return false;
   return localStorage.getItem(KEY) !== "off";
 }
+const VKEY = "dishyo:haptics:v1";
+export function hapticsEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(VKEY) !== "off";
+}
+export function setHapticsEnabled(on: boolean) {
+  localStorage.setItem(VKEY, on ? "on" : "off");
+}
+export type HapticName = SoundName | "tap" | "success" | "share";
+const PATTERNS: Record<HapticName, number | number[]> = {
+  tap: 10, pop: 18, bubble: [12, 40, 12], clink: [15, 60, 25], sizzle: [8, 20, 8, 20, 8, 20, 8],
+  ding: [20, 80, 40], success: [25, 50, 25], share: [15, 40, 15, 40, 35],
+};
+/** Vibration courte suivant l'interaction (Android/navigateurs compatibles ; iPhone ne supporte pas la vibration web). */
+export function haptic(name: HapticName) {
+  if (typeof navigator === "undefined" || !hapticsEnabled() || !("vibrate" in navigator)) return;
+  try { navigator.vibrate(PATTERNS[name]); } catch {}
+}
+
 export function setSoundsEnabled(on: boolean) {
   localStorage.setItem(KEY, on ? "on" : "off");
 }
@@ -53,6 +72,7 @@ function noise(c: AudioContext, dur: number, vol = 0.08) {
 
 /** Joue un son seulement si activé. `isPlus` : les sons sont un avantage Dishyo+. */
 export function playSound(name: SoundName, isPlus: boolean) {
+  haptic(name);
   if (!isPlus || !soundsEnabled()) return;
   const c = ac();
   if (!c) return;

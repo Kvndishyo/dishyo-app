@@ -82,6 +82,7 @@ export function CommentSheet({
       await supabase.from("comment_likes").delete().eq("comment_id", c.id).eq("user_id", currentUserId);
     } else {
       setLikes((ls) => [...ls, { comment_id: c.id, user_id: currentUserId }]);
+      import("@/lib/sounds").then((m) => m.haptic("pop"));
       await supabase.from("comment_likes").insert({ comment_id: c.id, user_id: currentUserId });
     }
   }

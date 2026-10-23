@@ -1,3 +1,4 @@
+import { haptic, hapticsEnabled, setHapticsEnabled } from "@/lib/sounds";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Bell, Heart, MessageCircle, UserPlus, Utensils, Megaphone, Moon, Smartphone, Send } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -93,6 +94,7 @@ function NotificationsSettingsPage() {
       <div className="space-y-6 p-4">
         <section className="rounded-3xl bg-card p-2 shadow-soft">
           <PushToggle Row={ToggleRow} />
+          <HapticRow />
         </section>
 
         <section>
@@ -214,5 +216,14 @@ function ToggleRow({
         <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${value ? "left-[22px]" : "left-0.5"}`} />
       </button>
     </div>
+  );
+}
+
+function HapticRow() {
+  const [on, setOn] = useState(true);
+  useEffect(() => setOn(hapticsEnabled()), []);
+  return (
+    <ToggleRow icon={<span>📳</span>} title="Vibrations" subtitle="Vibre quand tu réagis, partages, suis ou envoies un message"
+      value={on} onChange={(v) => { setHapticsEnabled(v); setOn(v); if (v) haptic("success"); }} />
   );
 }
