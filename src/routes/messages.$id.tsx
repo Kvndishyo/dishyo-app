@@ -135,6 +135,7 @@ function ConversationPage() {
     try {
       const path = await uploadChatImage(uid, file);
       await sendMessage({ conversationId: id, senderId: uid, kind: "image", mediaUrl: path, ephemeralSeconds: ephemeral });
+      import("@/lib/sounds").then((m) => m.haptic("share"));
       qc.invalidateQueries({ queryKey: ["messages", id] });
     } catch {
       toast.error("Photo non envoyée");

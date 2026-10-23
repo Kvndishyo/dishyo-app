@@ -59,6 +59,7 @@ function ProfilePage() {
       await supabase.from("follows").delete().eq("follower_id", session.user.id).eq("following_id", profile.id);
     } else {
       setFollowing(true);
+      import("@/lib/sounds").then((m) => m.haptic("success"));
       setStats((s) => ({ ...s, followers: s.followers + 1 }));
       await supabase.from("follows").insert({ follower_id: session.user.id, following_id: profile.id });
     }

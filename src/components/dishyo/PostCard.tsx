@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { blockUser } from "@/lib/moderation";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
-import { playSound } from "@/lib/sounds";
+import { playSound, haptic } from "@/lib/sounds";
 
 export function PostCard({ post, currentUserId, onHide }: { post: DbPost; currentUserId: string; onHide?: (postId: string) => void }) {
   const qc = useQueryClient();
@@ -36,6 +36,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
 
   async function toggleSave() {
     const next = !saved;
+    haptic("tap");
     setSavedOverride(next);
     const { error } = next
       ? await supabase.from("saved_posts").upsert({ post_id: post.id, user_id: currentUserId }, { onConflict: "user_id,post_id" })
@@ -278,7 +279,7 @@ export function PostCard({ post, currentUserId, onHide }: { post: DbPost; curren
             const shareData = { title: post.title, text: `${post.title} sur Dishyo`, url };
             try {
               if (navigator.share) await navigator.share(shareData);
-              else { await navigator.clipboard.writeText(url); toast.success("Lien copié !"); }
+              else { await navigator.clipboard.writeText(url); haptic("share"); toast.success("Lien copié !"); }
             } catch {}
           }}
           className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm transition hover:bg-accent"

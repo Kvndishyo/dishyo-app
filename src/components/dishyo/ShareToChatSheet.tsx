@@ -36,6 +36,7 @@ export function ShareToChatSheet({
         await sendMessage({ conversationId: c.id, senderId: uid, body: note.trim() });
       }
       setSent((s) => [...s, c.id]);
+      import("@/lib/sounds").then((m) => m.haptic("share"));
       toast.success("Plat envoyé 🍽️");
     } catch {
       toast.error("Envoi impossible");
