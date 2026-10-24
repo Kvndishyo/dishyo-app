@@ -105,6 +105,30 @@
   --ring: oklch(0.72 0.19 42);
 }
 
+/* Dishyo+ palettes also drive focus rings, highlights and readable text. */
+:root[data-dishyo-accent="framboise"], .accent-swatch-framboise { --selected-accent: oklch(0.62 0.21 5); }
+:root[data-dishyo-accent="basilic"], .accent-swatch-basilic { --selected-accent: oklch(0.62 0.15 150); }
+:root[data-dishyo-accent="myrtille"], .accent-swatch-myrtille { --selected-accent: oklch(0.55 0.19 275); }
+:root[data-dishyo-accent="safran"], .accent-swatch-safran { --selected-accent: oklch(0.78 0.16 85); }
+:root[data-dishyo-accent="cacao"], .accent-swatch-cacao { --selected-accent: oklch(0.48 0.08 55); }
+.accent-swatch-orange { --selected-accent: oklch(0.68 0.19 42); }
+[class*="accent-swatch-"] { background-color: var(--selected-accent); }
+:root[data-dishyo-accent]:not([data-dishyo-accent="orange"]) {
+  --primary: var(--selected-accent);
+  --ring: var(--primary);
+  --primary-soft: color-mix(in oklch, var(--primary) 16%, var(--background));
+  --accent: var(--primary-soft);
+  --accent-foreground: color-mix(in oklch, var(--primary) 65%, var(--foreground));
+  --primary-foreground: oklch(0.99 0 0);
+  --chart-1: var(--primary);
+  --shadow-soft: 0 4px 16px -4px color-mix(in oklch, var(--primary) 12%, transparent);
+}
+:root[data-dishyo-accent="safran"] { --primary-foreground: oklch(0.18 0.02 50); }
+:root.dark[data-dishyo-accent]:not([data-dishyo-accent="orange"]) {
+  --primary: color-mix(in oklch, var(--selected-accent) 75%, oklch(0.95 0 0));
+  --primary-foreground: oklch(0.15 0.02 50);
+}
+
 @layer base {
   * { border-color: var(--color-border); }
   html, body { height: 100%; }

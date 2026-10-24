@@ -9,6 +9,7 @@ import { PLUS_ACCENTS, PLUS_FRAMES, PLANS, PLUS_YEARLY } from "@/lib/plans";
 import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 import { playSound, setSoundsEnabled, soundsEnabled } from "@/lib/sounds";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 function SoundToggle() {
   const [on, setOn] = useState(true);
@@ -56,16 +57,24 @@ function PlusPage() {
   const { profile, refreshProfile } = useAuth();
   const { isPlus, get, trialUsed, startTrial, cancel, loading } = useSubscription();
   const [busy, setBusy] = useState(false);
+  const [savingPref, setSavingPref] = useState(false);
   const [interval, setInterval] = useState<"month" | "year">("month");
   const sub = get("plus");
   const accent = (profile as { plus_accent?: string } | null)?.plus_accent ?? "orange";
   const frame = (profile as { plus_frame?: string } | null)?.plus_frame ?? "none";
 
   async function savePref(patch: { plus_accent?: string; plus_frame?: string }) {
-    if (!profile) return;
-    const { error } = await supabase.from("profiles").update(patch).eq("id", profile.id);
-    if (error) return toast.error(error.message);
-    await refreshProfile();
+    if (!profile || savingPref) return;
+    setSavingPref(true);
+    try {
+      const { error } = await supabase.from("profiles").update(patch).eq("id", profile.id).select("id").single();
+      if (error) throw error;
+      await refreshProfile();
+    } catch {
+      toast.error("Impossible d’enregistrer ta personnalisation. Réessaie.");
+    } finally {
+      setSavingPref(false);
+    }
   }
 
   async function onTrial() {
@@ -90,12 +99,12 @@ function PlusPage() {
       </header>
 
       <div className="space-y-6 p-5">
-        <div className="rounded-3xl gradient-warm p-6 text-white shadow-glow">
+        <div className="rounded-3xl bg-primary p-6 text-primary-foreground shadow-glow">
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6" />
             <h2 className="text-xl font-bold">{PLANS.plus.tagline}</h2>
           </div>
-          <p className="mt-2 text-sm text-white/90">
+          <p className="mt-2 text-sm text-primary-foreground/90">
             Dishyo reste gratuit. Dishyo+ ajoute du confort, du style et des statistiques.
           </p>
         </div>
@@ -141,16 +150,19 @@ function PlusPage() {
               <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Accent de couleur</h3>
               <div className="grid grid-cols-3 gap-2">
                 {PLUS_ACCENTS.map((a) => (
-                  <button
+                  <Button
                     key={a.id}
+                    variant="outline"
+                    disabled={savingPref}
+                    aria-pressed={accent === a.id}
                     onClick={() => savePref({ plus_accent: a.id })}
-                    className={`flex items-center gap-2 rounded-2xl border-2 p-3 text-left text-xs font-medium transition ${
+                    className={`h-auto justify-start gap-2 whitespace-normal rounded-2xl border-2 p-3 text-left text-xs font-medium transition ${
                       accent === a.id ? "border-primary bg-accent/40" : "border-border bg-card"
                     }`}
                   >
-                    <span className="h-5 w-5 flex-shrink-0 rounded-full" style={{ background: a.swatch }} />
+                    <span className={`h-5 w-5 flex-shrink-0 rounded-full accent-swatch-${a.id}`} />
                     <span className="truncate">{a.label}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
