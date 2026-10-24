@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Logo } from "@/components/dishyo/Logo";
 import { supabase } from "@/integrations/supabase/client";
-import { getCurrentPosition } from "@/lib/geo";
+import { getStoredPosition } from "@/lib/geo";
 
 export const Route = createFileRoute("/")({
   head: () => ({

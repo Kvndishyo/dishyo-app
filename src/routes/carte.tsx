@@ -4,7 +4,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { MapPin, Loader2, Crosshair } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getCurrentPosition } from "@/lib/geo";
+import { getCurrentPosition, getStoredPosition } from "@/lib/geo";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/carte")({

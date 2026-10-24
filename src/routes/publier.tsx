@@ -49,7 +49,7 @@ function PublishPage() {
   async function addLocation() {
     setGeoBusy(true);
     try {
-      const pos = await getCurrentPosition();
+      const pos = await getCurrentPosition({ force: true });
       const place = await reverseGeocode(pos.lat, pos.lng);
       setGeo({ ...pos, place_name: place });
       toast.success(place ? `Position : ${place}` : "Position ajoutée");
