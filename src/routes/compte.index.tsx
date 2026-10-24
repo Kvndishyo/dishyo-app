@@ -6,7 +6,6 @@ import { useTheme } from "@/hooks/useTheme";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { PushToggle } from "@/components/dishyo/PushToggle";
 import { AgeSettings } from "@/components/dishyo/AgeSettings";
 import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 
@@ -151,7 +150,6 @@ function AccountPage() {
           <Row icon={<BarChart3 className="h-5 w-5 text-primary" />} title="Dashboard" subtitle="Tes statistiques" to="/compte/dashboard" iconBg="bg-primary/10" />
           <Row icon={<Sparkles className="h-5 w-5 text-primary" />} title="Dishyo+" subtitle="Thèmes, plats 7 jours, zéro pub" to="/compte/plus" iconBg="bg-primary/10" />
           <Row icon={<Star className="h-5 w-5 text-yellow-500" />} title="Mode Restaurateur" subtitleEl={<span className="text-emerald-600">Découvre les avantages →</span>} to="/compte/restaurateur" iconBg="bg-yellow-100" />
-          <PushToggle Row={ToggleRow} />
 
           <ToggleRow icon={<Moon className="h-5 w-5" />} title="Mode sombre" value={theme === "dark"} onChange={(v) => setTheme(v ? "dark" : "light")} />
           <AgeSettings />
