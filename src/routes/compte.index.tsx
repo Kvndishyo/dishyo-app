@@ -137,7 +137,7 @@ function AccountPage() {
           )}
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-2 border-y border-border py-4">
+        <div className="mt-6 grid grid-cols-3 gap-2">
           <StatBtn n={stats.following} label="Abonnements" to="/compte/abonnements" />
           <StatBtn n={stats.followers} label="Abonnés" to="/compte/abonnes" />
           <StatBtn n={stats.posts} label="Plats actifs" to="/compte/mes-plats" />
@@ -193,9 +193,9 @@ function AccountPage() {
 
 function StatBtn({ n, label, to }: { n: number; label: string; to: string }) {
   return (
-    <Link to={to} className="rounded-2xl py-1 transition active:scale-95 hover:bg-muted">
+    <Link to={to} className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-border bg-card px-1 py-3 text-center leading-tight transition active:scale-95 hover:bg-muted">
       <div className="text-xl font-bold">{n}</div>
-      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="mt-0.5 w-full text-xs text-muted-foreground">{label}</div>
     </Link>
   );
 }

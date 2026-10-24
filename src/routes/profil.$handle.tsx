@@ -118,7 +118,7 @@ function ProfilePage() {
           )}
         </div>
 
-        <div className="mt-6 grid grid-cols-3 border-y border-border py-4 text-center">
+        <div className="mt-6 grid grid-cols-3 gap-2">
           <Stat n={stats.following} label="Abonnements" />
           <Stat n={stats.followers} label="Abonnés" />
           <Stat n={posts.length} label="Plats actifs" />
@@ -142,5 +142,10 @@ function ProfilePage() {
 }
 
 function Stat({ n, label }: { n: number; label: string }) {
-  return <div><div className="text-xl font-bold">{n}</div><div className="text-xs text-muted-foreground">{label}</div></div>;
+  return (
+    <div className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-border bg-card px-1 py-3 text-center leading-tight">
+      <div className="text-xl font-bold">{n}</div>
+      <div className="mt-0.5 w-full text-xs text-muted-foreground">{label}</div>
+    </div>
+  );
 }
