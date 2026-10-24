@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { isActive, PLUS_ACCENTS, type PlanId, type SubscriptionRow } from "@/lib/plans";
+import { isActive, type PlanId, type SubscriptionRow } from "@/lib/plans";
 
 export function useSubscription() {
   const { session, loading: authLoading, refreshProfile } = useAuth();
@@ -57,25 +57,16 @@ export function useSubscription() {
 export function usePlusAppearance() {
   const { profile } = useAuth();
   const { isPlus, loading } = useSubscription();
+  const accent = profile?.plus_accent;
 
   useEffect(() => {
-    if (typeof document === "undefined" || loading) return;
+    if (loading) return;
     const root = document.documentElement;
-    const accent = isPlus
-      ? PLUS_ACCENTS.find((a) => a.id === (profile as { plus_accent?: string } | null)?.plus_accent)
-      : undefined;
-    if (!accent || accent.id === "orange") {
-      root.style.removeProperty("--primary");
-      root.style.removeProperty("--ring");
-      root.style.removeProperty("--accent");
-      root.style.removeProperty("--primary-soft");
-      root.style.removeProperty("--plus-primary");
-      return;
+    // Remove legacy inline overrides: the CSS palette owns light/dark tokens.
+    for (const token of ["--primary", "--ring", "--accent", "--primary-soft", "--plus-primary"]) {
+      root.style.removeProperty(token);
     }
-    root.style.setProperty("--primary", accent.primary);
-    root.style.setProperty("--ring", accent.ring);
-    root.style.setProperty("--accent", `color-mix(in oklch, ${accent.primary} 18%, var(--background))`);
-    root.style.setProperty("--primary-soft", `color-mix(in oklch, ${accent.primary} 18%, var(--background))`);
-    root.style.setProperty("--plus-primary", accent.primary);
-  }, [isPlus, loading, profile]);
+    if (isPlus && accent) root.dataset.dishyoAccent = accent;
+    else delete root.dataset.dishyoAccent;
+  }, [isPlus, loading, accent]);
 }
