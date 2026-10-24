@@ -95,18 +95,15 @@ function HomePage() {
     return () => { supabase.removeChannel(ch); };
   }, [session]);
 
-  // Load location-relevant sponsored ads
+  // Pubs locales : on prend la position déjà accordée, sans relancer la demande
   useEffect(() => {
     if (!session || subLoading || isPlus) { setAds([]); return; }
     let cancelled = false;
     (async () => {
-      try {
-        const { lat, lng } = await getCurrentPosition();
-        const { data } = await supabase.rpc("nearby_ads", { _lat: lat, _lng: lng });
-        if (!cancelled) setAds((data ?? []) as SponsoredAd[]);
-      } catch {
-        if (!cancelled) setAds([]);
-      }
+      const pos = await getStoredPosition();
+      if (!pos) { if (!cancelled) setAds([]); return; }
+      const { data } = await supabase.rpc("nearby_ads", { _lat: pos.lat, _lng: pos.lng });
+      if (!cancelled) setAds((data ?? []) as SponsoredAd[]);
     })();
     return () => { cancelled = true; };
   }, [session, isPlus, subLoading]);

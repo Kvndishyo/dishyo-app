@@ -30,13 +30,10 @@ function MapPage() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const p = await getCurrentPosition();
-        setPos(p);
-      } catch {
-        setPos({ lat: 48.8566, lng: 2.3522 });
-        toast.message("Position non disponible — Paris par défaut");
-      }
+      const p = await getStoredPosition();
+      if (p) { setPos(p); return; }
+      setPos({ lat: 48.8566, lng: 2.3522 });
+      toast.message("Position non disponible — Paris par défaut");
     })();
   }, []);
 
@@ -103,7 +100,7 @@ function MapPage() {
 
   async function recenter() {
     try {
-      const p = await getCurrentPosition();
+      const p = await getCurrentPosition({ force: true });
       setPos(p);
       mapRef.current?.flyTo({ center: [p.lng, p.lat], zoom: 13 });
     } catch (e: any) {
