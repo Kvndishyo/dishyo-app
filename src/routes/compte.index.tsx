@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AgeSettings } from "@/components/dishyo/AgeSettings";
 import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
+import { XpCard } from "@/components/dishyo/XpCard";
 
 
 export const Route = createFileRoute("/compte/")({
@@ -142,6 +143,7 @@ function AccountPage() {
           <StatBtn n={stats.followers} label="Abonnés" to="/compte/abonnes" />
           <StatBtn n={stats.posts} label="Plats actifs" to="/compte/mes-plats" />
         </div>
+        <XpCard userId={profile.id} />
 
         <div className="mt-6 space-y-1">
           <Row icon={<Utensils className="h-5 w-5" />} title="Mes plats" to="/compte/mes-plats" />

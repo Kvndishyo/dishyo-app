@@ -1006,11 +1006,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_xp: {
+        Row: {
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      add_xp: { Args: { _amount: number; _user: string }; Returns: undefined }
       admin_chat_authors: {
         Args: never
         Returns: {

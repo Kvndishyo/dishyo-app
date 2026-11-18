@@ -15,6 +15,13 @@
       "when": 1792598605872,
       "tag": "0001_scheduled_video_priority",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795024681436,
+      "tag": "0002_xp_system",
+      "breakpoints": true
     }
   ]
 }
