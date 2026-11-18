@@ -1008,16 +1008,22 @@ export type Database = {
       }
       user_xp: {
         Row: {
+          last_post_day: string | null
+          streak_days: number
           updated_at: string
           user_id: string
           xp: number
         }
         Insert: {
+          last_post_day?: string | null
+          streak_days?: number
           updated_at?: string
           user_id: string
           xp?: number
         }
         Update: {
+          last_post_day?: string | null
+          streak_days?: number
           updated_at?: string
           user_id?: string
           xp?: number

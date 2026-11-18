@@ -8,3 +8,14 @@ export function levelInfo(xp: number) {
   const cur = xpForLevel(level), next = xpForLevel(level + 1);
   return { level, title: TITLES[Math.min(Math.floor((level - 1) / 3), TITLES.length - 1)], current: xp - cur, needed: next - cur, progress: (xp - cur) / (next - cur) };
 }
+
+export const STREAK_BOOST_DAYS = 7;
+export const STREAK_MULTIPLIER = 1.5;
+/** Active streak: last post today or yesterday (Paris date strings YYYY-MM-DD). */
+export function activeStreak(streak: number, lastDay: string | null, today: string) {
+  if (!lastDay) return 0;
+  const diff = (Date.parse(today) - Date.parse(lastDay)) / 86400000;
+  return diff <= 1 ? streak : 0;
+}
+export const streakMultiplier = (s: number) => (s >= STREAK_BOOST_DAYS ? STREAK_MULTIPLIER : 1);
+export const parisToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris" }).format(new Date());
