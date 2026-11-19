@@ -36,6 +36,13 @@
       "when": 1795025596362,
       "tag": "0004_xp_cooking_streak",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795110249799,
+      "tag": "0005_xp_plus_and_prestige",
+      "breakpoints": true
     }
   ]
 }

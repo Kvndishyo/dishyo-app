@@ -1009,6 +1009,7 @@ export type Database = {
       user_xp: {
         Row: {
           last_post_day: string | null
+          prestige: number
           streak_days: number
           updated_at: string
           user_id: string
@@ -1016,6 +1017,7 @@ export type Database = {
         }
         Insert: {
           last_post_day?: string | null
+          prestige?: number
           streak_days?: number
           updated_at?: string
           user_id: string
@@ -1023,6 +1025,7 @@ export type Database = {
         }
         Update: {
           last_post_day?: string | null
+          prestige?: number
           streak_days?: number
           updated_at?: string
           user_id?: string
@@ -1177,6 +1180,13 @@ export type Database = {
           plan: string
           provider: string
           status: string
+        }[]
+      }
+      public_xp_rank: {
+        Args: { _user: string }
+        Returns: {
+          prestige: number
+          xp: number
         }[]
       }
       push_allowed: {

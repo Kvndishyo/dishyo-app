@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileByHandleOptions, userPostsOptions } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { XpBadge } from "@/components/dishyo/XpBadge";
 import { ProfileAvatar } from "@/components/dishyo/ProfileAvatar";
 import { GiftSubscription } from "@/components/dishyo/GiftSubscription";
 import { useStaffRoles } from "@/hooks/useIsAdmin";
@@ -88,6 +89,7 @@ function ProfilePage() {
             {profile.restaurateur && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">★ Restaurateur</span>}
             {profile.plus_active && <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary"><Sparkles className="h-3 w-3" /> Dishyo+</span>}
           </h2>
+          <XpBadge userId={profile.id} />
           {session?.user.id === profile.id && <p className="text-sm text-primary">@{profile.handle}</p>}
           {profile.bio && <p className="mt-2 text-sm text-muted-foreground">{profile.bio}</p>}
 

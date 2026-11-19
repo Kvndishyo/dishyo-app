@@ -9,3 +9,8 @@ describe("streak", () => {
   it("x1.5 from 7 days", () => { expect(streakMultiplier(6)).toBe(1); expect(streakMultiplier(7)).toBe(1.5); });
   it("breaks after a skipped day", () => { expect(activeStreak(8, "2026-11-17", "2026-11-18")).toBe(8); expect(activeStreak(8, "2026-11-16", "2026-11-18")).toBe(0); });
 });
+import { titleForLevel, MAX_LEVEL, xpForLevel as xfl } from "../xp";
+describe("titles & prestige", () => {
+  it("new title every 10 levels", () => { expect(titleForLevel(9)).toBe("Commis"); expect(titleForLevel(10)).toBe("Apprenti"); expect(titleForLevel(100)).toBe("Légende"); });
+  it("prestige cap matches level 100 (98504 XP in DB)", () => { expect(MAX_LEVEL).toBe(100); expect(xfl(100)).toBe(98504); expect(levelInfo(10_000_000).level).toBe(100); });
+});
